@@ -11,10 +11,13 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useAuth } from '@/lib/services/auth-context';
 import { useThemeColor } from '@/hooks/use-theme-color';
+
+const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
@@ -34,6 +37,8 @@ export default function SignInScreen() {
 
     try {
       await login(email, password);
+      // Mark onboarding as complete after successful sign in
+      await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
       router.replace('/(tabs)');
     } catch (error: any) {
       Alert.alert('Sign In Failed', error.message || 'Invalid credentials');
@@ -105,14 +110,17 @@ export default function SignInScreen() {
 
             <View style={styles.footer}>
               <ThemedText style={styles.footerText}>Don't have an account? </ThemedText>
-              <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
+              <TouchableOpacity onPress={() => router.push('/(onboarding)/register')}>
                 <ThemedText style={[styles.link, { color: tintColor }]}>Register</ThemedText>
               </TouchableOpacity>
             </View>
 
             <TouchableOpacity
               style={styles.skipButton}
-              onPress={() => router.replace('/(tabs)')}
+              onPress={async () => {
+                await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
+                router.replace('/(tabs)');
+              }}
             >
               <ThemedText style={[styles.skipText, { color: tintColor }]}>
                 Skip (Use Local Storage)

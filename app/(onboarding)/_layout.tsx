@@ -6,7 +6,8 @@ export default function OnboardingLayout() {
       <Stack.Screen name="welcome" />
       <Stack.Screen name="features" />
       <Stack.Screen name="consent" />
-      <Stack.Screen name="get-started" />
+      <Stack.Screen name="register" />
+      <Stack.Screen name="sign-in" />
     </Stack>
   );
 }

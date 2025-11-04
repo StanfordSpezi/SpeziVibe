@@ -82,8 +82,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setError(null);
 
     try {
-      // For Firebase, registration is done through Firebase Auth
-      await backend.login({ email, password });
+      // Check if backend has a register method, otherwise use login
+      if ('register' in backend && typeof backend.register === 'function') {
+        await backend.register({ email, password });
+      } else {
+        // Fallback for backends without register (shouldn't happen with Firebase)
+        await backend.login({ email, password });
+      }
       setIsAuthenticated(true);
     } catch (err: any) {
       setError(err.message || 'Registration failed');

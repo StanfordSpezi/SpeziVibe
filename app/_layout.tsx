@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { SchedulerProvider } from '@/lib/scheduler';
+import { AuthProvider } from '@/lib/services/auth-context';
 
 const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
 
@@ -62,12 +63,13 @@ export default function RootLayout() {
     }
 
     // If navigating to tabs while onboarding is not complete, re-check storage
-    // This handles the case where get-started just saved the value
+    // This handles the case where auth just saved the value
     if (!isOnboardingCompleted && inTabs) {
       checkOnboardingStatus();
       return;
     }
 
+    // Redirect to onboarding if not completed and not in onboarding
     if (!isOnboardingCompleted && !inOnboarding) {
       router.replace('/(onboarding)/welcome');
     }
@@ -76,13 +78,15 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <SchedulerProvider>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(onboarding)" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="questionnaire" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal', headerShown: true }} />
-        </Stack>
-        <StatusBar style="auto" />
+        <AuthProvider>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(onboarding)" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="questionnaire" options={{ presentation: 'modal' }} />
+            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal', headerShown: true }} />
+          </Stack>
+          <StatusBar style="auto" />
+        </AuthProvider>
       </SchedulerProvider>
     </ThemeProvider>
   );

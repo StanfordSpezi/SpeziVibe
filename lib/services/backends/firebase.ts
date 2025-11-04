@@ -1,7 +1,8 @@
-import { initializeApp, FirebaseApp } from 'firebase/app';
+import { initializeApp, FirebaseApp, getApps } from 'firebase/app';
 import {
   getAuth,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
   Auth,
   onAuthStateChanged,
@@ -49,17 +50,36 @@ export class FirebaseBackend implements BackendService {
   }
 
   async initialize(): Promise<void> {
-    this.app = initializeApp(this.config.firebase!);
-    this.auth = getAuth(this.app);
-    this.db = getFirestore(this.app);
+    try {
+      // Check if Firebase is already initialized
+      if (getApps().length === 0) {
+        console.log('[Firebase] Initializing with config:', {
+          projectId: this.config.firebase?.projectId,
+          authDomain: this.config.firebase?.authDomain,
+          hasApiKey: !!this.config.firebase?.apiKey,
+        });
+        this.app = initializeApp(this.config.firebase!);
+        console.log('[Firebase] Initialized successfully');
+      } else {
+        console.log('[Firebase] Using existing app instance');
+        this.app = getApps()[0];
+      }
 
-    // Listen for auth state changes
-    return new Promise((resolve) => {
-      onAuthStateChanged(this.auth!, (user) => {
-        this.userId = user?.uid || null;
-        resolve();
+      this.auth = getAuth(this.app);
+      this.db = getFirestore(this.app);
+
+      // Listen for auth state changes
+      return new Promise((resolve) => {
+        onAuthStateChanged(this.auth!, (user) => {
+          this.userId = user?.uid || null;
+          console.log('[Firebase] Auth state changed:', user ? `Logged in as ${user.uid}` : 'Not logged in');
+          resolve();
+        });
       });
-    });
+    } catch (error) {
+      console.error('[Firebase] Initialization error:', error);
+      throw error;
+    }
   }
 
   async isAuthenticated(): Promise<boolean> {
@@ -75,6 +95,24 @@ export class FirebaseBackend implements BackendService {
       credentials.password
     );
     this.userId = userCredential.user.uid;
+  }
+
+  async register(credentials: { email: string; password: string }): Promise<void> {
+    if (!this.auth) throw new Error('Firebase not initialized');
+
+    console.log('[Firebase] Attempting to create user with email:', credentials.email);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        this.auth,
+        credentials.email,
+        credentials.password
+      );
+      this.userId = userCredential.user.uid;
+      console.log('[Firebase] User created successfully:', this.userId);
+    } catch (error: any) {
+      console.error('[Firebase] Registration error:', error.code, error.message);
+      throw error;
+    }
   }
 
   async logout(): Promise<void> {
@@ -111,7 +149,11 @@ export class FirebaseBackend implements BackendService {
   }
 
   async saveSchedulerState(state: SchedulerState): Promise<void> {
-    if (!this.db || !this.userId) throw new Error('Not authenticated');
+    // Skip save if not authenticated yet
+    if (!this.db || !this.userId) {
+      console.log('[Firebase] Skipping save - user not authenticated yet');
+      return;
+    }
 
     // Note: This saves the entire state. For production, you'd want
     // to sync incrementally (only changed items)
@@ -123,7 +165,8 @@ export class FirebaseBackend implements BackendService {
 
       // Save outcomes
       for (const outcome of state.outcomes) {
-        await setDoc(doc(this.db, `users/${this.userId}/outcomes`, outcome.id), outcome);
+        const serialized = this.removeUndefined(outcome);
+        await setDoc(doc(this.db, `users/${this.userId}/outcomes`, outcome.id), serialized);
       }
     } catch (error) {
       console.error('Failed to save to Firebase:', error);
@@ -132,7 +175,11 @@ export class FirebaseBackend implements BackendService {
   }
 
   async createTask(task: Task): Promise<Task> {
-    if (!this.db || !this.userId) throw new Error('Not authenticated');
+    // Skip save if not authenticated yet - task will sync after login
+    if (!this.db || !this.userId) {
+      console.log('[Firebase] Skipping task save - user not authenticated yet');
+      return task;
+    }
 
     await setDoc(doc(this.db, `users/${this.userId}/tasks`, task.id), this.serializeTask(task));
     return task;
@@ -143,7 +190,11 @@ export class FirebaseBackend implements BackendService {
   }
 
   async deleteTask(taskId: string): Promise<void> {
-    if (!this.db || !this.userId) throw new Error('Not authenticated');
+    // Skip if not authenticated yet
+    if (!this.db || !this.userId) {
+      console.log('[Firebase] Skipping task delete - user not authenticated yet');
+      return;
+    }
 
     await deleteDoc(doc(this.db, `users/${this.userId}/tasks`, taskId));
 
@@ -169,9 +220,15 @@ export class FirebaseBackend implements BackendService {
   }
 
   async createOutcome(outcome: Outcome): Promise<Outcome> {
-    if (!this.db || !this.userId) throw new Error('Not authenticated');
+    // Skip save if not authenticated yet - outcome will sync after login
+    if (!this.db || !this.userId) {
+      console.log('[Firebase] Skipping outcome save - user not authenticated yet');
+      return outcome;
+    }
 
-    await setDoc(doc(this.db, `users/${this.userId}/outcomes`, outcome.id), outcome);
+    // Remove undefined values before saving
+    const serialized = this.removeUndefined(outcome);
+    await setDoc(doc(this.db, `users/${this.userId}/outcomes`, outcome.id), serialized);
     return outcome;
   }
 
@@ -189,12 +246,18 @@ export class FirebaseBackend implements BackendService {
   }
 
   async saveQuestionnaireResponse(response: QuestionnaireResponse): Promise<void> {
-    if (!this.db || !this.userId) throw new Error('Not authenticated');
+    // Skip save if not authenticated yet
+    if (!this.db || !this.userId) {
+      console.log('[Firebase] Skipping questionnaire response save - user not authenticated yet');
+      return;
+    }
 
     const responseId = `${response.taskId}-${Date.now()}`;
+    // Remove undefined values before saving
+    const serialized = this.removeUndefined(response);
     await setDoc(
       doc(this.db, `users/${this.userId}/questionnaire-responses`, responseId),
-      response
+      serialized
     );
   }
 
@@ -223,14 +286,13 @@ export class FirebaseBackend implements BackendService {
   }
 
   private serializeTask(task: Task): any {
-    return {
+    const serialized: any = {
       ...task,
       createdAt: task.createdAt.toISOString(),
       effectiveFrom: task.effectiveFrom.toISOString(),
       schedule: {
         ...task.schedule,
         startDate: task.schedule.startDate.toISOString(),
-        endDate: task.schedule.endDate?.toISOString(),
         recurrence:
           task.schedule.recurrence.type === 'once'
             ? {
@@ -240,6 +302,32 @@ export class FirebaseBackend implements BackendService {
             : task.schedule.recurrence,
       },
     };
+
+    // Only include endDate if it exists (Firestore doesn't allow undefined)
+    if (task.schedule.endDate) {
+      serialized.schedule.endDate = task.schedule.endDate.toISOString();
+    }
+
+    // Remove any other undefined values
+    return this.removeUndefined(serialized);
+  }
+
+  private removeUndefined(obj: any): any {
+    if (obj === null || typeof obj !== 'object') {
+      return obj;
+    }
+
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.removeUndefined(item));
+    }
+
+    const cleaned: any = {};
+    for (const key in obj) {
+      if (obj[key] !== undefined) {
+        cleaned[key] = this.removeUndefined(obj[key]);
+      }
+    }
+    return cleaned;
   }
 
   private deserializeTask(data: any): Task {

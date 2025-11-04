@@ -12,6 +12,7 @@ export interface BackendService {
   // Authentication (for remote backends)
   isAuthenticated(): Promise<boolean>;
   login(credentials: any): Promise<void>;
+  register?(credentials: any): Promise<void>;
   logout(): Promise<void>;
 
   // Scheduler data operations
