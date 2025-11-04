@@ -1,0 +1,204 @@
+import React, { useState } from 'react';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
+import { router } from 'expo-router';
+import { ThemedView } from '@/components/themed-view';
+import { ThemedText } from '@/components/themed-text';
+import { useAuth } from '@/lib/services/auth-context';
+import { useThemeColor } from '@/hooks/use-theme-color';
+
+export default function SignInScreen() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { login, isLoading } = useAuth();
+
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+  const tintColor = useThemeColor({}, 'tint');
+  const borderColor = useThemeColor({ light: '#ddd', dark: '#444' }, 'border');
+
+  async function handleSignIn() {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    try {
+      await login(email, password);
+      router.replace('/(tabs)');
+    } catch (error: any) {
+      Alert.alert('Sign In Failed', error.message || 'Invalid credentials');
+    }
+  }
+
+  return (
+    <ThemedView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.header}>
+            <ThemedText type="title" style={styles.title}>
+              Welcome Back
+            </ThemedText>
+            <ThemedText style={styles.subtitle}>Sign in to continue</ThemedText>
+          </View>
+
+          <View style={styles.form}>
+            <View style={styles.inputContainer}>
+              <ThemedText style={styles.label}>Email</ThemedText>
+              <TextInput
+                style={[
+                  styles.input,
+                  { color: textColor, borderColor, backgroundColor: backgroundColor },
+                ]}
+                placeholder="your@email.com"
+                placeholderTextColor="#999"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                editable={!isLoading}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <ThemedText style={styles.label}>Password</ThemedText>
+              <TextInput
+                style={[
+                  styles.input,
+                  { color: textColor, borderColor, backgroundColor: backgroundColor },
+                ]}
+                placeholder="Enter your password"
+                placeholderTextColor="#999"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                editable={!isLoading}
+              />
+            </View>
+
+            <TouchableOpacity
+              style={[styles.button, { backgroundColor: tintColor }]}
+              onPress={handleSignIn}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <ThemedText style={styles.buttonText}>Sign In</ThemedText>
+              )}
+            </TouchableOpacity>
+
+            <View style={styles.footer}>
+              <ThemedText style={styles.footerText}>Don't have an account? </ThemedText>
+              <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
+                <ThemedText style={[styles.link, { color: tintColor }]}>Register</ThemedText>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              style={styles.skipButton}
+              onPress={() => router.replace('/(tabs)')}
+            >
+              <ThemedText style={[styles.skipText, { color: tintColor }]}>
+                Skip (Use Local Storage)
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </ThemedView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    padding: 24,
+  },
+  header: {
+    marginBottom: 40,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    opacity: 0.7,
+  },
+  form: {
+    width: '100%',
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  input: {
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
+  },
+  button: {
+    height: 50,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  footerText: {
+    fontSize: 14,
+  },
+  link: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  skipButton: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  skipText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+});

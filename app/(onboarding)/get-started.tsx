@@ -18,10 +18,10 @@ export default function GetStartedScreen() {
 
       // Use a slight delay to ensure AsyncStorage is fully committed
       setTimeout(() => {
-        router.replace('/(tabs)');
+        router.replace('/(auth)/register');
       }, 100);
     } catch (error) {
-      router.replace('/(tabs)');
+      router.replace('/(auth)/register');
     }
   };
 

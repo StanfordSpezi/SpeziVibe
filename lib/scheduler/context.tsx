@@ -1,12 +1,15 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Scheduler, getScheduler } from './scheduler';
+import { Scheduler } from './scheduler';
 import { Task, Event } from './types';
 import { createSampleTasks } from './sample-tasks';
+import { BackendFactory } from '../services/backend-factory';
+import { getBackendConfig } from '../services/config';
 
 interface SchedulerContextValue {
-  scheduler: Scheduler;
+  scheduler: Scheduler | null;
   tasks: Task[];
   refreshTasks: () => void;
+  isLoading: boolean;
 }
 
 const SchedulerContext = createContext<SchedulerContextValue | null>(null);
@@ -16,50 +19,73 @@ interface SchedulerProviderProps {
 }
 
 export function SchedulerProvider({ children }: SchedulerProviderProps) {
-  const [scheduler] = useState(() => getScheduler());
+  const [scheduler, setScheduler] = useState<Scheduler | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [initialized, setInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize scheduler and predefined tasks
+    // Initialize scheduler with backend
     async function initializeScheduler() {
-      await scheduler.initialize();
+      try {
+        // Load backend configuration
+        const config = await getBackendConfig();
+        const backend = BackendFactory.createBackend(config);
 
-      // Check if tasks are already initialized
-      const existingTasks = scheduler.getTasks();
+        // Create scheduler with backend
+        const schedulerInstance = new Scheduler(backend);
+        await schedulerInstance.initialize();
 
-      if (existingTasks.length === 0) {
-        // Initialize predefined tasks on first launch
-        const predefinedTasks = createSampleTasks();
-        for (const task of predefinedTasks) {
-          await scheduler.createOrUpdateTask(task);
+        // Check if tasks are already initialized
+        const existingTasks = schedulerInstance.getTasks();
+
+        if (existingTasks.length === 0) {
+          // Initialize predefined tasks on first launch
+          const predefinedTasks = createSampleTasks();
+          for (const task of predefinedTasks) {
+            await schedulerInstance.createOrUpdateTask(task);
+          }
         }
-      }
 
-      setTasks(scheduler.getTasks());
-      setInitialized(true);
+        setScheduler(schedulerInstance);
+        setTasks(schedulerInstance.getTasks());
+
+        // Subscribe to changes
+        const unsubscribe = schedulerInstance.subscribe(() => {
+          setTasks(schedulerInstance.getTasks());
+        });
+
+        // Store unsubscribe function for cleanup
+        return unsubscribe;
+      } catch (error) {
+        console.error('Failed to initialize scheduler:', error);
+      } finally {
+        setIsLoading(false);
+      }
     }
 
-    initializeScheduler();
+    const unsubscribePromise = initializeScheduler();
 
-    // Subscribe to changes
-    const unsubscribe = scheduler.subscribe(() => {
-      setTasks(scheduler.getTasks());
-    });
-
-    return unsubscribe;
-  }, [scheduler]);
+    return () => {
+      unsubscribePromise.then((unsubscribe) => {
+        if (unsubscribe) {
+          unsubscribe();
+        }
+      });
+    };
+  }, []);
 
   const refreshTasks = () => {
-    setTasks(scheduler.getTasks());
+    if (scheduler) {
+      setTasks(scheduler.getTasks());
+    }
   };
 
-  if (!initialized) {
+  if (isLoading) {
     return null; // Or a loading spinner
   }
 
   return (
-    <SchedulerContext.Provider value={{ scheduler, tasks, refreshTasks }}>
+    <SchedulerContext.Provider value={{ scheduler, tasks, refreshTasks, isLoading }}>
       {children}
     </SchedulerContext.Provider>
   );
