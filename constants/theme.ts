@@ -5,7 +5,8 @@
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
+// Stanford Cardinal Red
+const tintColorLight = '#8C1515';
 const tintColorDark = '#fff';
 
 export const Colors = {
@@ -25,6 +26,17 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
+};
+
+// Stanford color palette
+export const StanfordColors = {
+  cardinal: '#8C1515',
+  cardinalLight: '#B83A4B',
+  cardinalDark: '#6B0F0F',
+  white: '#FFFFFF',
+  black: '#2E2D29',
+  coolGrey: '#4D4F53',
+  beige: '#F5E6D3',
 };
 
 export const Fonts = Platform.select({
