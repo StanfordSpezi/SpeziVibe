@@ -1,0 +1,102 @@
+# SpeziVibe Development Rules
+
+## Project Overview
+SpeziVibe is a cross-platform digital health app template built with React Native, Expo, and TypeScript. It follows patterns from Stanford Spezi and is optimized for AI-assisted development.
+
+## Code Style & Conventions
+
+### TypeScript
+- Use strict TypeScript with explicit types
+- Avoid `any` - use proper types or `unknown`
+- Export types alongside implementations
+- Use interfaces for object shapes, types for unions/primitives
+
+### React Native
+- Use functional components with hooks
+- Prefer `View` over `div`, `Text` over `p`
+- Use `StyleSheet.create()` for styles
+- Follow React Native performance best practices
+
+### File Naming
+- Components: `kebab-case.tsx` (e.g., `calendar-strip.tsx`)
+- Types: `types.ts` in each module
+- Utilities: `utils.ts` in each module
+- Index files: `index.ts` for module exports
+
+### Component Patterns
+- Use `Themed*` components for theme-aware UI
+- Hook into `useColorScheme()` for dark mode
+- Use `router` from `expo-router` for navigation
+- Wrap modals in proper layout files
+
+### State Management
+- Use React Context for global state (see `SchedulerProvider`)
+- Use `AsyncStorage` for persistence
+- Keep state close to where it's used
+- Use hooks like `useState`, `useEffect`, `useCallback`
+
+## Key Modules
+
+### Scheduler (`lib/scheduler/`)
+- `types.ts` - Core types (Task, Event, Outcome, Schedule)
+- `scheduler.ts` - Main Scheduler class with AsyncStorage persistence
+- `utils.ts` - Helper functions for occurrences and validation
+- `context.tsx` - React Context provider
+- `sample-tasks.ts` - Predefined tasks for the template
+
+**Task Types**: `questionnaire`, `task`, `reminder`, `measurement`
+**Recurrence**: `daily`, `weekly`, `monthly`, `once`
+**Completion Policies**: `anytime`, `window` (with time constraints)
+
+### Questionnaires (`lib/questionnaires/`)
+- `types.ts` - Question and questionnaire types
+- `sample-questionnaires.ts` - Predefined questionnaires
+- Built with Formik + Yup for validation
+- Question types: `text`, `scale`, `multipleChoice`, `boolean`
+
+### Navigation
+- File-based routing with Expo Router
+- Route groups: `(tabs)`, `(onboarding)`, `questionnaire`
+- Modals: Use `presentation: 'modal'` in Stack.Screen
+- Deep linking: Use `router.push()` with params
+
+## Common Tasks
+
+### Adding a New Task
+1. Add to `lib/scheduler/sample-tasks.ts`
+2. Include `questionnaireId` if it's a questionnaire task
+3. Set appropriate `completionPolicy`
+4. Reset schedule via Explore tab
+
+### Adding a New Questionnaire
+1. Define in `lib/questionnaires/sample-questionnaires.ts`
+2. Create `Questionnaire` object with questions array
+3. Link to task via `questionnaireId`
+4. Test via Explore tab
+
+### Adding a New Screen
+1. Create in appropriate route group folder
+2. Add to `_layout.tsx` if needed
+3. Use `ThemedView` and `ThemedText` components
+4. Apply Stanford color scheme
+
+## Color Scheme
+- Primary: `#8C1515` (Stanford Cardinal Red)
+- Primary Light: `#B83A4B`
+- Background Light: `#fff`
+- Background Dark: `#000`
+- Use `isDark` from `useColorScheme()` for theme switching
+
+## Best Practices
+- Keep components small and focused
+- Extract reusable logic into hooks
+- Use proper TypeScript types for all props
+- Test dark mode for all UI changes
+- Follow Stanford Spezi patterns where applicable
+- Write clean, readable code for AI agents
+
+## Debugging
+- Use Expo Go for quick testing
+- Check AsyncStorage in Explore tab
+- Reset onboarding/schedule as needed
+- Use TypeScript errors as guides
