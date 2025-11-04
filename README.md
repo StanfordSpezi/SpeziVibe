@@ -1,14 +1,17 @@
 <div align="center">
-  <img src="assets/images/spezivibe-logo.png" alt="SpeziVibe Logo" width="200"/>
+  <img src="assets/images/rocket-logo.png" alt="SpeziVibe Logo" width="200"/>
 
   # SpeziVibe
 
-  **Vibe code friendly cross-platform digital health app template [WIP]**
+  **Vibe code friendly cross-platform digital health app template**
 
   [![Built with Expo](https://img.shields.io/badge/Built%20with-Expo-000020.svg?style=flat&logo=expo)](https://expo.dev)
   [![React Native](https://img.shields.io/badge/React%20Native-0.76-61DAFB.svg?style=flat&logo=react)](https://reactnative.dev)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6.svg?style=flat&logo=typescript)](https://www.typescriptlang.org)
 </div>
+
+> [!WARNING]
+> This template is a work in progress, and not yet stable for production use. Please use [SpeziTemplateApplication](https://github.com/StanfordSpezi/SpeziTemplateApplication) instead.
 
 ---
 
@@ -21,9 +24,8 @@ SpeziVibe is a React Native + Expo template for building cross-platform digital 
 - **📋 Onboarding Flow** - Multi-step onboarding with feature highlights and informed consent
 - **📅 Task Scheduler** - Flexible scheduling with daily, weekly, monthly recurrence patterns and completion policies
 - **📝 Questionnaires** - Dynamic forms built with Formik and Yup validation (text, scale, multiple choice, boolean)
-- **🗓️ Calendar Navigation** - Horizontal calendar strip for date selection
 - **👥 Contact Management** - Built-in support team and emergency contact templates
-- **🎨 Dark Mode** - Full light and dark theme support
+- **🎨 Theme Support** - Full light and dark theme support
 - **💾 Local Persistence** - AsyncStorage for offline-first data storage
 - **🚀 Vibe Code Friendly** - Clean, well-structured codebase designed for AI-assisted development
 
@@ -52,26 +54,24 @@ npx expo start
 ### Run the app
 - Press `i` for iOS Simulator
 - Press `a` for Android Emulator
+- Press `w` for Web
 - Scan QR code with Expo Go on your device
 
 ## 🎯 Key Modules
 
 ### Scheduler
-Task management inspired by Stanford Spezi's SpeziScheduler:
 - Task categories: questionnaires, measurements, reminders, custom tasks
 - Recurrence patterns with time windows
 - Completion tracking with outcomes and timestamps
 - Date-based event querying
 
 ### Questionnaires
-Dynamic questionnaire system with Formik:
 - Multiple question types: text, scale (1-10), multiple choice, boolean
 - Real-time validation with Yup schemas
 - Integration with task scheduler
 - Response storage in AsyncStorage
 
 ### Onboarding
-Multi-step flow with:
 - Welcome screen with app features
 - Interactive feature showcase with pagination
 - Informed consent with digital signature
@@ -87,16 +87,14 @@ Multi-step flow with:
 - **[Yup](https://github.com/jquense/yup)** - Schema validation
 - **[AsyncStorage](https://react-native-async-storage.github.io/async-storage/)** - Local data persistence
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! Please feel free to submit issues, fork the repository, and create pull requests.
+Contributions to this project are welcome. Please make sure to read the [contribution guidelines](https://github.com/StanfordSpezi/.github/blob/main/CONTRIBUTING.md) and the [contributor covenant code of conduct](https://github.com/StanfordSpezi/.github/blob/main/CODE_OF_CONDUCT.md) first.
 
-## 📄 License
 
-This project is part of the Stanford Spezi ecosystem.
+## License
 
----
+This project is licensed under the MIT License. See [Licenses](https://github.com/StanfordSpezi/Spezi/tree/main/LICENSES) for more information.
 
-<div align="center">
-  Made with ❤️ by the Stanford Spezi Team
-</div>
+![Spezi Footer](https://raw.githubusercontent.com/StanfordSpezi/.github/main/assets/Footer.png#gh-light-mode-only)
+![Spezi Footer](https://raw.githubusercontent.com/StanfordSpezi/.github/main/assets/Footer~dark.png#gh-dark-mode-only)
