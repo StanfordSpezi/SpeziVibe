@@ -2,7 +2,7 @@
 
 ## Overview
 
-SpeziVibe is a React Native + Expo template for digital health applications. It follows patterns from [Stanford Spezi](https://github.com/StanfordSpezi) and is optimized for rapid prototyping and AI-assisted development.
+SpeziVibe is a React Native + Expo template for digital health applications. It follows the **Standard pattern** from [Stanford Spezi](https://github.com/StanfordSpezi) and implements production-ready React patterns optimized for rapid prototyping and AI-assisted development.
 
 ## Tech Stack
 
@@ -12,6 +12,59 @@ SpeziVibe is a React Native + Expo template for digital health applications. It 
 - **Expo Router** - File-based navigation system
 - **Formik + Yup** - Form state and validation
 - **AsyncStorage** - Local data persistence
+
+## Core Architecture: The Standard Pattern
+
+### What is the Standard?
+
+Inspired by Stanford Spezi, the **Standard** is the central orchestrator that manages data flow throughout the application. It's implemented in `lib/services/standard-context.tsx` and provides:
+
+- **Backend Service** - Pluggable storage (local or Firebase)
+- **Centralized Initialization** - Ensures proper startup order
+- **Error Management** - Exposes errors with retry mechanism
+- **Global Accessibility** - Available to all modules via `useStandard()` hook
+
+### Provider Hierarchy
+
+```typescript
+app/_layout.tsx:
+  <StandardProvider>              // Step 1: Initialize backend
+    <SchedulerProvider>           // Step 2: Initialize scheduler using backend
+      <AuthProvider>              // Step 3: Check auth status using backend
+        <App />                   // Step 4: Render app when all ready
+      </AuthProvider>
+    </SchedulerProvider>
+  </StandardProvider>
+```
+
+**Why this order?**
+- Standard must initialize first (provides backend)
+- Scheduler and Auth depend on backend
+- Both can initialize in parallel (no dependency on each other)
+- Children render during loading for smooth UX
+
+### Backend System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Application Layer                       │
+│              (Scheduler, Auth, Questionnaires)              │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   Standard (Backend Service)                 │
+│     (Single source of truth for data operations)            │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+          ┌─────────────────┴─────────────────┐
+          │                                   │
+          ▼                                   ▼
+┌──────────────────┐              ┌──────────────────┐
+│  LocalStorage    │              │    Firebase      │
+│    Backend       │              │    Backend       │
+└──────────────────┘              └──────────────────┘
+```
 
 ## Project Structure
 
@@ -23,7 +76,9 @@ spezivibe/
 │   │   ├── welcome.tsx          # Welcome screen
 │   │   ├── features.tsx         # Feature showcase
 │   │   ├── consent.tsx          # Informed consent
-│   │   └── get-started.tsx      # Completion screen
+│   │   ├── get-started.tsx      # Completion screen
+│   │   ├── register.tsx         # Registration with auto-skip
+│   │   └── sign-in.tsx          # Sign in with auto-skip
 │   ├── (tabs)/                  # Main app tabs route group
 │   │   ├── _layout.tsx          # Tab navigator
 │   │   ├── index.tsx            # Home tab
@@ -33,12 +88,22 @@ spezivibe/
 │   ├── questionnaire/           # Questionnaire modal route
 │   │   ├── _layout.tsx          # Modal configuration
 │   │   └── [id].tsx             # Dynamic questionnaire screen
-│   └── _layout.tsx              # Root layout
+│   └── _layout.tsx              # Root layout with Standard
 ├── components/                   # Reusable UI components
 │   ├── themed-*.tsx             # Theme-aware components
 │   ├── calendar-strip.tsx       # Calendar navigation
 │   └── questionnaire-form.tsx   # Dynamic form component
 ├── lib/                         # Business logic modules
+│   ├── services/                # Backend and auth services
+│   │   ├── standard-context.tsx # The Standard (core orchestrator)
+│   │   ├── auth-context.tsx    # Authentication module
+│   │   ├── backend-factory.ts  # Creates backend instances
+│   │   ├── config.ts           # Backend configuration
+│   │   ├── types.ts            # Shared type definitions
+│   │   ├── backends/           # Backend implementations
+│   │   │   ├── local-storage.ts # Local AsyncStorage backend
+│   │   │   └── firebase.ts     # Firebase backend
+│   │   └── README.md           # Backend documentation
 │   ├── scheduler/               # Task scheduling system
 │   │   ├── types.ts            # TypeScript definitions
 │   │   ├── scheduler.ts        # Core scheduler class
@@ -151,46 +216,118 @@ router.push({
 
 ### 4. State Management
 
-**Pattern**: React Context + AsyncStorage
+**Pattern**: Standard + React Context with Production Patterns
 
 **Global State**:
-- `SchedulerContext` - Tasks and outcomes
+- `StandardContext` - Backend service and initialization (root level)
+- `SchedulerContext` - Tasks and outcomes (depends on Standard)
+- `AuthContext` - Authentication state (depends on Standard)
 - Theme - via `useColorScheme()` hook
 - Navigation - managed by Expo Router
+
+**Production-Ready Patterns**:
+- **Memoization**: All context values use `useMemo` to prevent re-renders
+- **Stable Callbacks**: Functions wrapped in `useCallback` for performance
+- **Cancellation Tokens**: `let cancelled = false` pattern prevents setState after unmount
+- **No Early Returns**: Providers render children during loading for coordinated init
+- **Error States**: All contexts expose error with retry mechanisms
 
 **Local State**:
 - Component state with `useState`
 - Side effects with `useEffect`
-- Memoization with `useMemo`, `useCallback`
+- Proper cleanup with return functions
+- Refs for navigation guards (`useRef`)
 
 **Persistence**:
 ```typescript
-// Keys used in AsyncStorage
+// Keys used in AsyncStorage (local backend)
 const STORAGE_KEYS = {
   SCHEDULER: '@scheduler_state',
   ONBOARDING: '@onboarding_completed',
-  CONSENT: '@consent_data',
   RESPONSES: '@questionnaire_responses',
 };
 ```
 
+**Backend Abstraction**:
+- All data operations go through Standard's backend
+- Switch backends without changing application code
+- Supports local storage and Firebase out of the box
+
 ## Design Patterns
 
-### 1. Provider Pattern
-Used for global state (Scheduler):
+### 1. Standard Pattern (Spezi-Inspired)
+Central orchestrator for data flow:
 ```typescript
-export function SchedulerProvider({ children }) {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  // ... scheduler logic
-  return (
-    <SchedulerContext.Provider value={{ scheduler, tasks }}>
-      {children}
-    </SchedulerContext.Provider>
+export function StandardProvider({ children }) {
+  const [backend, setBackend] = useState<BackendService | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    let cancelled = false; // Cancellation token
+
+    async function initializeStandard() {
+      try {
+        const config = await getBackendConfig();
+        const backendInstance = BackendFactory.createBackend(config);
+        await backendInstance.initialize();
+
+        if (cancelled) return; // Check before setState
+
+        setBackend(backendInstance);
+      } catch (err) {
+        if (!cancelled) setError(err);
+      }
+    }
+
+    initializeStandard();
+    return () => { cancelled = true }; // Cleanup
+  }, []);
+
+  // Memoize to prevent re-renders
+  const value = useMemo(
+    () => ({ backend, error, retry }),
+    [backend, error]
   );
+
+  return <StandardContext.Provider value={value}>{children}</StandardContext.Provider>;
 }
 ```
 
-### 2. Themed Components
+### 2. Provider Pattern with Performance Optimization
+Used for all global state:
+```typescript
+export function SchedulerProvider({ children }) {
+  const { backend } = useStandard(); // Consume Standard
+  const [tasks, setTasks] = useState<Task[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
+
+    async function init() {
+      // ... initialization
+      if (cancelled) return;
+      unsubscribe = scheduler.subscribe(() => setTasks(...));
+    }
+
+    init();
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
+  }, [backend]);
+
+  // Memoize value and callbacks
+  const value = useMemo(
+    () => ({ scheduler, tasks, refreshTasks }),
+    [scheduler, tasks]
+  );
+
+  return <SchedulerContext.Provider value={value}>{children}</SchedulerContext.Provider>;
+}
+```
+
+### 3. Themed Components
 For dark mode support:
 ```typescript
 export function ThemedView({ style, ...props }: ViewProps) {
@@ -199,7 +336,7 @@ export function ThemedView({ style, ...props }: ViewProps) {
 }
 ```
 
-### 3. Dynamic Forms
+### 4. Dynamic Forms
 Formik + Yup for validation:
 ```typescript
 const validationSchema = createValidationSchema(questions);
@@ -212,7 +349,7 @@ const validationSchema = createValidationSchema(questions);
 </Formik>
 ```
 
-### 4. Type-Safe Routing
+### 5. Type-Safe Routing
 Expo Router with params:
 ```typescript
 const { id, taskId } = useLocalSearchParams<{
@@ -286,26 +423,54 @@ interface Questionnaire {
 
 ## Best Practices
 
+### Code Quality
+
 1. **Type Safety**: Use TypeScript strictly, avoid `any`
 2. **Modularity**: Keep business logic in `lib/`, UI in `components/`
-3. **Consistency**: Follow established patterns (Context, themed components)
-4. **Performance**: Use `useMemo` and `useCallback` for expensive operations
-5. **Persistence**: Use AsyncStorage for all user data
-6. **Validation**: Use Yup schemas for all form validation
-7. **Navigation**: Use `router` from Expo Router, avoid imperative navigation
-8. **Theming**: Always support dark mode with themed components
-9. **Documentation**: Keep this file updated with architectural changes
-10. **AI-Friendly**: Write clear, well-structured code with descriptive names
+3. **Consistency**: Follow established patterns (Standard, Context, themed components)
+4. **AI-Friendly**: Write clear, well-structured code with descriptive names
+5. **Documentation**: Keep docs updated with architectural changes
+
+### Performance
+
+1. **Memoization**: Always use `useMemo` for context values
+2. **Stable Callbacks**: Wrap functions in `useCallback` when passed to contexts
+3. **Avoid Early Returns**: Providers should render children during loading
+4. **Lazy Initialization**: Use `useEffect` for async initialization
+
+### React Patterns
+
+1. **Cancellation Tokens**: Use `let cancelled = false` pattern in effects with async
+2. **Cleanup Functions**: Always return cleanup from `useEffect`
+3. **Navigation Guards**: Use `useRef` to prevent navigation loops
+4. **Error Boundaries**: Expose error states for UI error handling
+
+### Data Management
+
+1. **Standard for Data**: All data operations go through Standard's backend
+2. **Backend Abstraction**: Never directly import `AsyncStorage` or Firebase in business logic
+3. **Background Sync**: Don't block UX waiting for sync operations
+4. **Validation**: Use Yup schemas for all form validation
+
+### UI/UX
+
+1. **Loading States**: Show loading overlays during async operations
+2. **Theming**: Always support dark mode with themed components
+3. **Navigation**: Use `router` from Expo Router, avoid imperative navigation
+4. **Accessibility**: Consider screen readers and accessibility
 
 ## Common Pitfalls
 
-1. **AsyncStorage is async**: Always `await` operations
-2. **Date serialization**: Convert dates to/from ISO strings when persisting
-3. **Navigation timing**: Use `useEffect` with proper dependencies
-4. **Context updates**: Trigger re-renders with state changes
-5. **Formik state**: Access via `formik.values`, not direct state
-6. **Dark mode**: Test all UI changes in both themes
-7. **Type imports**: Import types alongside values for clarity
+1. **Forgetting cancellation tokens**: Always use `let cancelled = false` in async effects
+2. **Missing cleanup**: Return cleanup functions from all effects with subscriptions
+3. **Unmemoized context values**: Always wrap context values in `useMemo`
+4. **Missing callback deps**: Include all used variables in `useCallback` dependencies
+5. **Navigation loops**: Use refs to guard against repeated navigation
+6. **Early provider returns**: Don't return `null` from providers during loading
+7. **AsyncStorage is async**: Always `await` operations
+8. **Date serialization**: Convert dates to/from ISO strings when persisting
+9. **Direct backend access**: Always use Standard, never import backends directly
+10. **Blocking sync**: Run sync operations in background, don't block user actions
 
 ## Testing Strategy
 

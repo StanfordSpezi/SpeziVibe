@@ -1,7 +1,7 @@
 # SpeziVibe Development Rules
 
 ## Project Overview
-SpeziVibe is a cross-platform digital health app template built with React Native, Expo, and TypeScript. It follows patterns from Stanford Spezi and is optimized for AI-assisted development.
+SpeziVibe is a cross-platform digital health app template built with React Native, Expo, and TypeScript. It implements the **Standard pattern** from Stanford Spezi and follows production-ready React patterns optimized for AI-assisted development.
 
 ## Code Style & Conventions
 
@@ -30,18 +30,50 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
 - Wrap modals in proper layout files
 
 ### State Management
-- Use React Context for global state (see `SchedulerProvider`)
-- Use `AsyncStorage` for persistence
+- **Standard Pattern**: Use `StandardProvider` as the central orchestrator
+- Access backend via `useStandard()` hook, never import backends directly
+- Use React Context for module state (`SchedulerProvider`, `AuthProvider`)
+- **ALWAYS memoize** context values with `useMemo`
+- **ALWAYS wrap functions** in `useCallback` when passed to contexts
 - Keep state close to where it's used
-- Use hooks like `useState`, `useEffect`, `useCallback`
+- Use hooks properly: `useState`, `useEffect`, `useCallback`, `useMemo`, `useRef`
 
 ## Key Modules
 
+### Standard (`lib/services/standard-context.tsx`)
+**The central orchestrator for all data flow** - Spezi Standard pattern
+
+- Initializes and provides backend service to all modules
+- Manages initialization order and error states
+- Exposes `backend`, `backendType`, `isLoading`, `error`, `retry`
+- Access via `useStandard()` from any component
+- **Must be at root level** to provide backend to all modules including modals
+
+**Provider Hierarchy**:
+```
+<StandardProvider>       // Initializes backend
+  <SchedulerProvider>    // Uses backend from Standard
+    <AuthProvider>       // Uses backend from Standard
+      <App />
+    </AuthProvider>
+  </SchedulerProvider>
+</StandardProvider>
+```
+
+### Backend Services (`lib/services/`)
+- `backend-factory.ts` - Creates backend instances
+- `config.ts` - Backend configuration (reads from .env)
+- `backends/local-storage.ts` - Local AsyncStorage backend (default)
+- `backends/firebase.ts` - Firebase backend (optional)
+- `auth-context.tsx` - Authentication module using Standard
+
+**Supported Backends**: `local` (default), `firebase`
+
 ### Scheduler (`lib/scheduler/`)
 - `types.ts` - Core types (Task, Event, Outcome, Schedule)
-- `scheduler.ts` - Main Scheduler class with AsyncStorage persistence
+- `scheduler.ts` - Main Scheduler class (uses backend from Standard)
 - `utils.ts` - Helper functions for occurrences and validation
-- `context.tsx` - React Context provider
+- `context.tsx` - React Context provider (depends on Standard)
 - `sample-tasks.ts` - Predefined tasks for the template
 
 **Task Types**: `questionnaire`, `task`, `reminder`, `measurement`
@@ -88,12 +120,72 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
 - Use `isDark` from `useColorScheme()` for theme switching
 
 ## Best Practices
+
+### Production-Ready React Patterns
+1. **Cancellation Tokens**: ALWAYS use `let cancelled = false` in async `useEffect`
+   ```typescript
+   useEffect(() => {
+     let cancelled = false;
+     async function fetchData() {
+       const data = await fetch();
+       if (!cancelled) setState(data);
+     }
+     fetchData();
+     return () => { cancelled = true };
+   }, []);
+   ```
+
+2. **Memoization**: ALWAYS memoize context values and callbacks
+   ```typescript
+   const value = useMemo(() => ({ state, action }), [state, action]);
+   const action = useCallback(async () => { ... }, [deps]);
+   ```
+
+3. **Cleanup**: ALWAYS return cleanup from effects with subscriptions
+   ```typescript
+   useEffect(() => {
+     const unsubscribe = subscribe();
+     return () => unsubscribe();
+   }, []);
+   ```
+
+4. **Navigation Guards**: Use refs to prevent navigation loops
+   ```typescript
+   const hasRedirected = useRef(false);
+   if (!hasRedirected.current) {
+     hasRedirected.current = true;
+     router.replace(...);
+   }
+   ```
+
+5. **No Early Returns**: Providers should NOT return null during loading
+   - Let children render and handle loading states themselves
+   - Enables coordinated initialization across providers
+
+6. **Error States**: Always expose error states with retry mechanisms
+   ```typescript
+   const { data, error, retry } = useStandard();
+   if (error) return <ErrorUI onRetry={retry} />;
+   ```
+
+### Code Organization
 - Keep components small and focused
 - Extract reusable logic into hooks
 - Use proper TypeScript types for all props
+- Never import `AsyncStorage` or Firebase directly - use Standard
+- Business logic in `lib/`, UI in `components/` and `app/`
 - Test dark mode for all UI changes
-- Follow Stanford Spezi patterns where applicable
 - Write clean, readable code for AI agents
+
+### Common Pitfalls to Avoid
+- ❌ Forgetting cancellation tokens in async effects
+- ❌ Missing cleanup functions for subscriptions
+- ❌ Not memoizing context values (causes re-renders)
+- ❌ Missing dependencies in useCallback/useMemo
+- ❌ Using refs for values that should trigger re-renders
+- ❌ Returning null from providers during loading
+- ❌ Importing backends directly instead of using Standard
+- ❌ Blocking UX with sync operations (run in background)
 
 ## Debugging
 - Use Expo Go for quick testing

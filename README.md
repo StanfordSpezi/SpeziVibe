@@ -21,13 +21,14 @@ SpeziVibe is a React Native + Expo template for building cross-platform digital 
 
 ## ✨ Features
 
+- **🏗️ Standard Architecture** - Inspired by Stanford Spezi's Standard pattern for centralized data orchestration
+- **🔌 Pluggable Backends** - Switch between local storage and Firebase without changing app code
 - **📋 Onboarding Flow** - Multi-step onboarding with feature highlights and informed consent
 - **📅 Task Scheduler** - Flexible scheduling with daily, weekly, monthly recurrence patterns and completion policies
-- **📝 Questionnaires** - Dynamic forms built with Formik and Yup validation (text, scale, multiple choice, boolean)
+- **📝 Questionnaires** - Dynamic forms with validation
 - **👥 Contact Management** - Built-in support team and emergency contact templates
 - **🎨 Theme Support** - Full light and dark theme support
-- **💾 Local Persistence** - AsyncStorage for offline-first data storage
-- **🚀 Vibe Code Friendly** - Clean, well-structured codebase designed for AI-assisted development
+- **🤖 AI-Friendly** - Clean, well-structured codebase designed for AI-assisted development
 
 ## 🚀 Getting Started
 
@@ -59,19 +60,68 @@ npx expo start
 
 ## 🎯 Key Modules
 
-### Scheduler
+### Standard Module
+
+The **Standard** is the central orchestrator of the application. 
+It:
+- Initializes and provides the backend service to all modules
+- Manages data flow throughout the application
+- Ensures proper initialization order and error handling
+- Accessible via `useStandard()` hook from any component
+
+```typescript
+const { backend, backendType, isLoading, error, retry } = useStandard();
+```
+
+### Backend Module
+
+Pluggable backend architecture supporting multiple storage solutions:
+
+**Local Storage (Default)**
+- Uses React Native AsyncStorage
+- No authentication required
+- Perfect for offline-first apps and development
+- Zero configuration needed
+
+**Firebase Backend**
+- Real-time cloud sync via Firestore
+- Email/password authentication
+- Multi-device support
+- Easy to set up with environment variables
+
+To configure Firebase, create a `.env` file:
+```bash
+EXPO_PUBLIC_BACKEND_TYPE=firebase
+EXPO_PUBLIC_FIREBASE_API_KEY=your-api-key
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your-app.firebaseapp.com
+# ... other Firebase config
+```
+
+See `lib/services/README.md` for detailed backend documentation.
+
+### Scheduler Module
+
 - Task categories: questionnaires, measurements, reminders, custom tasks
 - Recurrence patterns with time windows
 - Completion tracking with outcomes and timestamps
 - Date-based event querying
+- Uses Standard for data persistence
 
-### Questionnaires
+### Questionnaire Module
+
 - Multiple question types: text, scale (1-10), multiple choice, boolean
 - Real-time validation with Yup schemas
 - Integration with task scheduler
-- Response storage in AsyncStorage
+- Response storage via backend system
 
-### Onboarding
+### Authentication Module
+
+- Email/password authentication
+- Smart loading states during initialization
+- Persistent session management
+
+### Onboarding Module
+
 - Welcome screen with app features
 - Interactive feature showcase with pagination
 - Informed consent with digital signature
@@ -86,11 +136,11 @@ npx expo start
 - **[Formik](https://formik.org/)** - Form state management
 - **[Yup](https://github.com/jquense/yup)** - Schema validation
 - **[AsyncStorage](https://react-native-async-storage.github.io/async-storage/)** - Local data persistence
+- **[Firebase](https://firebase.google.com/)** (Optional) - Cloud backend and authentication
 
 ## Contributing
 
 Contributions to this project are welcome. Please make sure to read the [contribution guidelines](https://github.com/StanfordSpezi/.github/blob/main/CONTRIBUTING.md) and the [contributor covenant code of conduct](https://github.com/StanfordSpezi/.github/blob/main/CODE_OF_CONDUCT.md) first.
-
 
 ## License
 

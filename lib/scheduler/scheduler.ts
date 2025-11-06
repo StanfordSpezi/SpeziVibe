@@ -1,12 +1,12 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Task, Event, Outcome, SchedulerState, Schedule, Occurrence } from './types';
 import { calculateOccurrences, isAllowedToComplete } from './utils';
-
-const STORAGE_KEY = '@scheduler_state';
+import { BackendService } from '../services/types';
 
 /**
  * Main Scheduler class for managing tasks and events
  * Based on Stanford Spezi SpeziScheduler
+ *
+ * Now supports pluggable backends (LocalStorage, Firebase)
  */
 export class Scheduler {
   private state: SchedulerState = {
@@ -14,41 +14,23 @@ export class Scheduler {
     outcomes: [],
   };
 
+  private backend: BackendService;
   private listeners: Set<() => void> = new Set();
 
+  constructor(backend: BackendService) {
+    this.backend = backend;
+  }
+
   async initialize(): Promise<void> {
+    await this.backend.initialize();
     await this.loadState();
   }
 
   private async loadState(): Promise<void> {
     try {
-      const data = await AsyncStorage.getItem(STORAGE_KEY);
-      if (data) {
-        const parsed = JSON.parse(data);
-        // Deserialize dates
-        this.state = {
-          tasks: parsed.tasks.map((task: any) => ({
-            ...task,
-            createdAt: new Date(task.createdAt),
-            effectiveFrom: new Date(task.effectiveFrom),
-            schedule: {
-              ...task.schedule,
-              startDate: new Date(task.schedule.startDate),
-              endDate: task.schedule.endDate ? new Date(task.schedule.endDate) : undefined,
-              recurrence:
-                task.schedule.recurrence.type === 'once'
-                  ? {
-                      ...task.schedule.recurrence,
-                      date: new Date(task.schedule.recurrence.date),
-                    }
-                  : task.schedule.recurrence,
-            },
-          })),
-          outcomes: parsed.outcomes.map((outcome: any) => ({
-            ...outcome,
-            completedAt: new Date(outcome.completedAt),
-          })),
-        };
+      const state = await this.backend.loadSchedulerState();
+      if (state) {
+        this.state = state;
       }
     } catch (error) {
       console.error('Failed to load scheduler state:', error);
@@ -57,7 +39,7 @@ export class Scheduler {
 
   private async saveState(): Promise<void> {
     try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+      await this.backend.saveSchedulerState(this.state);
       this.notifyListeners();
     } catch (error) {
       console.error('Failed to save scheduler state:', error);
@@ -258,14 +240,4 @@ export class Scheduler {
   private getOutcomeId(taskId: string, occurrence: Occurrence): string {
     return `${taskId}-${occurrence.index}-${occurrence.scheduledDate.getTime()}`;
   }
-}
-
-// Singleton instance
-let schedulerInstance: Scheduler | null = null;
-
-export function getScheduler(): Scheduler {
-  if (!schedulerInstance) {
-    schedulerInstance = new Scheduler();
-  }
-  return schedulerInstance;
 }

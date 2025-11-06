@@ -1,12 +1,14 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { Scheduler, getScheduler } from './scheduler';
+import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode } from 'react';
+import { Scheduler } from './scheduler';
 import { Task, Event } from './types';
 import { createSampleTasks } from './sample-tasks';
+import { useStandard } from '../services/standard-context';
 
 interface SchedulerContextValue {
-  scheduler: Scheduler;
+  scheduler: Scheduler | null;
   tasks: Task[];
   refreshTasks: () => void;
+  isLoading: boolean;
 }
 
 const SchedulerContext = createContext<SchedulerContextValue | null>(null);
@@ -16,50 +18,83 @@ interface SchedulerProviderProps {
 }
 
 export function SchedulerProvider({ children }: SchedulerProviderProps) {
-  const [scheduler] = useState(() => getScheduler());
+  const [scheduler, setScheduler] = useState<Scheduler | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [initialized, setInitialized] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { backend, isLoading: backendLoading } = useStandard();
 
   useEffect(() => {
-    // Initialize scheduler and predefined tasks
+    // Wait for backend to be ready
+    if (backendLoading || !backend) {
+      return;
+    }
+
+    let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
+
     async function initializeScheduler() {
-      await scheduler.initialize();
+      try {
+        // Create scheduler with backend from context
+        const schedulerInstance = new Scheduler(backend);
+        await schedulerInstance.initialize();
 
-      // Check if tasks are already initialized
-      const existingTasks = scheduler.getTasks();
+        if (cancelled) return;
 
-      if (existingTasks.length === 0) {
-        // Initialize predefined tasks on first launch
-        const predefinedTasks = createSampleTasks();
-        for (const task of predefinedTasks) {
-          await scheduler.createOrUpdateTask(task);
+        // Check if tasks are already initialized
+        const existingTasks = schedulerInstance.getTasks();
+
+        if (existingTasks.length === 0) {
+          // Initialize predefined tasks on first launch
+          const predefinedTasks = createSampleTasks();
+          for (const task of predefinedTasks) {
+            if (cancelled) return;
+            await schedulerInstance.createOrUpdateTask(task);
+          }
+        }
+
+        if (cancelled) return;
+
+        setScheduler(schedulerInstance);
+        setTasks(schedulerInstance.getTasks());
+
+        // Subscribe to changes
+        unsubscribe = schedulerInstance.subscribe(() => {
+          setTasks(schedulerInstance.getTasks());
+        });
+      } catch (error) {
+        if (!cancelled) {
+          console.error('Failed to initialize scheduler:', error);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
         }
       }
-
-      setTasks(scheduler.getTasks());
-      setInitialized(true);
     }
 
     initializeScheduler();
 
-    // Subscribe to changes
-    const unsubscribe = scheduler.subscribe(() => {
-      setTasks(scheduler.getTasks());
-    });
-
-    return unsubscribe;
-  }, [scheduler]);
+    return () => {
+      cancelled = true;
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [backend, backendLoading]);
 
   const refreshTasks = () => {
-    setTasks(scheduler.getTasks());
+    if (scheduler) {
+      setTasks(scheduler.getTasks());
+    }
   };
 
-  if (!initialized) {
-    return null; // Or a loading spinner
-  }
+  const value = useMemo(
+    () => ({ scheduler, tasks, refreshTasks, isLoading }),
+    [scheduler, tasks, isLoading]
+  );
 
   return (
-    <SchedulerContext.Provider value={{ scheduler, tasks, refreshTasks }}>
+    <SchedulerContext.Provider value={value}>
       {children}
     </SchedulerContext.Provider>
   );
