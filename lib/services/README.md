@@ -1,13 +1,30 @@
 # Backend Services Module
 
-This module provides an abstraction layer for different backend implementations, allowing SpeziVibe to use local storage or Firebase without changing the core business logic.
+This module implements the **Standard pattern** from Stanford Spezi, providing centralized data orchestration and pluggable backend support.
+
+## The Standard Pattern
+
+The **Standard** (`standard-context.tsx`) is the central orchestrator that:
+- Initializes and provides the backend service to all modules
+- Manages application-wide data flow
+- Handles initialization order and error states
+- Exposes retry mechanism for failed initialization
+
+Think of the Standard as the "kernel" of your application's data layer.
 
 ## Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      Application Layer                       │
-│              (Scheduler, Questionnaires, etc.)               │
+│              (Scheduler, Auth, Questionnaires)              │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+                            ▼ useStandard()
+┌─────────────────────────────────────────────────────────────┐
+│                   Standard Context                           │
+│     (Centralized orchestrator for data flow)                │
+│     Provides: backend, backendType, error, retry            │
 └───────────────────────────┬─────────────────────────────────┘
                             │
                             ▼
@@ -109,18 +126,49 @@ users/
 
 ### Basic Setup
 
-The backend is automatically configured through the `SchedulerContext`. By default, it uses local storage.
+The Standard is configured at the root of your application. All modules access it via the `useStandard()` hook.
 
 ```typescript
 // In your app root (_layout.tsx)
+import { StandardProvider } from '@/lib/services/standard-context';
 import { SchedulerProvider } from '@/lib/scheduler/context';
+import { AuthProvider } from '@/lib/services/auth-context';
 
 export default function RootLayout() {
   return (
-    <SchedulerProvider>
-      {/* Your app content */}
-    </SchedulerProvider>
+    <StandardProvider>
+      <SchedulerProvider>
+        <AuthProvider>
+          {/* Your app content */}
+        </AuthProvider>
+      </SchedulerProvider>
+    </StandardProvider>
   );
+}
+```
+
+### Using the Standard
+
+Access the backend from any component:
+
+```typescript
+import { useStandard } from '@/lib/services/standard-context';
+
+function MyComponent() {
+  const { backend, backendType, isLoading, error, retry } = useStandard();
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (error) {
+    return <ErrorScreen error={error} onRetry={retry} />;
+  }
+
+  // Use backend for data operations
+  const isLocal = backendType === 'local';
+
+  return <YourUI />;
 }
 ```
 
@@ -163,19 +211,21 @@ Then update the backend type in the same file.
 
 ### Authentication (Remote Backends)
 
+Use the `AuthProvider` for authentication:
+
 ```typescript
-import { useScheduler } from '@/lib/scheduler/context';
+import { useAuth } from '@/lib/services/auth-context';
 
 function LoginScreen() {
-  const { scheduler } = useScheduler();
+  const { login, register, isAuthenticated, isLoading, error } = useAuth();
 
   async function handleLogin(email: string, password: string) {
-    if (scheduler) {
-      const backend = scheduler['backend']; // Access backend (requires type assertion in production)
-      await backend.login({ email, password });
-
-      // Backend will now sync data
-      await backend.syncFromRemote();
+    try {
+      await login(email, password);
+      // Auth successful, sync happens automatically in background
+      router.replace('/(tabs)');
+    } catch (err) {
+      Alert.alert('Login Failed', err.message);
     }
   }
 
@@ -184,6 +234,12 @@ function LoginScreen() {
   );
 }
 ```
+
+The `AuthProvider` automatically:
+- Checks authentication status on app start
+- Syncs data in background (doesn't block UX)
+- Manages authentication state
+- Provides stable memoized callbacks
 
 ## API Reference
 
@@ -270,14 +326,118 @@ To add support for a new backend (e.g., Supabase, AWS, custom API):
    export { MyBackend } from './backends/my-backend';
    ```
 
+## Production-Ready Patterns
+
+### Standard Context Implementation
+
+The Standard uses production-ready React patterns:
+
+```typescript
+export function StandardProvider({ children }) {
+  const [backend, setBackend] = useState<BackendService | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    let cancelled = false; // Cancellation token
+
+    async function initializeStandard() {
+      try {
+        const config = await getBackendConfig();
+        const backendInstance = BackendFactory.createBackend(config);
+        await backendInstance.initialize();
+
+        if (cancelled) return; // Prevent setState after unmount
+
+        setBackend(backendInstance);
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof Error ? err : new Error('Init failed'));
+        }
+      }
+    }
+
+    initializeStandard();
+
+    return () => {
+      cancelled = true; // Cleanup
+    };
+  }, [retryCount]);
+
+  // Memoize to prevent unnecessary re-renders
+  const value = useMemo(
+    () => ({ backend, backendType, isLoading, error, retry }),
+    [backend, backendType, isLoading, error]
+  );
+
+  return <StandardContext.Provider value={value}>{children}</StandardContext.Provider>;
+}
+```
+
+**Key Patterns Used:**
+- ✅ Cancellation tokens prevent setState after unmount
+- ✅ Proper cleanup in effect return function
+- ✅ Memoized context value prevents re-renders
+- ✅ Error state with retry mechanism
+- ✅ No early returns - children render during loading
+
+### Module Implementation Best Practices
+
+When creating modules that use the Standard:
+
+```typescript
+export function YourModuleProvider({ children }) {
+  const { backend, isLoading: backendLoading } = useStandard();
+
+  useEffect(() => {
+    // Wait for backend
+    if (backendLoading || !backend) {
+      return;
+    }
+
+    let cancelled = false;
+    let cleanup: (() => void) | undefined;
+
+    async function init() {
+      // Your initialization
+      if (cancelled) return;
+
+      // Set up subscriptions
+      cleanup = yourModule.subscribe(...);
+    }
+
+    init();
+
+    return () => {
+      cancelled = true;
+      cleanup?.();
+    };
+  }, [backend, backendLoading]);
+
+  // Memoize callbacks
+  const yourAction = useCallback(async () => {
+    // Your action using backend
+  }, [backend]);
+
+  // Memoize context value
+  const value = useMemo(
+    () => ({ yourAction, yourState }),
+    [yourAction, yourState]
+  );
+
+  return <YourContext.Provider value={value}>{children}</YourContext.Provider>;
+}
+```
+
 ## Best Practices
 
-1. **Error Handling**: Always wrap backend operations in try-catch blocks
-2. **Loading States**: Show loading indicators during backend operations
-3. **Offline Support**: Local storage backend always works offline
-4. **Data Migration**: When switching backends, implement data migration logic
-5. **Testing**: Test each backend implementation thoroughly
-6. **Security**: Never commit API keys or credentials to version control
+1. **Use the Standard**: Never import backends directly, always go through Standard
+2. **Cancellation Tokens**: Use `let cancelled = false` in all async effects
+3. **Memoization**: Always memoize context values and callbacks
+4. **Error Handling**: Expose error states for UI error handling
+5. **Background Operations**: Don't block UX waiting for sync operations
+6. **Loading States**: Show appropriate loading UI during initialization
+7. **Offline Support**: Local storage backend always works offline
+8. **Security**: Never commit API keys or credentials to version control
 
 ## Troubleshooting
 

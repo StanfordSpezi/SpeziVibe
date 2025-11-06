@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -7,6 +7,7 @@ import { AppState } from 'react-native';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { StandardProvider } from '@/lib/services/standard-context';
 import { SchedulerProvider } from '@/lib/scheduler';
 import { AuthProvider } from '@/lib/services/auth-context';
 
@@ -21,6 +22,7 @@ export default function RootLayout() {
   const [isOnboardingCompleted, setIsOnboardingCompleted] = useState<boolean | null>(null);
   const router = useRouter();
   const segments = useSegments();
+  const hasRedirected = useRef(false);
 
   const checkOnboardingStatus = useCallback(async () => {
     try {
@@ -48,46 +50,34 @@ export default function RootLayout() {
   }, [checkOnboardingStatus]);
 
   useEffect(() => {
-    if (isOnboardingCompleted === null) {
+    if (isOnboardingCompleted === null || hasRedirected.current) {
       return;
     }
 
     const inOnboarding = segments[0] === '(onboarding)';
-    const inTabs = segments[0] === '(tabs)';
-
-    // If navigating to onboarding while completed, re-check storage
-    // This handles the case where the user manually cleared storage
-    if (isOnboardingCompleted && inOnboarding) {
-      checkOnboardingStatus();
-      return;
-    }
-
-    // If navigating to tabs while onboarding is not complete, re-check storage
-    // This handles the case where auth just saved the value
-    if (!isOnboardingCompleted && inTabs) {
-      checkOnboardingStatus();
-      return;
-    }
 
     // Redirect to onboarding if not completed and not in onboarding
     if (!isOnboardingCompleted && !inOnboarding) {
+      hasRedirected.current = true;
       router.replace('/(onboarding)/welcome');
     }
-  }, [isOnboardingCompleted, segments, checkOnboardingStatus]);
+  }, [isOnboardingCompleted, segments, router]);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <SchedulerProvider>
-        <AuthProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(onboarding)" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="questionnaire" options={{ presentation: 'modal' }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal', headerShown: true }} />
-          </Stack>
-          <StatusBar style="auto" />
-        </AuthProvider>
-      </SchedulerProvider>
+      <StandardProvider>
+        <SchedulerProvider>
+          <AuthProvider>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(onboarding)" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="questionnaire" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal', headerShown: true }} />
+            </Stack>
+            <StatusBar style="auto" />
+          </AuthProvider>
+        </SchedulerProvider>
+      </StandardProvider>
     </ThemeProvider>
   );
 }

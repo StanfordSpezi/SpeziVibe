@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { BackendService } from './types';
-import { useScheduler } from '../scheduler/context';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
+import { useStandard } from './standard-context';
 
 interface AuthContextValue {
   isAuthenticated: boolean;
@@ -21,38 +20,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { scheduler } = useScheduler();
-
-  // Get backend service from scheduler
-  const getBackend = (): BackendService | null => {
-    if (!scheduler) return null;
-    // Access private backend through type assertion
-    return (scheduler as any).backend;
-  };
+  const { backend, isLoading: backendLoading } = useStandard();
 
   useEffect(() => {
-    checkAuthStatus();
-  }, [scheduler]);
-
-  async function checkAuthStatus() {
-    const backend = getBackend();
-    if (!backend) {
-      setIsLoading(false);
+    if (backendLoading || !backend) {
       return;
     }
 
-    try {
-      const authenticated = await backend.isAuthenticated();
-      setIsAuthenticated(authenticated);
-    } catch (err) {
-      console.error('Failed to check auth status:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    let cancelled = false;
 
-  async function login(email: string, password: string) {
-    const backend = getBackend();
+    async function checkAuth() {
+      try {
+        const authenticated = await backend.isAuthenticated();
+        if (!cancelled) {
+          setIsAuthenticated(authenticated);
+          setIsLoading(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error('Failed to check auth status:', err);
+          setIsLoading(false);
+        }
+      }
+    }
+
+    checkAuth();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [backend, backendLoading]);
+
+  const login = useCallback(async (email: string, password: string) => {
     if (!backend) {
       throw new Error('Backend not initialized');
     }
@@ -62,18 +61,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     try {
       await backend.login({ email, password });
-      await backend.syncFromRemote();
       setIsAuthenticated(true);
+
+      // Sync in background, don't block login
+      backend.syncFromRemote().catch(err => {
+        console.warn('Background sync failed:', err);
+      });
     } catch (err: any) {
       setError(err.message || 'Login failed');
       throw err;
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [backend]);
 
-  async function register(email: string, password: string) {
-    const backend = getBackend();
+  const register = useCallback(async (email: string, password: string) => {
     if (!backend) {
       throw new Error('Backend not initialized');
     }
@@ -96,10 +98,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [backend]);
 
-  async function logout() {
-    const backend = getBackend();
+  const logout = useCallback(async () => {
     if (!backend) return;
 
     setIsLoading(true);
@@ -114,19 +115,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [backend]);
+
+  const value = useMemo(
+    () => ({
+      isAuthenticated,
+      isLoading,
+      login,
+      register,
+      logout,
+      error,
+    }),
+    [isAuthenticated, isLoading, login, register, logout, error]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        isAuthenticated,
-        isLoading,
-        login,
-        register,
-        logout,
-        error,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   TextInput,
@@ -16,18 +16,46 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useAuth } from '@/lib/services/auth-context';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { useStandard } from '@/lib/services/standard-context';
 
 const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isLoading } = useAuth();
+  const [isSkipping, setIsSkipping] = useState(false);
+  const { login, isLoading, isAuthenticated } = useAuth();
+  const { backendType } = useStandard();
+  const hasAttemptedSkip = useRef(false);
 
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const tintColor = useThemeColor({}, 'tint');
   const borderColor = useThemeColor({ light: '#ddd', dark: '#444' }, 'border');
+
+  // Auto-skip auth screen if already authenticated or using local storage
+  useEffect(() => {
+    if (hasAttemptedSkip.current || isSkipping) return;
+
+    async function checkAuthAndSkip() {
+      if (isAuthenticated || backendType === 'local') {
+        hasAttemptedSkip.current = true;
+        setIsSkipping(true);
+        try {
+          await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
+          router.replace('/(tabs)');
+        } catch (error) {
+          setIsSkipping(false);
+          hasAttemptedSkip.current = false;
+          console.error('Failed to skip:', error);
+        }
+      }
+    }
+
+    if (!isLoading && backendType) {
+      checkAuthAndSkip();
+    }
+  }, [isAuthenticated, isLoading, backendType, isSkipping]);
 
   async function handleSignIn() {
     if (!email || !password) {
@@ -43,6 +71,18 @@ export default function SignInScreen() {
     } catch (error: any) {
       Alert.alert('Sign In Failed', error.message || 'Invalid credentials');
     }
+  }
+
+  // Show loading overlay during auto-skip
+  if (isSkipping) {
+    return (
+      <ThemedView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={tintColor} />
+          <ThemedText style={styles.loadingText}>Loading...</ThemedText>
+        </View>
+      </ThemedView>
+    );
   }
 
   return (
@@ -114,18 +154,6 @@ export default function SignInScreen() {
                 <ThemedText style={[styles.link, { color: tintColor }]}>Register</ThemedText>
               </TouchableOpacity>
             </View>
-
-            <TouchableOpacity
-              style={styles.skipButton}
-              onPress={async () => {
-                await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
-                router.replace('/(tabs)');
-              }}
-            >
-              <ThemedText style={[styles.skipText, { color: tintColor }]}>
-                Skip (Use Local Storage)
-              </ThemedText>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -136,6 +164,16 @@ export default function SignInScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 16,
+    opacity: 0.7,
   },
   keyboardView: {
     flex: 1,
@@ -200,13 +238,5 @@ const styles = StyleSheet.create({
   link: {
     fontSize: 14,
     fontWeight: '600',
-  },
-  skipButton: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  skipText: {
-    fontSize: 14,
-    fontWeight: '500',
   },
 });

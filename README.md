@@ -21,13 +21,18 @@ SpeziVibe is a React Native + Expo template for building cross-platform digital 
 
 ## ✨ Features
 
+- **🏗️ Standard Architecture** - Inspired by Stanford Spezi's Standard pattern for centralized data orchestration
+- **🔌 Pluggable Backends** - Switch between local storage and Firebase without changing app code
+- **🔐 Smart Authentication** - Auto-skip auth screens for local storage, Firebase integration ready
 - **📋 Onboarding Flow** - Multi-step onboarding with feature highlights and informed consent
 - **📅 Task Scheduler** - Flexible scheduling with daily, weekly, monthly recurrence patterns and completion policies
 - **📝 Questionnaires** - Dynamic forms built with Formik and Yup validation (text, scale, multiple choice, boolean)
 - **👥 Contact Management** - Built-in support team and emergency contact templates
 - **🎨 Theme Support** - Full light and dark theme support
-- **💾 Local Persistence** - AsyncStorage for offline-first data storage
-- **🚀 Vibe Code Friendly** - Clean, well-structured codebase designed for AI-assisted development
+- **💾 Offline-First** - AsyncStorage for local persistence with optional cloud sync
+- **⚡ Performance Optimized** - Memoized contexts, proper cleanup, zero memory leaks
+- **🚀 Production Ready** - Race condition free, proper error handling, cancellation tokens
+- **🤖 AI-Friendly** - Clean, well-structured codebase designed for AI-assisted development
 
 ## 🚀 Getting Started
 
@@ -59,23 +64,69 @@ npx expo start
 
 ## 🎯 Key Modules
 
+### Standard (Core Architecture)
+
+The **Standard** is the central orchestrator of the application, inspired by Stanford Spezi's Standard pattern. It:
+- Initializes and provides the backend service to all modules
+- Manages data flow throughout the application
+- Ensures proper initialization order and error handling
+- Accessible via `useStandard()` hook from any component
+
+```typescript
+const { backend, backendType, isLoading, error, retry } = useStandard();
+```
+
+### Backend System
+
+Pluggable backend architecture supporting multiple storage solutions:
+
+**Local Storage (Default)**
+- Uses React Native AsyncStorage
+- No authentication required
+- Perfect for offline-first apps and development
+- Zero configuration needed
+
+**Firebase Backend**
+- Real-time cloud sync via Firestore
+- Email/password authentication
+- Multi-device support
+- Easy to set up with environment variables
+
+To configure Firebase, create a `.env` file:
+```bash
+EXPO_PUBLIC_BACKEND_TYPE=firebase
+EXPO_PUBLIC_FIREBASE_API_KEY=your-api-key
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your-app.firebaseapp.com
+# ... other Firebase config
+```
+
+See `lib/services/README.md` for detailed backend documentation.
+
 ### Scheduler
 - Task categories: questionnaires, measurements, reminders, custom tasks
 - Recurrence patterns with time windows
 - Completion tracking with outcomes and timestamps
 - Date-based event querying
+- Uses Standard for data persistence
 
 ### Questionnaires
 - Multiple question types: text, scale (1-10), multiple choice, boolean
 - Real-time validation with Yup schemas
 - Integration with task scheduler
-- Response storage in AsyncStorage
+- Response storage via backend system
+
+### Authentication
+- Automatic skip for local storage mode
+- Firebase email/password authentication
+- Smart loading states during initialization
+- Persistent session management
 
 ### Onboarding
 - Welcome screen with app features
 - Interactive feature showcase with pagination
 - Informed consent with digital signature
 - Completion confirmation
+- Auth screen with smart auto-skip logic
 
 ## 🛠️ Built With
 
@@ -86,6 +137,38 @@ npx expo start
 - **[Formik](https://formik.org/)** - Form state management
 - **[Yup](https://github.com/jquense/yup)** - Schema validation
 - **[AsyncStorage](https://react-native-async-storage.github.io/async-storage/)** - Local data persistence
+- **[Firebase](https://firebase.google.com/)** (Optional) - Cloud backend and authentication
+
+## 🏗️ Architecture Highlights
+
+### Production-Ready React Patterns
+
+- **Memoized Contexts** - All context values use `useMemo` to prevent unnecessary re-renders
+- **Stable Callbacks** - Functions wrapped in `useCallback` for optimal performance
+- **Cancellation Tokens** - Proper cleanup prevents setState after unmount
+- **Error Boundaries** - Error states exposed for graceful error handling
+- **Race Condition Free** - Careful async handling with cancellation flags
+- **Memory Leak Prevention** - All subscriptions and listeners properly cleaned up
+
+### Provider Hierarchy
+
+```typescript
+<StandardProvider>          // Initializes backend
+  <SchedulerProvider>       // Manages tasks using backend
+    <AuthProvider>          // Manages auth using backend
+      <App />
+    </AuthProvider>
+  </SchedulerProvider>
+</StandardProvider>
+```
+
+### Key Design Decisions
+
+1. **Standard at Root** - The Standard provider is at the top level to provide the backend service to all modules, including modals
+2. **No Early Returns** - Providers render children during loading for coordinated initialization
+3. **Background Sync** - Auth sync happens in background to not block user interactions
+4. **Smart Navigation** - Auto-skip logic with refs prevents navigation loops
+5. **Offline-First** - Local storage as default ensures app works without network
 
 ## Contributing
 
