@@ -12,17 +12,9 @@ export default function GetStartedScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const handleGetStarted = async () => {
-    try {
-      await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
-
-      // Use a slight delay to ensure AsyncStorage is fully committed
-      setTimeout(() => {
-        router.replace('/(tabs)');
-      }, 100);
-    } catch (error) {
-      router.replace('/(tabs)');
-    }
+  const handleGetStarted = () => {
+    // Don't mark onboarding complete yet - auth is part of onboarding
+    router.push('/(onboarding)/register');
   };
 
   return (
