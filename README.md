@@ -23,15 +23,11 @@ SpeziVibe is a React Native + Expo template for building cross-platform digital 
 
 - **🏗️ Standard Architecture** - Inspired by Stanford Spezi's Standard pattern for centralized data orchestration
 - **🔌 Pluggable Backends** - Switch between local storage and Firebase without changing app code
-- **🔐 Smart Authentication** - Auto-skip auth screens for local storage, Firebase integration ready
 - **📋 Onboarding Flow** - Multi-step onboarding with feature highlights and informed consent
 - **📅 Task Scheduler** - Flexible scheduling with daily, weekly, monthly recurrence patterns and completion policies
-- **📝 Questionnaires** - Dynamic forms built with Formik and Yup validation (text, scale, multiple choice, boolean)
+- **📝 Questionnaires** - Dynamic forms with validation
 - **👥 Contact Management** - Built-in support team and emergency contact templates
 - **🎨 Theme Support** - Full light and dark theme support
-- **💾 Offline-First** - AsyncStorage for local persistence with optional cloud sync
-- **⚡ Performance Optimized** - Memoized contexts, proper cleanup, zero memory leaks
-- **🚀 Production Ready** - Race condition free, proper error handling, cancellation tokens
 - **🤖 AI-Friendly** - Clean, well-structured codebase designed for AI-assisted development
 
 ## 🚀 Getting Started
@@ -64,9 +60,10 @@ npx expo start
 
 ## 🎯 Key Modules
 
-### Standard (Core Architecture)
+### Standard Module
 
-The **Standard** is the central orchestrator of the application, inspired by Stanford Spezi's Standard pattern. It:
+The **Standard** is the central orchestrator of the application. 
+It:
 - Initializes and provides the backend service to all modules
 - Manages data flow throughout the application
 - Ensures proper initialization order and error handling
@@ -76,7 +73,7 @@ The **Standard** is the central orchestrator of the application, inspired by Sta
 const { backend, backendType, isLoading, error, retry } = useStandard();
 ```
 
-### Backend System
+### Backend Module
 
 Pluggable backend architecture supporting multiple storage solutions:
 
@@ -102,31 +99,33 @@ EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your-app.firebaseapp.com
 
 See `lib/services/README.md` for detailed backend documentation.
 
-### Scheduler
+### Scheduler Module
+
 - Task categories: questionnaires, measurements, reminders, custom tasks
 - Recurrence patterns with time windows
 - Completion tracking with outcomes and timestamps
 - Date-based event querying
 - Uses Standard for data persistence
 
-### Questionnaires
+### Questionnaire Module
+
 - Multiple question types: text, scale (1-10), multiple choice, boolean
 - Real-time validation with Yup schemas
 - Integration with task scheduler
 - Response storage via backend system
 
-### Authentication
-- Automatic skip for local storage mode
-- Firebase email/password authentication
+### Authentication Module
+
+- Email/password authentication
 - Smart loading states during initialization
 - Persistent session management
 
-### Onboarding
+### Onboarding Module
+
 - Welcome screen with app features
 - Interactive feature showcase with pagination
 - Informed consent with digital signature
 - Completion confirmation
-- Auth screen with smart auto-skip logic
 
 ## 🛠️ Built With
 
@@ -139,41 +138,9 @@ See `lib/services/README.md` for detailed backend documentation.
 - **[AsyncStorage](https://react-native-async-storage.github.io/async-storage/)** - Local data persistence
 - **[Firebase](https://firebase.google.com/)** (Optional) - Cloud backend and authentication
 
-## 🏗️ Architecture Highlights
-
-### Production-Ready React Patterns
-
-- **Memoized Contexts** - All context values use `useMemo` to prevent unnecessary re-renders
-- **Stable Callbacks** - Functions wrapped in `useCallback` for optimal performance
-- **Cancellation Tokens** - Proper cleanup prevents setState after unmount
-- **Error Boundaries** - Error states exposed for graceful error handling
-- **Race Condition Free** - Careful async handling with cancellation flags
-- **Memory Leak Prevention** - All subscriptions and listeners properly cleaned up
-
-### Provider Hierarchy
-
-```typescript
-<StandardProvider>          // Initializes backend
-  <SchedulerProvider>       // Manages tasks using backend
-    <AuthProvider>          // Manages auth using backend
-      <App />
-    </AuthProvider>
-  </SchedulerProvider>
-</StandardProvider>
-```
-
-### Key Design Decisions
-
-1. **Standard at Root** - The Standard provider is at the top level to provide the backend service to all modules, including modals
-2. **No Early Returns** - Providers render children during loading for coordinated initialization
-3. **Background Sync** - Auth sync happens in background to not block user interactions
-4. **Smart Navigation** - Auto-skip logic with refs prevents navigation loops
-5. **Offline-First** - Local storage as default ensures app works without network
-
 ## Contributing
 
 Contributions to this project are welcome. Please make sure to read the [contribution guidelines](https://github.com/StanfordSpezi/.github/blob/main/CONTRIBUTING.md) and the [contributor covenant code of conduct](https://github.com/StanfordSpezi/.github/blob/main/CODE_OF_CONDUCT.md) first.
-
 
 ## License
 
