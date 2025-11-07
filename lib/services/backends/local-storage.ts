@@ -124,7 +124,7 @@ export class LocalStorageBackend implements BackendService {
         completedAt: new Date(r.completedAt),
       }));
 
-      return taskId ? deserialized.filter((r) => r.taskId === taskId) : deserialized;
+      return taskId ? deserialized.filter((r) => r.metadata?.taskId === taskId) : deserialized;
     } catch (error) {
       console.error('Failed to load questionnaire responses:', error);
       return [];

@@ -1,9 +1,10 @@
 import { useLocalSearchParams, router } from 'expo-router';
 import { Alert } from 'react-native';
 import { ThemedView } from '@/components/themed-view';
-import { QuestionnaireForm } from '@/components/questionnaire-form';
+import { QuestionnaireForm, defaultLightTheme, defaultDarkTheme } from '@spezivibe/questionnaire';
 import { getQuestionnaireById } from '@/lib/questionnaires/sample-questionnaires';
 import { useScheduler } from '@/lib/scheduler';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RESPONSES_KEY = '@questionnaire_responses';
@@ -11,6 +12,8 @@ const RESPONSES_KEY = '@questionnaire_responses';
 export default function QuestionnaireScreen() {
   const { id, taskId, eventId } = useLocalSearchParams<{ id: string; taskId: string; eventId: string }>();
   const { scheduler } = useScheduler();
+  const colorScheme = useColorScheme();
+  const theme = colorScheme === 'dark' ? defaultDarkTheme : defaultLightTheme;
 
   const questionnaire = getQuestionnaireById(id);
 
@@ -22,12 +25,16 @@ export default function QuestionnaireScreen() {
 
   const handleSubmit = async (answers: Record<string, any>) => {
     try {
-      // Save the response
+      // Save the response with new format
       const response = {
+        id: `${id}-${Date.now()}`, // Generate unique ID
         questionnaireId: id,
-        taskId,
-        completedAt: new Date().toISOString(),
+        completedAt: new Date(),
         answers,
+        metadata: {
+          taskId,
+          eventId,
+        },
       };
 
       // Store response in AsyncStorage
@@ -37,7 +44,7 @@ export default function QuestionnaireScreen() {
       await AsyncStorage.setItem(RESPONSES_KEY, JSON.stringify(responses));
 
       // Mark the task as complete if we have the necessary info
-      if (taskId && eventId) {
+      if (taskId && eventId && scheduler) {
         const event = scheduler.getEventById(taskId, parseInt(eventId, 10));
         if (event) {
           await scheduler.completeEvent(event, response);
@@ -68,6 +75,7 @@ export default function QuestionnaireScreen() {
         questionnaire={questionnaire}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
+        theme={theme}
       />
     </ThemedView>
   );

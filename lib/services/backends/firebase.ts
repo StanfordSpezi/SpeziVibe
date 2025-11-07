@@ -252,7 +252,7 @@ export class FirebaseBackend implements BackendService {
       return;
     }
 
-    const responseId = `${response.taskId}-${Date.now()}`;
+    const responseId = response.id || `${response.questionnaireId}-${Date.now()}`;
     // Remove undefined values before saving
     const serialized = this.removeUndefined(response);
     await setDoc(
@@ -265,7 +265,7 @@ export class FirebaseBackend implements BackendService {
     if (!this.db || !this.userId) return [];
 
     const collectionRef = collection(this.db, `users/${this.userId}/questionnaire-responses`);
-    const q = taskId ? query(collectionRef, where('taskId', '==', taskId)) : collectionRef;
+    const q = taskId ? query(collectionRef, where('metadata.taskId', '==', taskId)) : collectionRef;
 
     const snapshot = await getDocs(q);
     return snapshot.docs.map(

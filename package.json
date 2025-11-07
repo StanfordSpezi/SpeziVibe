@@ -16,6 +16,7 @@
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
+    "@spezivibe/questionnaire": "*",
     "dotenv": "^17.2.3",
     "expo": "~54.0.22",
     "expo-constants": "~18.0.10",
@@ -48,5 +49,8 @@
     "eslint-config-expo": "~10.0.0",
     "typescript": "~5.9.2"
   },
-  "private": true
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
 }
