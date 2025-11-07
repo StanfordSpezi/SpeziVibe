@@ -3,6 +3,7 @@ export * from './types';
 
 // Components
 export { QuestionnaireForm } from './components/QuestionnaireForm';
+export { QuestionnaireErrorBoundary } from './components/ErrorBoundary';
 export * from './components/questions';
 
 // Validation
@@ -13,3 +14,6 @@ export { defaultLightTheme, defaultDarkTheme, mergeTheme } from './theme/default
 
 // Storage (optional adapters)
 export * from './storage';
+
+// Utils
+export { triggerHaptic } from './utils/haptics';

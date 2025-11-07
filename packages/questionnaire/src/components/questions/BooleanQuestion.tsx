@@ -5,7 +5,7 @@ import { Question, QuestionnaireTheme } from '../../types';
 
 interface BooleanQuestionProps {
   question: Question;
-  formik: FormikProps<any>;
+  formik: FormikProps<Record<string, unknown>>;
   theme: QuestionnaireTheme;
 }
 
@@ -50,7 +50,7 @@ export function BooleanQuestion({ question, formik, theme }: BooleanQuestionProp
           return (
             <Pressable
               key={option.label}
-              style={[
+              style={({ pressed }) => [
                 styles.booleanButton,
                 {
                   backgroundColor: isSelected
@@ -59,9 +59,15 @@ export function BooleanQuestion({ question, formik, theme }: BooleanQuestionProp
                   borderColor: isSelected ? theme.colors.primary : theme.colors.border,
                   borderRadius: theme.borderRadius.md,
                   paddingVertical: theme.spacing.sm,
+                  opacity: pressed ? 0.7 : 1,
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
                 },
               ]}
-              onPress={() => formik.setFieldValue(question.id, option.value)}>
+              onPress={() => formik.setFieldValue(question.id, option.value)}
+              accessibilityRole="button"
+              accessibilityLabel={`${option.label} for ${question.title}`}
+              accessibilityHint={`Select ${option.label.toLowerCase()} as answer`}
+              accessibilityState={{ selected: isSelected }}>
               <Text
                 style={[
                   styles.booleanText,
@@ -86,7 +92,9 @@ export function BooleanQuestion({ question, formik, theme }: BooleanQuestionProp
               fontSize: theme.fontSize.sm,
               marginTop: theme.spacing.xs,
             },
-          ]}>
+          ]}
+          accessibilityRole="alert"
+          accessibilityLive="polite">
           {formik.errors[question.id] as string}
         </Text>
       )}

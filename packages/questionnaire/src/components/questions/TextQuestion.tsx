@@ -5,7 +5,7 @@ import { Question, QuestionnaireTheme } from '../../types';
 
 interface TextQuestionProps {
   question: Question;
-  formik: FormikProps<any>;
+  formik: FormikProps<Record<string, unknown>>;
   theme: QuestionnaireTheme;
 }
 
@@ -61,6 +61,9 @@ export function TextQuestion({ question, formik, theme }: TextQuestionProps) {
         onBlur={formik.handleBlur(question.id)}
         multiline
         numberOfLines={3}
+        accessibilityLabel={question.title}
+        accessibilityHint={question.description || `Enter your response for ${question.title}`}
+        accessibilityRequired={question.required}
       />
 
       {hasError && (
@@ -72,7 +75,9 @@ export function TextQuestion({ question, formik, theme }: TextQuestionProps) {
               fontSize: theme.fontSize.sm,
               marginTop: theme.spacing.xs,
             },
-          ]}>
+          ]}
+          accessibilityRole="alert"
+          accessibilityLive="polite">
           {formik.errors[question.id] as string}
         </Text>
       )}

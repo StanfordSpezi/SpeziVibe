@@ -1,5 +1,15 @@
-import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView, Alert, StyleSheet } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import {
+  View,
+  Text,
+  Pressable,
+  ScrollView,
+  Alert,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
+} from 'react-native';
 import { Formik } from 'formik';
 import { QuestionnaireFormProps, QuestionnaireResponse } from '../types';
 import { createValidationSchema } from '../validation/schema-builder';
@@ -22,18 +32,31 @@ export function QuestionnaireForm({
   cancelButtonText = 'Cancel',
 }: QuestionnaireFormProps) {
   const [showCompletion, setShowCompletion] = useState(false);
-  const [completedAnswers, setCompletedAnswers] = useState<Record<string, any> | null>(null);
+  const [completedAnswers, setCompletedAnswers] = useState<Record<string, unknown> | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const theme = mergeTheme(userTheme, defaultLightTheme);
-  const validationSchema = createValidationSchema(questionnaire.questions);
+  // Memoize theme to prevent unnecessary re-renders
+  const theme = useMemo(
+    () => mergeTheme(userTheme, defaultLightTheme),
+    [userTheme]
+  );
 
-  // Create initial values for form
-  const initialValues: Record<string, any> = userInitialValues || {};
-  questionnaire.questions.forEach((question) => {
-    if (initialValues[question.id] === undefined) {
-      initialValues[question.id] = '';
-    }
-  });
+  // Memoize validation schema
+  const validationSchema = useMemo(
+    () => createValidationSchema(questionnaire.questions),
+    [questionnaire.questions]
+  );
+
+  // Memoize initial values for form
+  const initialValues = useMemo(() => {
+    const values: Record<string, unknown> = { ...userInitialValues };
+    questionnaire.questions.forEach((question) => {
+      if (values[question.id] === undefined) {
+        values[question.id] = '';
+      }
+    });
+    return values;
+  }, [questionnaire.questions, userInitialValues]);
 
   const handleCancel = () => {
     if (cancelBehavior === 'disabled') {
@@ -60,7 +83,8 @@ export function QuestionnaireForm({
     );
   };
 
-  const handleSubmit = async (answers: Record<string, any>) => {
+  const handleSubmit = async (answers: Record<string, unknown>) => {
+    setIsSubmitting(true);
     try {
       // If there's a completion message, show it first
       if (completionMessage) {
@@ -75,10 +99,12 @@ export function QuestionnaireForm({
         status: 'failed',
         error: error instanceof Error ? error : new Error('Unknown error'),
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const submitQuestionnaire = async (answers: Record<string, any>) => {
+  const submitQuestionnaire = async (answers: Record<string, unknown>) => {
     const response: QuestionnaireResponse = {
       id: `${questionnaire.id}-${Date.now()}`,
       questionnaireId: questionnaire.id,
@@ -117,23 +143,33 @@ export function QuestionnaireForm({
             {completionMessage}
           </Text>
           <Pressable
-            style={[
+            style={({ pressed }) => [
               styles.button,
               {
                 backgroundColor: theme.colors.primary,
                 borderRadius: theme.borderRadius.md,
                 paddingVertical: theme.spacing.md,
                 paddingHorizontal: theme.spacing.xl,
+                opacity: pressed || isSubmitting ? 0.7 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
               },
             ]}
-            onPress={() => submitQuestionnaire(completedAnswers)}>
-            <Text
-              style={[
-                styles.buttonText,
-                { color: theme.colors.selectedBackground, fontSize: theme.fontSize.lg },
-              ]}>
-              Done
-            </Text>
+            onPress={() => submitQuestionnaire(completedAnswers)}
+            disabled={isSubmitting}
+            accessibilityRole="button"
+            accessibilityLabel="Done"
+            accessibilityHint="Submits the completed questionnaire">
+            {isSubmitting ? (
+              <ActivityIndicator color={theme.colors.selectedBackground} />
+            ) : (
+              <Text
+                style={[
+                  styles.buttonText,
+                  { color: theme.colors.selectedBackground, fontSize: theme.fontSize.lg },
+                ]}>
+                Done
+              </Text>
+            )}
           </Pressable>
         </View>
       </View>
@@ -146,127 +182,150 @@ export function QuestionnaireForm({
       validationSchema={validationSchema}
       onSubmit={handleSubmit}>
       {(formik) => (
-        <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-          <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={[
-              styles.scrollContent,
-              {
-                paddingHorizontal: theme.spacing.lg,
-                paddingTop: theme.spacing.xl * 2,
-                paddingBottom: theme.spacing.lg,
-              },
-            ]}>
-            <View style={{ marginBottom: theme.spacing.xl }}>
-              <Text
-                style={[
-                  styles.title,
-                  {
-                    color: theme.colors.text,
-                    fontSize: theme.fontSize.xl,
-                    marginBottom: theme.spacing.xs,
-                  },
-                ]}>
-                {questionnaire.title}
-              </Text>
-              <Text
-                style={[
-                  styles.description,
-                  {
-                    color: theme.colors.textSecondary,
-                    fontSize: theme.fontSize.sm,
-                  },
-                ]}>
-                {questionnaire.description}
-              </Text>
-            </View>
-
-            {questionnaire.questions.map((question) => {
-              switch (question.type) {
-                case 'text':
-                  return (
-                    <TextQuestion key={question.id} question={question} formik={formik} theme={theme} />
-                  );
-                case 'scale':
-                  return (
-                    <ScaleQuestion key={question.id} question={question} formik={formik} theme={theme} />
-                  );
-                case 'multipleChoice':
-                  return (
-                    <MultipleChoiceQuestion
-                      key={question.id}
-                      question={question}
-                      formik={formik}
-                      theme={theme}
-                    />
-                  );
-                case 'boolean':
-                  return (
-                    <BooleanQuestion key={question.id} question={question} formik={formik} theme={theme} />
-                  );
-                default:
-                  return null;
-              }
-            })}
-          </ScrollView>
-
-          <View
-            style={[
-              styles.footer,
-              {
-                padding: theme.spacing.lg,
-                paddingBottom: theme.spacing.xl * 1.5,
-                gap: theme.spacing.sm,
-              },
-            ]}>
-            {cancelBehavior !== 'disabled' && (
-              <Pressable
-                style={[
-                  styles.button,
-                  styles.cancelButton,
-                  {
-                    backgroundColor: theme.colors.cardBackground,
-                    borderRadius: theme.borderRadius.md,
-                    paddingVertical: theme.spacing.md,
-                  },
-                ]}
-                onPress={handleCancel}>
-                <Text
-                  style={[
-                    styles.buttonText,
-                    { color: theme.colors.text, fontSize: theme.fontSize.lg },
-                  ]}>
-                  {cancelButtonText}
-                </Text>
-              </Pressable>
-            )}
-            <Pressable
-              style={[
-                styles.button,
-                styles.submitButton,
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}>
+          <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+            <ScrollView
+              style={styles.scrollView}
+              contentContainerStyle={[
+                styles.scrollContent,
                 {
-                  backgroundColor: theme.colors.primary,
-                  borderRadius: theme.borderRadius.md,
-                  paddingVertical: theme.spacing.md,
-                  flex: cancelBehavior !== 'disabled' ? 2 : undefined,
+                  paddingHorizontal: theme.spacing.lg,
+                  paddingTop: theme.spacing.xl * 2,
+                  paddingBottom: theme.spacing.lg,
                 },
               ]}
-              onPress={() => {
-                formik.handleSubmit();
-                if (Object.keys(formik.errors).length > 0) {
-                  Alert.alert('Incomplete Form', 'Please fill in all required fields');
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="interactive">
+              <View style={{ marginBottom: theme.spacing.xl }}>
+                <Text
+                  style={[
+                    styles.title,
+                    {
+                      color: theme.colors.text,
+                      fontSize: theme.fontSize.xl,
+                      marginBottom: theme.spacing.xs,
+                    },
+                  ]}>
+                  {questionnaire.title}
+                </Text>
+                <Text
+                  style={[
+                    styles.description,
+                    {
+                      color: theme.colors.textSecondary,
+                      fontSize: theme.fontSize.sm,
+                    },
+                  ]}>
+                  {questionnaire.description}
+                </Text>
+              </View>
+
+              {questionnaire.questions.map((question) => {
+                switch (question.type) {
+                  case 'text':
+                    return (
+                      <TextQuestion key={question.id} question={question} formik={formik} theme={theme} />
+                    );
+                  case 'scale':
+                    return (
+                      <ScaleQuestion key={question.id} question={question} formik={formik} theme={theme} />
+                    );
+                  case 'multipleChoice':
+                    return (
+                      <MultipleChoiceQuestion
+                        key={question.id}
+                        question={question}
+                        formik={formik}
+                        theme={theme}
+                      />
+                    );
+                  case 'boolean':
+                    return (
+                      <BooleanQuestion key={question.id} question={question} formik={formik} theme={theme} />
+                    );
+                  default:
+                    return null;
                 }
-              }}>
-              <Text
-                style={[
-                  styles.buttonText,
-                  { color: theme.colors.selectedBackground, fontSize: theme.fontSize.lg },
-                ]}>
-                {submitButtonText}
-              </Text>
-            </Pressable>
+              })}
+            </ScrollView>
+
+            <View
+              style={[
+                styles.footer,
+                {
+                  padding: theme.spacing.lg,
+                  paddingBottom: theme.spacing.xl * 1.5,
+                  gap: theme.spacing.sm,
+                },
+              ]}>
+              {cancelBehavior !== 'disabled' && (
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.button,
+                    styles.cancelButton,
+                    {
+                      backgroundColor: theme.colors.cardBackground,
+                      borderRadius: theme.borderRadius.md,
+                      paddingVertical: theme.spacing.md,
+                      opacity: pressed || isSubmitting ? 0.7 : 1,
+                      transform: [{ scale: pressed ? 0.98 : 1 }],
+                    },
+                  ]}
+                  onPress={handleCancel}
+                  disabled={isSubmitting}
+                  accessibilityRole="button"
+                  accessibilityLabel={cancelButtonText}
+                  accessibilityHint="Cancels the questionnaire without saving">
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      { color: theme.colors.text, fontSize: theme.fontSize.lg },
+                    ]}>
+                    {cancelButtonText}
+                  </Text>
+                </Pressable>
+              )}
+              <Pressable
+                style={({ pressed }) => [
+                  styles.button,
+                  styles.submitButton,
+                  {
+                    backgroundColor: theme.colors.primary,
+                    borderRadius: theme.borderRadius.md,
+                    paddingVertical: theme.spacing.md,
+                    flex: cancelBehavior !== 'disabled' ? 2 : undefined,
+                    opacity: pressed || isSubmitting ? 0.7 : 1,
+                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                  },
+                ]}
+                onPress={() => {
+                  formik.handleSubmit();
+                  if (Object.keys(formik.errors).length > 0) {
+                    Alert.alert('Incomplete Form', 'Please fill in all required fields');
+                  }
+                }}
+                disabled={isSubmitting}
+                accessibilityRole="button"
+                accessibilityLabel={submitButtonText}
+                accessibilityHint="Submits the questionnaire with your answers">
+                {isSubmitting ? (
+                  <ActivityIndicator color={theme.colors.selectedBackground} />
+                ) : (
+                  <Text
+                    style={[
+                      styles.buttonText,
+                      { color: theme.colors.selectedBackground, fontSize: theme.fontSize.lg },
+                    ]}>
+                    {submitButtonText}
+                  </Text>
+                )}
+              </Pressable>
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       )}
     </Formik>
   );

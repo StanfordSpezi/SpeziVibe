@@ -5,7 +5,7 @@ import { Question, QuestionnaireTheme } from '../../types';
 
 interface MultipleChoiceQuestionProps {
   question: Question;
-  formik: FormikProps<any>;
+  formik: FormikProps<Record<string, unknown>>;
   theme: QuestionnaireTheme;
 }
 
@@ -47,7 +47,7 @@ export function MultipleChoiceQuestion({ question, formik, theme }: MultipleChoi
           return (
             <Pressable
               key={option.value.toString()}
-              style={[
+              style={({ pressed }) => [
                 styles.optionButton,
                 {
                   backgroundColor: isSelected
@@ -57,9 +57,15 @@ export function MultipleChoiceQuestion({ question, formik, theme }: MultipleChoi
                   borderRadius: theme.borderRadius.md,
                   paddingVertical: theme.spacing.sm,
                   paddingHorizontal: theme.spacing.md,
+                  opacity: pressed ? 0.7 : 1,
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
                 },
               ]}
-              onPress={() => formik.setFieldValue(question.id, option.value)}>
+              onPress={() => formik.setFieldValue(question.id, option.value)}
+              accessibilityRole="button"
+              accessibilityLabel={option.label}
+              accessibilityHint={`Select ${option.label} for ${question.title}`}
+              accessibilityState={{ selected: isSelected }}>
               <Text
                 style={[
                   styles.optionText,
@@ -84,7 +90,9 @@ export function MultipleChoiceQuestion({ question, formik, theme }: MultipleChoi
               fontSize: theme.fontSize.sm,
               marginTop: theme.spacing.xs,
             },
-          ]}>
+          ]}
+          accessibilityRole="alert"
+          accessibilityLive="polite">
           {formik.errors[question.id] as string}
         </Text>
       )}

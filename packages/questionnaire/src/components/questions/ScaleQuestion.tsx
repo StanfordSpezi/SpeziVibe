@@ -1,18 +1,21 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { FormikProps } from 'formik';
 import { Question, QuestionnaireTheme } from '../../types';
 
 interface ScaleQuestionProps {
   question: Question;
-  formik: FormikProps<any>;
+  formik: FormikProps<Record<string, unknown>>;
   theme: QuestionnaireTheme;
 }
 
 export function ScaleQuestion({ question, formik, theme }: ScaleQuestionProps) {
   const min = question.min || 1;
   const max = question.max || 10;
-  const values = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+  const values = useMemo(
+    () => Array.from({ length: max - min + 1 }, (_, i) => min + i),
+    [min, max]
+  );
   const hasError = formik.touched[question.id] && formik.errors[question.id];
 
   return (
@@ -50,7 +53,7 @@ export function ScaleQuestion({ question, formik, theme }: ScaleQuestionProps) {
           return (
             <Pressable
               key={value}
-              style={[
+              style={({ pressed }) => [
                 styles.scaleButton,
                 {
                   backgroundColor: isSelected
@@ -58,9 +61,15 @@ export function ScaleQuestion({ question, formik, theme }: ScaleQuestionProps) {
                     : theme.colors.cardBackground,
                   borderColor: isSelected ? theme.colors.primary : theme.colors.border,
                   borderRadius: theme.borderRadius.lg,
+                  opacity: pressed ? 0.7 : 1,
+                  transform: [{ scale: pressed ? 0.95 : 1 }],
                 },
               ]}
-              onPress={() => formik.setFieldValue(question.id, value)}>
+              onPress={() => formik.setFieldValue(question.id, value)}
+              accessibilityRole="button"
+              accessibilityLabel={`${question.title}, value ${value}`}
+              accessibilityHint={`Selects ${value} on a scale from ${min} to ${max}`}
+              accessibilityState={{ selected: isSelected }}>
               <Text
                 style={[
                   styles.scaleButtonText,
@@ -85,7 +94,9 @@ export function ScaleQuestion({ question, formik, theme }: ScaleQuestionProps) {
               fontSize: theme.fontSize.sm,
               marginTop: theme.spacing.xs,
             },
-          ]}>
+          ]}
+          accessibilityRole="alert"
+          accessibilityLive="polite">
           {formik.errors[question.id] as string}
         </Text>
       )}
