@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView, Alert, StyleSheet } from 'react-native';
 import { Formik } from 'formik';
-import { QuestionnaireFormProps } from '../types';
+import { QuestionnaireFormProps, QuestionnaireResponse } from '../types';
 import { createValidationSchema } from '../validation/schema-builder';
 import { defaultLightTheme, mergeTheme } from '../theme/default-theme';
 import {
@@ -13,13 +13,17 @@ import {
 
 export function QuestionnaireForm({
   questionnaire,
-  onSubmit,
-  onCancel,
+  onResult,
+  completionMessage,
+  cancelBehavior = 'confirm',
   theme: userTheme,
   initialValues: userInitialValues,
   submitButtonText = 'Submit',
   cancelButtonText = 'Cancel',
 }: QuestionnaireFormProps) {
+  const [showCompletion, setShowCompletion] = useState(false);
+  const [completedAnswers, setCompletedAnswers] = useState<Record<string, any> | null>(null);
+
   const theme = mergeTheme(userTheme, defaultLightTheme);
   const validationSchema = createValidationSchema(questionnaire.questions);
 
@@ -31,17 +35,116 @@ export function QuestionnaireForm({
     }
   });
 
+  const handleCancel = () => {
+    if (cancelBehavior === 'disabled') {
+      return;
+    }
+
+    if (cancelBehavior === 'immediate') {
+      onResult({ status: 'cancelled' });
+      return;
+    }
+
+    // cancelBehavior === 'confirm'
+    Alert.alert(
+      'Cancel Questionnaire',
+      'Are you sure you want to cancel? Your responses will not be saved.',
+      [
+        { text: 'Continue', style: 'cancel' },
+        {
+          text: 'Cancel',
+          style: 'destructive',
+          onPress: () => onResult({ status: 'cancelled' }),
+        },
+      ]
+    );
+  };
+
+  const handleSubmit = async (answers: Record<string, any>) => {
+    try {
+      // If there's a completion message, show it first
+      if (completionMessage) {
+        setCompletedAnswers(answers);
+        setShowCompletion(true);
+      } else {
+        // Otherwise submit immediately
+        await submitQuestionnaire(answers);
+      }
+    } catch (error) {
+      onResult({
+        status: 'failed',
+        error: error instanceof Error ? error : new Error('Unknown error'),
+      });
+    }
+  };
+
+  const submitQuestionnaire = async (answers: Record<string, any>) => {
+    const response: QuestionnaireResponse = {
+      id: `${questionnaire.id}-${Date.now()}`,
+      questionnaireId: questionnaire.id,
+      completedAt: new Date(),
+      answers,
+    };
+
+    await onResult({ status: 'completed', response });
+  };
+
+  // Show completion message screen
+  if (showCompletion && completedAnswers) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.completionContainer}>
+          <Text
+            style={[
+              styles.completionTitle,
+              {
+                color: theme.colors.text,
+                fontSize: theme.fontSize.xl,
+                marginBottom: theme.spacing.lg,
+              },
+            ]}>
+            Complete
+          </Text>
+          <Text
+            style={[
+              styles.completionMessage,
+              {
+                color: theme.colors.textSecondary,
+                fontSize: theme.fontSize.md,
+                marginBottom: theme.spacing.xl,
+              },
+            ]}>
+            {completionMessage}
+          </Text>
+          <Pressable
+            style={[
+              styles.button,
+              {
+                backgroundColor: theme.colors.primary,
+                borderRadius: theme.borderRadius.md,
+                paddingVertical: theme.spacing.md,
+                paddingHorizontal: theme.spacing.xl,
+              },
+            ]}
+            onPress={() => submitQuestionnaire(completedAnswers)}>
+            <Text
+              style={[
+                styles.buttonText,
+                { color: theme.colors.selectedBackground, fontSize: theme.fontSize.lg },
+              ]}>
+              Done
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={async (values) => {
-        try {
-          await onSubmit(values);
-        } catch (error) {
-          Alert.alert('Error', 'Failed to submit questionnaire');
-        }
-      }}>
+      onSubmit={handleSubmit}>
       {(formik) => (
         <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
           <ScrollView
@@ -116,7 +219,7 @@ export function QuestionnaireForm({
                 gap: theme.spacing.sm,
               },
             ]}>
-            {onCancel && (
+            {cancelBehavior !== 'disabled' && (
               <Pressable
                 style={[
                   styles.button,
@@ -127,7 +230,7 @@ export function QuestionnaireForm({
                     paddingVertical: theme.spacing.md,
                   },
                 ]}
-                onPress={onCancel}>
+                onPress={handleCancel}>
                 <Text
                   style={[
                     styles.buttonText,
@@ -145,7 +248,7 @@ export function QuestionnaireForm({
                   backgroundColor: theme.colors.primary,
                   borderRadius: theme.borderRadius.md,
                   paddingVertical: theme.spacing.md,
-                  flex: onCancel ? 2 : undefined,
+                  flex: cancelBehavior !== 'disabled' ? 2 : undefined,
                 },
               ]}
               onPress={() => {
@@ -183,6 +286,20 @@ const styles = StyleSheet.create({
   description: {
     lineHeight: 21,
     opacity: 0.8,
+  },
+  completionContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  completionTitle: {
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  completionMessage: {
+    textAlign: 'center',
+    lineHeight: 24,
   },
   footer: {
     flexDirection: 'row',

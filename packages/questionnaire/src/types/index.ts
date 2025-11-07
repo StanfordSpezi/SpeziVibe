@@ -82,6 +82,24 @@ export interface QuestionnaireTheme {
 }
 
 /**
+ * The result of a questionnaire completion
+ * Inspired by SpeziQuestionnaire's result pattern
+ */
+export type QuestionnaireResult =
+  | { status: 'completed'; response: QuestionnaireResponse }
+  | { status: 'cancelled' }
+  | { status: 'failed'; error: Error };
+
+/**
+ * Cancel behavior configuration
+ * Inspired by SpeziQuestionnaire's CancelBehavior
+ */
+export type CancelBehavior =
+  | 'confirm' // Show confirmation dialog before cancelling (default)
+  | 'immediate' // Cancel immediately without confirmation
+  | 'disabled'; // Disable cancel button
+
+/**
  * Storage interface that apps must implement
  */
 export interface QuestionnaireStorage {
@@ -93,11 +111,24 @@ export interface QuestionnaireStorage {
 
 /**
  * Props for the main QuestionnaireForm component
+ * Updated to match SpeziQuestionnaire's API pattern
  */
 export interface QuestionnaireFormProps {
   questionnaire: Questionnaire;
-  onSubmit: (answers: Record<string, any>) => Promise<void> | void;
-  onCancel?: () => void;
+  /**
+   * Result handler that receives the questionnaire result
+   * (completed with response, cancelled, or failed with error)
+   */
+  onResult: (result: QuestionnaireResult) => Promise<void> | void;
+  /**
+   * Optional completion message shown after questionnaire is filled
+   */
+  completionMessage?: string;
+  /**
+   * Cancel behavior configuration
+   * @default 'confirm'
+   */
+  cancelBehavior?: CancelBehavior;
   theme?: Partial<QuestionnaireTheme>;
   initialValues?: Record<string, any>;
   submitButtonText?: string;

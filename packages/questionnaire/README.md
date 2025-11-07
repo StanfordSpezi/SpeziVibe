@@ -69,23 +69,35 @@ const myQuestionnaire: Questionnaire = {
 ### 2. Use the QuestionnaireForm Component
 
 ```typescript
-import { QuestionnaireForm } from '@spezivibe/questionnaire';
+import { QuestionnaireForm, QuestionnaireResult } from '@spezivibe/questionnaire';
 import { useRouter } from 'expo-router';
 
 function MyQuestionnaireScreen() {
   const router = useRouter();
 
-  const handleSubmit = async (answers: Record<string, any>) => {
-    console.log('Answers:', answers);
-    // Save to your backend, storage, etc.
-    router.back();
+  const handleResult = async (result: QuestionnaireResult) => {
+    switch (result.status) {
+      case 'completed':
+        console.log('Response:', result.response);
+        // Save response to your backend, storage, etc.
+        router.back();
+        break;
+
+      case 'cancelled':
+        console.log('User cancelled');
+        router.back();
+        break;
+
+      case 'failed':
+        console.error('Failed:', result.error);
+        break;
+    }
   };
 
   return (
     <QuestionnaireForm
       questionnaire={myQuestionnaire}
-      onSubmit={handleSubmit}
-      onCancel={() => router.back()}
+      onResult={handleResult}
     />
   );
 }
@@ -100,8 +112,49 @@ import { QuestionnaireForm, defaultDarkTheme } from '@spezivibe/questionnaire';
 
 <QuestionnaireForm
   questionnaire={myQuestionnaire}
-  onSubmit={handleSubmit}
+  onResult={handleResult}
   theme={defaultDarkTheme}
+/>
+```
+
+## Advanced Features
+
+### Completion Messages
+
+Show a message after the questionnaire is completed but before the result is submitted:
+
+```typescript
+<QuestionnaireForm
+  questionnaire={myQuestionnaire}
+  onResult={handleResult}
+  completionMessage="Thank you for completing the wellness check-in!"
+/>
+```
+
+### Cancel Behavior
+
+Configure how cancellation works:
+
+```typescript
+// Show confirmation dialog (default)
+<QuestionnaireForm
+  questionnaire={myQuestionnaire}
+  onResult={handleResult}
+  cancelBehavior="confirm"
+/>
+
+// Cancel immediately without confirmation
+<QuestionnaireForm
+  questionnaire={myQuestionnaire}
+  onResult={handleResult}
+  cancelBehavior="immediate"
+/>
+
+// Disable cancel button
+<QuestionnaireForm
+  questionnaire={myQuestionnaire}
+  onResult={handleResult}
+  cancelBehavior="disabled"
 />
 ```
 
@@ -258,12 +311,22 @@ class MyCustomStorage implements QuestionnaireStorage {
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
 | `questionnaire` | `Questionnaire` | Yes | The questionnaire definition |
-| `onSubmit` | `(answers: Record<string, any>) => void \| Promise<void>` | Yes | Called when form is submitted |
-| `onCancel` | `() => void` | No | Called when cancel button is pressed |
+| `onResult` | `(result: QuestionnaireResult) => void \| Promise<void>` | Yes | Result handler receiving completed/cancelled/failed status |
+| `completionMessage` | `string` | No | Message shown after completion before submitting |
+| `cancelBehavior` | `'confirm' \| 'immediate' \| 'disabled'` | No | Cancel behavior (default: "confirm") |
 | `theme` | `Partial<QuestionnaireTheme>` | No | Custom theme configuration |
 | `initialValues` | `Record<string, any>` | No | Pre-fill form values |
 | `submitButtonText` | `string` | No | Custom submit button text (default: "Submit") |
 | `cancelButtonText` | `string` | No | Custom cancel button text (default: "Cancel") |
+
+### QuestionnaireResult
+
+```typescript
+type QuestionnaireResult =
+  | { status: 'completed'; response: QuestionnaireResponse }
+  | { status: 'cancelled' }
+  | { status: 'failed'; error: Error };
+```
 
 ## Testing
 
