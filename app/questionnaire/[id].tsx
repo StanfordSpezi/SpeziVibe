@@ -10,6 +10,7 @@ import {
 import { getQuestionnaireById } from '@/lib/questionnaires/sample-questionnaires';
 import { useScheduler } from '@/lib/scheduler';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useStandard } from '@/lib/services/standard-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const RESPONSES_KEY = '@questionnaire_responses';
@@ -17,6 +18,7 @@ const RESPONSES_KEY = '@questionnaire_responses';
 export default function QuestionnaireScreen() {
   const { id, taskId, eventId } = useLocalSearchParams<{ id: string; taskId: string; eventId: string }>();
   const { scheduler } = useScheduler();
+  const { backend } = useStandard();
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? defaultDarkTheme : defaultLightTheme;
 
@@ -42,11 +44,16 @@ export default function QuestionnaireScreen() {
             },
           };
 
-          // Store response in AsyncStorage
+          // Store response in AsyncStorage (for offline support/backup)
           const existingResponses = await AsyncStorage.getItem(RESPONSES_KEY);
           const responses = existingResponses ? JSON.parse(existingResponses) : [];
           responses.push(responseWithMetadata);
           await AsyncStorage.setItem(RESPONSES_KEY, JSON.stringify(responses));
+
+          // Save to Firebase through the backend service
+          if (backend) {
+            await backend.saveQuestionnaireResponse(responseWithMetadata);
+          }
 
           // Mark the task as complete if we have the necessary info
           if (taskId && eventId && scheduler) {
@@ -63,6 +70,7 @@ export default function QuestionnaireScreen() {
             },
           ]);
         } catch (error) {
+          console.error('Failed to save questionnaire response:', error);
           Alert.alert('Error', 'Failed to save your responses. Please try again.');
         }
         break;
