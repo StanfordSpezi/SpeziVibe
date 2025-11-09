@@ -23,17 +23,12 @@
   "dependencies": {
     "@types/fhir": "^0.0.40",
     "formik": "^2.4.0",
+    "react-native-ui-datepicker": "^3.1.2",
     "yup": "^1.0.0"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
-    "react-native": ">=0.70.0",
-    "react-native-ui-datepicker": "^3.1.2"
-  },
-  "peerDependenciesMeta": {
-    "react-native-ui-datepicker": {
-      "optional": true
-    }
+    "react-native": ">=0.70.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.5",

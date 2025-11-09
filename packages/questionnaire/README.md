@@ -34,16 +34,7 @@ A FHIR R4-compliant React Native questionnaire component library for healthcare 
 npm install @spezivibe/questionnaire
 ```
 
-This automatically includes all required dependencies (formik, yup, @types/fhir).
-
-### Optional: Date/Time Pickers
-
-For date, dateTime, and time question types, install the optional date picker:
-```bash
-npm install react-native-ui-datepicker
-```
-
-If not installed, these question types will use basic text input instead.
+This automatically includes all required dependencies (formik, yup, @types/fhir, react-native-ui-datepicker).
 
 ## Quick Start
 
