@@ -21,10 +21,10 @@
   "author": "SpeziVibe",
   "license": "MIT",
   "dependencies": {
-    "@types/fhir": "^0.0.40",
-    "formik": "^2.4.0",
+    "@types/fhir": "^0.0.41",
+    "formik": "^2.4.8",
     "react-native-ui-datepicker": "^3.1.2",
-    "yup": "^1.0.0"
+    "yup": "^1.7.1"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
