@@ -1,147 +1,86 @@
-import { Questionnaire } from './types';
+import { Questionnaire, QuestionnaireBuilder } from '@spezivibe/questionnaire';
 
-export const WELLNESS_QUESTIONNAIRE: Questionnaire = {
-  id: 'wellness-checkin',
-  title: 'Daily Wellness Check-In',
-  description: 'Take a moment to reflect on your overall wellness today',
-  questions: [
-    {
-      id: 'mood',
-      type: 'scale',
-      title: 'How would you rate your mood today?',
-      description: '1 = Very Poor, 10 = Excellent',
-      required: true,
-      min: 1,
-      max: 10,
-    },
-    {
-      id: 'energy',
-      type: 'scale',
-      title: 'What is your energy level?',
-      description: '1 = Very Low, 10 = Very High',
-      required: true,
-      min: 1,
-      max: 10,
-    },
-    {
-      id: 'sleep_quality',
-      type: 'multipleChoice',
-      title: 'How was your sleep last night?',
-      required: true,
-      options: [
-        { label: 'Excellent', value: 4 },
-        { label: 'Good', value: 3 },
-        { label: 'Fair', value: 2 },
-        { label: 'Poor', value: 1 },
-      ],
-    },
-    {
-      id: 'stress_level',
-      type: 'scale',
-      title: 'How stressed do you feel?',
-      description: '1 = Not Stressed, 10 = Extremely Stressed',
-      required: true,
-      min: 1,
-      max: 10,
-    },
-    {
-      id: 'notes',
-      type: 'text',
-      title: 'Additional notes',
-      description: 'Any additional thoughts or observations?',
-      required: false,
-      placeholder: 'Enter your notes here...',
-    },
-  ],
-};
+export const WELLNESS_QUESTIONNAIRE: Questionnaire = new QuestionnaireBuilder('wellness-checkin')
+  .title('Daily Wellness Check-In')
+  .description('Take a moment to reflect on your overall wellness today')
+  .addInteger('mood', 'How would you rate your mood today?', {
+    required: true,
+    min: 1,
+    max: 10,
+  })
+  .addInteger('energy', 'What is your energy level?', {
+    required: true,
+    min: 1,
+    max: 10,
+  })
+  .addChoice('sleep_quality', 'How was your sleep last night?', {
+    required: true,
+    answerOption: [
+      { value: 'excellent', display: 'Excellent' },
+      { value: 'good', display: 'Good' },
+      { value: 'fair', display: 'Fair' },
+      { value: 'poor', display: 'Poor' },
+    ],
+  })
+  .addInteger('stress_level', 'How stressed do you feel?', {
+    required: true,
+    min: 1,
+    max: 10,
+  })
+  .addText('notes', 'Additional notes', {
+    required: false,
+  })
+  .build();
 
-export const GRATITUDE_QUESTIONNAIRE: Questionnaire = {
-  id: 'gratitude-reflection',
-  title: 'Evening Gratitude',
-  description: 'Reflect on the positive moments of your day',
-  questions: [
-    {
-      id: 'grateful_for',
-      type: 'text',
-      title: 'What are you grateful for today?',
-      description: 'Name three things you appreciate',
-      required: true,
-      placeholder: 'I am grateful for...',
-    },
-    {
-      id: 'positive_moment',
-      type: 'text',
-      title: 'Describe a positive moment from today',
-      required: true,
-      placeholder: 'Today, something great happened when...',
-    },
-    {
-      id: 'helped_someone',
-      type: 'boolean',
-      title: 'Did you help someone today?',
-      required: true,
-    },
-    {
-      id: 'overall_satisfaction',
-      type: 'scale',
-      title: 'How satisfied are you with today?',
-      description: '1 = Not Satisfied, 10 = Very Satisfied',
-      required: true,
-      min: 1,
-      max: 10,
-    },
-  ],
-};
+export const GRATITUDE_QUESTIONNAIRE: Questionnaire = new QuestionnaireBuilder('gratitude-reflection')
+  .title('Evening Gratitude')
+  .description('Reflect on the positive moments of your day')
+  .addText('grateful_for', 'What are you grateful for today?', {
+    required: true,
+  })
+  .addText('positive_moment', 'Describe a positive moment from today', {
+    required: true,
+  })
+  .addBoolean('helped_someone', 'Did you help someone today?', {
+    required: true,
+  })
+  .addInteger('overall_satisfaction', 'How satisfied are you with today?', {
+    required: true,
+    min: 1,
+    max: 10,
+  })
+  .build();
 
-export const WEEKLY_REFLECTION_QUESTIONNAIRE: Questionnaire = {
-  id: 'weekly-reflection',
-  title: 'Weekly Reflection',
-  description: 'Review your progress and set intentions for the week ahead',
-  questions: [
-    {
-      id: 'week_rating',
-      type: 'scale',
-      title: 'Overall, how was your week?',
-      description: '1 = Very Challenging, 10 = Excellent',
-      required: true,
-      min: 1,
-      max: 10,
-    },
-    {
-      id: 'accomplishments',
-      type: 'text',
-      title: 'What did you accomplish this week?',
-      required: true,
-      placeholder: 'List your achievements...',
-    },
-    {
-      id: 'challenges',
-      type: 'text',
-      title: 'What challenges did you face?',
-      required: false,
-      placeholder: 'Describe any difficulties...',
-    },
-    {
-      id: 'self_care',
-      type: 'multipleChoice',
-      title: 'How well did you practice self-care?',
-      required: true,
-      options: [
-        { label: 'Excellent - Made it a priority', value: 4 },
-        { label: 'Good - Regular practice', value: 3 },
-        { label: 'Fair - Could improve', value: 2 },
-        { label: 'Poor - Needs attention', value: 1 },
-      ],
-    },
-    {
-      id: 'next_week_goals',
-      type: 'text',
-      title: 'What are your goals for next week?',
-      required: true,
-      placeholder: 'Next week, I plan to...',
-    },
-  ],
-};
+export const WEEKLY_REFLECTION_QUESTIONNAIRE: Questionnaire = new QuestionnaireBuilder('weekly-reflection')
+  .title('Weekly Reflection')
+  .description('Review your progress and set intentions for the week ahead')
+  .addDate('reflection_date', 'Week ending date', {
+    required: true,
+  })
+  .addInteger('week_rating', 'Overall, how was your week?', {
+    required: true,
+    min: 1,
+    max: 10,
+  })
+  .addText('accomplishments', 'What did you accomplish this week?', {
+    required: true,
+  })
+  .addText('challenges', 'What challenges did you face?', {
+    required: false,
+  })
+  .addChoice('self_care', 'How well did you practice self-care?', {
+    required: true,
+    answerOption: [
+      { value: 'excellent', display: 'Excellent - Made it a priority' },
+      { value: 'good', display: 'Good - Regular practice' },
+      { value: 'fair', display: 'Fair - Could improve' },
+      { value: 'poor', display: 'Poor - Needs attention' },
+    ],
+  })
+  .addText('next_week_goals', 'What are your goals for next week?', {
+    required: true,
+  })
+  .build();
 
 export const SAMPLE_QUESTIONNAIRES = [
   WELLNESS_QUESTIONNAIRE,
