@@ -8,9 +8,9 @@ A FHIR R4-compliant React Native questionnaire component library for healthcare 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
 - [Why FHIR?](#why-fhir)
-- [Builder API](#builder-api)
 - [Question Types](#question-types)
 - [Conditional Logic (enableWhen)](#conditional-logic-enablewhen)
+- [Builder API (Optional)](#builder-api-optional)
 - [Result Handling](#result-handling)
 - [Theming](#theming)
 - [Storage](#storage)
@@ -20,16 +20,16 @@ A FHIR R4-compliant React Native questionnaire component library for healthcare 
 
 ## Features
 
-- ✅ **FHIR R4 Compliant** - Full support for FHIR Questionnaire and QuestionnaireResponse resources
-- ✅ **Conditional Logic** - Full support for enableWhen with all operators (=, !=, >, <, >=, <=, exists)
-- ✅ **10+ Question Types** - Boolean, integer, decimal, string, text, date, dateTime, time, choice, group, display
-- ✅ **Builder API** - Convenient fluent API for easy questionnaire creation
-- ✅ **Real-time Validation** - Built-in validation with Yup schemas
-- ✅ **Themeable** - Fully customizable theme system with light/dark defaults
-- ✅ **Type-Safe** - Complete TypeScript support with FHIR R4 types
-- ✅ **Storage Agnostic** - No built-in storage (Spezi standard) - you handle persistence
-- ✅ **Expo Go Compatible** - Works with Expo Go (no native modules required)
-- ✅ **Cross-Platform** - iOS, Android, and Web support
+- **FHIR R4 Compliant** - Full support for FHIR Questionnaire and QuestionnaireResponse resources
+- **Conditional Logic** - Full support for enableWhen with all operators (=, !=, >, <, >=, <=, exists)
+- **10+ Question Types** - Boolean, integer, decimal, string, text, date, dateTime, time, choice, group, display
+- **Real-time Validation** - Built-in validation with Yup schemas
+- **Themeable** - Fully customizable theme system with light/dark defaults
+- **Type-Safe** - Complete TypeScript support with FHIR R4 types
+- **Storage Agnostic** - No built-in storage (Spezi standard) - you handle persistence
+- **Optional Builder API** - Convenience API for programmatic questionnaire creation
+- **Expo Go Compatible** - Works with Expo Go (no native modules required)
+- **Cross-Platform** - iOS, Android, and Web support
 
 ## Installation
 
@@ -57,28 +57,67 @@ The package requires:
 
 ## Quick Start
 
-### Option 1: Using the Builder API (Recommended)
+### Basic Usage with FHIR R4 Format
 
-The builder API provides a convenient way to create FHIR questionnaires:
+Use standard FHIR R4 Questionnaire resources directly:
 
 ```typescript
 import React from 'react';
 import { SafeAreaView, Alert } from 'react-native';
+import { Questionnaire } from 'fhir/r4';
 import {
-  QuestionnaireBuilder,
   QuestionnaireForm,
   QuestionnaireResult,
 } from '@spezivibe/questionnaire';
 import { useRouter } from 'expo-router';
 
-// Create a FHIR Questionnaire using the builder
-const dailyCheckIn = new QuestionnaireBuilder('daily-checkin')
-  .title('Daily Check-In')
-  .description('How are you feeling today?')
-  .addSlider('mood', 'Rate your mood (1-10)', { min: 1, max: 10, required: true })
-  .addBoolean('exercised', 'Did you exercise today?', { required: true })
-  .addText('notes', 'Any notes for today?')
-  .build(); // Returns FHIR R4 Questionnaire
+// Define a FHIR R4 Questionnaire
+const dailyCheckIn: Questionnaire = {
+  resourceType: 'Questionnaire',
+  status: 'active',
+  id: 'daily-checkin',
+  title: 'Daily Check-In',
+  description: 'How are you feeling today?',
+  item: [
+    {
+      linkId: 'mood',
+      type: 'integer',
+      text: 'Rate your mood (1-10)',
+      required: true,
+      extension: [
+        {
+          url: 'http://hl7.org/fhir/StructureDefinition/minValue',
+          valueInteger: 1,
+        },
+        {
+          url: 'http://hl7.org/fhir/StructureDefinition/maxValue',
+          valueInteger: 10,
+        },
+        {
+          url: 'http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl',
+          valueCodeableConcept: {
+            coding: [{
+              system: 'http://hl7.org/fhir/questionnaire-item-control',
+              code: 'slider',
+              display: 'Slider',
+            }],
+          },
+        },
+      ],
+    },
+    {
+      linkId: 'exercised',
+      type: 'boolean',
+      text: 'Did you exercise today?',
+      required: true,
+    },
+    {
+      linkId: 'notes',
+      type: 'text',
+      text: 'Any notes for today?',
+    },
+  ],
+};
 
 export default function CheckInScreen() {
   const router = useRouter();
@@ -111,46 +150,25 @@ export default function CheckInScreen() {
 }
 ```
 
-### Option 2: Using Raw FHIR Format
+### Optional: Using the Builder API
 
-You can also use raw FHIR R4 Questionnaires directly:
+For programmatic questionnaire creation, you can use the optional builder API:
 
 ```typescript
-import { Questionnaire } from 'fhir/r4';
-import { QuestionnaireForm } from '@spezivibe/questionnaire';
+import { QuestionnaireBuilder } from '@spezivibe/questionnaire';
 
-const fhirQuestionnaire: Questionnaire = {
-  resourceType: 'Questionnaire',
-  status: 'active',
-  title: 'Patient Feedback',
-  item: [
-    {
-      linkId: 'q1',
-      type: 'integer',
-      text: 'Rate your experience (1-5)',
-      required: true,
-      extension: [
-        {
-          url: 'http://hl7.org/fhir/StructureDefinition/minValue',
-          valueInteger: 1,
-        },
-        {
-          url: 'http://hl7.org/fhir/StructureDefinition/maxValue',
-          valueInteger: 5,
-        },
-      ],
-    },
-    {
-      linkId: 'q2',
-      type: 'text',
-      text: 'Any comments?',
-    },
-  ],
-};
+// Create the same questionnaire using the builder
+const dailyCheckIn = new QuestionnaireBuilder('daily-checkin')
+  .title('Daily Check-In')
+  .description('How are you feeling today?')
+  .addSlider('mood', 'Rate your mood (1-10)', { min: 1, max: 10, required: true })
+  .addBoolean('exercised', 'Did you exercise today?', { required: true })
+  .addText('notes', 'Any notes for today?')
+  .build(); // Returns FHIR R4 Questionnaire
 
-// Use it directly
+// Use it the same way
 <QuestionnaireForm
-  questionnaire={fhirQuestionnaire}
+  questionnaire={dailyCheckIn}
   onResult={handleResult}
 />
 ```
@@ -171,9 +189,9 @@ const fhirQuestionnaire: Questionnaire = {
 - **Symptom Tracking** - Standardized symptom assessment tools
 - **Quality of Life** - Industry-standard QoL questionnaires (SF-36, EQ-5D)
 
-## Builder API
+## Builder API (Optional)
 
-The builder API makes it easy to create FHIR questionnaires programmatically:
+The optional builder API provides a convenient way to create FHIR questionnaires programmatically when you need to generate them dynamically:
 
 ### Basic Usage
 
