@@ -99,6 +99,13 @@ export const WEEKLY_REFLECTION_QUESTIONNAIRE: Questionnaire = {
   description: 'Review your progress and set intentions for the week ahead',
   questions: [
     {
+      id: 'reflection_date',
+      type: 'date',
+      title: 'Week ending date',
+      description: 'Select the last day of the week you are reflecting on',
+      required: true,
+    },
+    {
       id: 'week_rating',
       type: 'scale',
       title: 'Overall, how was your week?',

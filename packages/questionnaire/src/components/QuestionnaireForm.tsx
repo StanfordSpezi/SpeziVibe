@@ -19,6 +19,7 @@ import {
   ScaleQuestion,
   MultipleChoiceQuestion,
   BooleanQuestion,
+  DateQuestion,
 } from './questions';
 
 export function QuestionnaireForm({
@@ -245,6 +246,10 @@ export function QuestionnaireForm({
                   case 'boolean':
                     return (
                       <BooleanQuestion key={question.id} question={question} formik={formik} theme={theme} />
+                    );
+                  case 'date':
+                    return (
+                      <DateQuestion key={question.id} question={question} formik={formik} theme={theme} />
                     );
                   default:
                     return null;
