@@ -7,10 +7,9 @@ A FHIR R4-compliant React Native questionnaire component library for healthcare 
 - [Features](#features)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
-- [Why FHIR?](#why-fhir)
 - [Question Types](#question-types)
 - [Conditional Logic (enableWhen)](#conditional-logic-enablewhen)
-- [Builder API (Optional)](#builder-api-optional)
+- [Builder API](#builder-api-optional)
 - [Result Handling](#result-handling)
 - [Theming](#theming)
 - [Storage](#storage)
@@ -25,35 +24,33 @@ A FHIR R4-compliant React Native questionnaire component library for healthcare 
 - **10+ Question Types** - Boolean, integer, decimal, string, text, date, dateTime, time, choice, group, display
 - **Real-time Validation** - Built-in validation with Yup schemas
 - **Themeable** - Fully customizable theme system with light/dark defaults
-- **Type-Safe** - Complete TypeScript support with FHIR R4 types
-- **Storage Agnostic** - No built-in storage (Spezi standard) - you handle persistence
-- **Optional Builder API** - Convenience API for programmatic questionnaire creation
+- **Builder API** - Convenient fluent API for programmatic questionnaire creation
 - **Expo Go Compatible** - Works with Expo Go (no native modules required)
 - **Cross-Platform** - iOS, Android, and Web support
 
 ## Installation
 
-### Required Dependencies
-
 ```bash
-npm install @spezivibe/questionnaire formik yup fhir
+npm install @spezivibe/questionnaire formik yup
 ```
 
-### Optional Dependencies
+### Why Separate Dependencies?
 
-For date/time pickers:
+This package uses **peer dependencies** for `formik` and `yup` because:
+- Most React Native apps already use these popular form libraries
+- Avoids bundling duplicate versions (reduces bundle size)
+- Lets you control which version to use
+
+If your app doesn't have them yet, the command above installs everything you need.
+
+### Optional: Date/Time Pickers
+
+For date, dateTime, and time question types:
 ```bash
 npm install react-native-ui-datepicker
 ```
 
-### Peer Dependencies
-
-The package requires:
-- `react` >= 18.0.0
-- `react-native` >= 0.70.0
-- `formik` ^2.4.0
-- `yup` ^1.0.0
-- `fhir` ^4.11.1
+If not installed, these question types will use basic text input instead.
 
 ## Quick Start
 
@@ -173,25 +170,9 @@ const dailyCheckIn = new QuestionnaireBuilder('daily-checkin')
 />
 ```
 
-## Why FHIR?
+## Builder API
 
-[FHIR (Fast Healthcare Interoperability Resources)](https://www.hl7.org/fhir/) is the healthcare industry standard for exchanging healthcare information electronically. By using FHIR:
-
-1. **Interoperability** - Your app can import questionnaires from any FHIR-compliant system (hospitals, research institutions, EHR systems)
-2. **Standardization** - Uses industry-standard formats recognized globally
-3. **Rich Features** - Built-in support for conditional logic, validation, and complex question types
-4. **Future-proof** - FHIR is actively maintained and widely adopted
-
-### Real-World Use Cases
-
-- **Clinical Research** - Import research questionnaires from [LOINC](https://loinc.org/) or [NIH](https://www.nih.gov/)
-- **Patient Intake** - Use standardized patient history questionnaires
-- **Symptom Tracking** - Standardized symptom assessment tools
-- **Quality of Life** - Industry-standard QoL questionnaires (SF-36, EQ-5D)
-
-## Builder API (Optional)
-
-The optional builder API provides a convenient way to create FHIR questionnaires programmatically when you need to generate them dynamically:
+The builder API provides a convenient way to create FHIR questionnaires programmatically when you need to generate them dynamically:
 
 ### Basic Usage
 
