@@ -1,50 +1,14 @@
-/**
- * Core types for the @spezivibe/questionnaire package
- * These types are decoupled from any specific app integration
- */
-
-export type QuestionType =
-  | 'text'
-  | 'multipleChoice'
-  | 'scale'
-  | 'date'
-  | 'boolean';
-
-export interface QuestionOption {
-  label: string;
-  value: string | number;
-}
-
-export interface Question {
-  id: string;
-  type: QuestionType;
-  title: string;
-  description?: string;
-  required?: boolean;
-  options?: QuestionOption[]; // For multipleChoice
-  min?: number; // For scale
-  max?: number; // For scale
-  placeholder?: string; // For text
-}
-
-export interface Questionnaire {
-  id: string;
-  title: string;
-  description: string;
-  questions: Question[];
-}
-
-/**
- * Decoupled response type - removed taskId coupling
- * Apps can add their own metadata via the metadata field
- */
-export interface QuestionnaireResponse {
-  id: string; // Unique response ID
-  questionnaireId: string;
-  completedAt: Date;
-  answers: Record<string, any>;
-  metadata?: Record<string, any>; // Flexible field for app-specific data (taskId, userId, etc.)
-}
+import type { Questionnaire, QuestionnaireResponse } from 'fhir/r4';
+export type { Questionnaire, QuestionnaireResponse };
+export type {
+  QuestionnaireItem,
+  QuestionnaireResponseItem,
+  QuestionnaireResponseItemAnswer,
+  QuestionnaireItemEnableWhen,
+  QuestionnaireItemAnswerOption,
+  Coding,
+  Extension,
+} from 'fhir/r4';
 
 /**
  * Theme configuration for questionnaire components
@@ -83,7 +47,6 @@ export interface QuestionnaireTheme {
 
 /**
  * The result of a questionnaire completion
- * Inspired by SpeziQuestionnaire's result pattern
  */
 export type QuestionnaireResult =
   | { status: 'completed'; response: QuestionnaireResponse }
@@ -92,45 +55,53 @@ export type QuestionnaireResult =
 
 /**
  * Cancel behavior configuration
- * Inspired by SpeziQuestionnaire's CancelBehavior
  */
 export type CancelBehavior =
-  | 'confirm' // Show confirmation dialog before cancelling (default)
-  | 'immediate' // Cancel immediately without confirmation
-  | 'disabled'; // Disable cancel button
-
-/**
- * Storage interface that apps must implement
- */
-export interface QuestionnaireStorage {
-  save(response: QuestionnaireResponse): Promise<void>;
-  getAll(): Promise<QuestionnaireResponse[]>;
-  getByQuestionnaireId(questionnaireId: string): Promise<QuestionnaireResponse[]>;
-  getById(id: string): Promise<QuestionnaireResponse | null>;
-}
+  | 'confirm'
+  | 'immediate'
+  | 'disabled';
 
 /**
  * Props for the main QuestionnaireForm component
- * Updated to match SpeziQuestionnaire's API pattern
+ *
+ * Storage is NOT handled by this module - handle persistence in the onResult callback
  */
 export interface QuestionnaireFormProps {
   questionnaire: Questionnaire;
-  /**
-   * Result handler that receives the questionnaire result
-   * (completed with response, cancelled, or failed with error)
-   */
   onResult: (result: QuestionnaireResult) => Promise<void> | void;
-  /**
-   * Optional completion message shown after questionnaire is filled
-   */
   completionMessage?: string;
-  /**
-   * Cancel behavior configuration
-   * @default 'confirm'
-   */
   cancelBehavior?: CancelBehavior;
   theme?: Partial<QuestionnaireTheme>;
-  initialValues?: Record<string, any>;
+  initialResponse?: QuestionnaireResponse;
   submitButtonText?: string;
   cancelButtonText?: string;
 }
+
+export type QuestionnaireItemType =
+  | 'group'
+  | 'display'
+  | 'boolean'
+  | 'decimal'
+  | 'integer'
+  | 'date'
+  | 'dateTime'
+  | 'time'
+  | 'string'
+  | 'text'
+  | 'url'
+  | 'choice'
+  | 'open-choice'
+  | 'attachment'
+  | 'reference'
+  | 'quantity';
+
+export type EnableWhenOperator =
+  | 'exists'
+  | '='
+  | '!='
+  | '>'
+  | '<'
+  | '>='
+  | '<=';
+
+export type EnableBehavior = 'all' | 'any';

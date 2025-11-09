@@ -1,16 +1,16 @@
 # @spezivibe/questionnaire - Examples
 
-Real-world examples of using the questionnaire package.
+Real-world examples using FHIR R4 Questionnaires for healthcare interoperability.
 
 ## Table of Contents
 1. [Basic Usage](#basic-usage)
-2. [Result Handling](#result-handling)
-3. [Custom Themes](#custom-themes)
-4. [Storage Integration](#storage-integration)
-5. [Complex Questionnaires](#complex-questionnaires)
-6. [Integration with Task Schedulers](#integration-with-task-schedulers)
-7. [Pre-filled Forms](#pre-filled-forms)
-8. [Multi-Step Questionnaires](#multi-step-questionnaires)
+2. [Using the Builder API](#using-the-builder-api)
+3. [Result Handling](#result-handling)
+4. [Conditional Logic (enableWhen)](#conditional-logic-enablewhen)
+5. [Custom Themes](#custom-themes)
+6. [Storage Integration](#storage-integration)
+7. [Complex Questionnaires](#complex-questionnaires)
+8. [Pre-filled Forms](#pre-filled-forms)
 
 ---
 
@@ -21,27 +21,46 @@ Real-world examples of using the questionnaire package.
 ```typescript
 import React from 'react';
 import { SafeAreaView, Alert } from 'react-native';
-import { QuestionnaireForm, Questionnaire, QuestionnaireResult } from '@spezivibe/questionnaire';
+import {
+  QuestionnaireForm,
+  QuestionnaireResult,
+  type Questionnaire
+} from '@spezivibe/questionnaire';
 import { useRouter } from 'expo-router';
 
+// FHIR R4 Questionnaire
 const feedbackSurvey: Questionnaire = {
-  id: 'feedback-2025',
+  resourceType: 'Questionnaire',
+  status: 'active',
   title: 'Quick Feedback',
-  description: 'Tell us how we're doing',
-  questions: [
+  description: "Tell us how we're doing",
+  item: [
     {
-      id: 'rating',
-      type: 'scale',
-      title: 'How would you rate your experience?',
-      min: 1,
-      max: 5,
+      linkId: 'rating',
+      type: 'integer',
+      text: 'How would you rate your experience?',
       required: true,
+      extension: [
+        {
+          url: 'http://hl7.org/fhir/StructureDefinition/minValue',
+          valueInteger: 1,
+        },
+        {
+          url: 'http://hl7.org/fhir/StructureDefinition/maxValue',
+          valueInteger: 5,
+        },
+        {
+          url: 'http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl',
+          valueCodeableConcept: {
+            coding: [{ code: 'slider' }],
+          },
+        },
+      ],
     },
     {
-      id: 'comments',
+      linkId: 'comments',
       type: 'text',
-      title: 'Any additional comments?',
-      placeholder: 'Your feedback...',
+      text: 'Any additional comments?',
     },
   ],
 };
@@ -52,11 +71,18 @@ export default function FeedbackScreen() {
   const handleResult = async (result: QuestionnaireResult) => {
     switch (result.status) {
       case 'completed':
-        console.log('Rating:', result.response.answers.rating);
-        console.log('Comments:', result.response.answers.comments);
+        // FHIR QuestionnaireResponse
+        const { response } = result;
 
-        // Send to backend
-        await api.post('/feedback', result.response);
+        // Access answers from FHIR response
+        const rating = response.item?.find(i => i.linkId === 'rating')?.answer?.[0]?.valueInteger;
+        const comments = response.item?.find(i => i.linkId === 'comments')?.answer?.[0]?.valueString;
+
+        console.log('Rating:', rating);
+        console.log('Comments:', comments);
+
+        // Send FHIR response to backend
+        await api.post('/fhir/QuestionnaireResponse', response);
 
         Alert.alert('Thank you!', 'Your feedback has been submitted');
         router.back();
@@ -86,57 +112,161 @@ export default function FeedbackScreen() {
 
 ---
 
-## Result Handling
+## Using the Builder API
 
-### Complete Example with All Result Types
+### Quick Questionnaire with Builder
 
 ```typescript
-import { QuestionnaireResult } from '@spezivibe/questionnaire';
+import { QuestionnaireBuilder, QuestionnaireForm } from '@spezivibe/questionnaire';
+
+// Use the builder for easier questionnaire creation
+const dailyCheckIn = new QuestionnaireBuilder('daily-checkin')
+  .title('Daily Check-In')
+  .description('How are you feeling today?')
+  .addSlider('mood', 'Rate your mood', { min: 1, max: 10, required: true })
+  .addBoolean('exercised', 'Did you exercise today?', { required: true })
+  .addChoice('sleep_quality', 'How was your sleep?', {
+    options: [
+      { code: 'poor', display: 'Poor' },
+      { code: 'fair', display: 'Fair' },
+      { code: 'good', display: 'Good' },
+      { code: 'excellent', display: 'Excellent' },
+    ],
+    required: true,
+  })
+  .addText('notes', 'Any notes for today?')
+  .build(); // Returns FHIR Questionnaire
+
+function DailyCheckInScreen() {
+  const handleResult = async (result: QuestionnaireResult) => {
+    if (result.status === 'completed') {
+      await storage.save(result.response);
+      router.back();
+    }
+  };
+
+  return (
+    <QuestionnaireForm
+      questionnaire={dailyCheckIn}
+      onResult={handleResult}
+    />
+  );
+}
+```
+
+### Builder with All Question Types
+
+```typescript
+import { QuestionnaireBuilder } from '@spezivibe/questionnaire';
+
+const comprehensiveForm = new QuestionnaireBuilder('comprehensive-form')
+  .title('Patient Intake Form')
+  .description('Please complete all sections')
+
+  // Boolean question
+  .addBoolean('has_insurance', 'Do you have health insurance?', { required: true })
+
+  // Integer with slider
+  .addSlider('pain_level', 'Current pain level', { min: 0, max: 10 })
+
+  // Integer with buttons (small range)
+  .addInteger('num_medications', 'Number of current medications', { min: 0, max: 20 })
+
+  // Decimal
+  .addDecimal('temperature', 'Body temperature (°F)', { min: 95, max: 105 })
+
+  // Single-line text
+  .addString('emergency_contact', 'Emergency contact name', { required: true, maxLength: 100 })
+
+  // Multi-line text
+  .addText('medical_history', 'Brief medical history', { maxLength: 500 })
+
+  // Date
+  .addDate('last_checkup', 'Date of last check-up')
+
+  // Choice (radio buttons)
+  .addChoice('blood_type', 'Blood type', {
+    options: [
+      { code: 'a+', display: 'A+' },
+      { code: 'a-', display: 'A-' },
+      { code: 'b+', display: 'B+' },
+      { code: 'b-', display: 'B-' },
+      { code: 'o+', display: 'O+' },
+      { code: 'o-', display: 'O-' },
+      { code: 'ab+', display: 'AB+' },
+      { code: 'ab-', display: 'AB-' },
+    ],
+  })
+
+  // Display (informational text)
+  .addDisplay('privacy_notice', 'All information is kept confidential per HIPAA regulations.')
+
+  .build();
+```
+
+---
+
+## Result Handling
+
+### Complete Example with Type-Safe Access
+
+```typescript
+import { QuestionnaireResult, QuestionnaireResponse } from '@spezivibe/questionnaire';
 import analytics from '@react-native-firebase/analytics';
 
+// Helper to extract answer values from FHIR response
+function getAnswer<T = any>(response: QuestionnaireResponse, linkId: string): T | undefined {
+  const item = response.item?.find(i => i.linkId === linkId);
+  if (!item?.answer?.[0]) return undefined;
+
+  const answer = item.answer[0];
+
+  // Return the appropriate value based on type
+  if (answer.valueBoolean !== undefined) return answer.valueBoolean as T;
+  if (answer.valueInteger !== undefined) return answer.valueInteger as T;
+  if (answer.valueDecimal !== undefined) return answer.valueDecimal as T;
+  if (answer.valueString !== undefined) return answer.valueString as T;
+  if (answer.valueDate !== undefined) return answer.valueDate as T;
+  if (answer.valueDateTime !== undefined) return answer.valueDateTime as T;
+  if (answer.valueTime !== undefined) return answer.valueTime as T;
+  if (answer.valueCoding !== undefined) return answer.valueCoding.code as T;
+
+  return undefined;
+}
+
 const handleResult = async (result: QuestionnaireResult) => {
-  // Track start time for analytics
   const completionTime = Date.now() - startTime;
 
   switch (result.status) {
     case 'completed': {
-      // Response includes: id, questionnaireId, completedAt, answers, metadata
       const { response } = result;
 
       try {
-        // Add app-specific metadata
-        const enrichedResponse = {
-          ...response,
-          metadata: {
-            ...response.metadata,
-            userId: currentUser.id,
-            appVersion: AppVersion,
-            platform: Platform.OS,
-            completionTime,
-          },
-        };
+        // Extract values using helper
+        const mood = getAnswer<number>(response, 'mood');
+        const exercised = getAnswer<boolean>(response, 'exercised');
+        const notes = getAnswer<string>(response, 'notes');
 
-        // Save to multiple destinations
+        console.log('Mood:', mood);
+        console.log('Exercised:', exercised);
+        console.log('Notes:', notes);
+
+        // Save FHIR response
         await Promise.all([
-          // Local storage for offline access
-          localStorage.save(enrichedResponse),
+          // Local storage
+          localStorage.save(response),
 
-          // Backend API
-          api.post('/responses', enrichedResponse),
+          // Backend FHIR API
+          api.post('/fhir/QuestionnaireResponse', response),
 
           // Analytics
           analytics().logEvent('questionnaire_completed', {
-            questionnaire_id: response.questionnaireId,
-            question_count: Object.keys(response.answers).length,
+            questionnaire: response.questionnaire,
+            item_count: response.item?.length || 0,
           }),
         ]);
 
-        // Navigate based on answers
-        if (response.answers.needsFollowUp) {
-          router.push('/follow-up');
-        } else {
-          router.back();
-        }
+        router.back();
       } catch (error) {
         console.error('Save failed:', error);
         Alert.alert('Error', 'Failed to save your responses');
@@ -145,20 +275,16 @@ const handleResult = async (result: QuestionnaireResult) => {
     }
 
     case 'cancelled': {
-      // User cancelled
       await analytics().logEvent('questionnaire_cancelled', {
-        questionnaire_id: questionnaire.id,
+        questionnaire: questionnaire.url || questionnaire.id,
         time_spent: completionTime,
       });
-
       router.back();
       break;
     }
 
     case 'failed': {
-      // Error occurred
       const { error } = result;
-
       console.error('Questionnaire failed:', error);
       Sentry.captureException(error);
 
@@ -174,36 +300,115 @@ const handleResult = async (result: QuestionnaireResult) => {
     }
   }
 };
-
-<QuestionnaireForm
-  questionnaire={questionnaire}
-  onResult={handleResult}
-/>
 ```
 
-### Type-Safe Result Handling
+---
+
+## Conditional Logic (enableWhen)
+
+### Basic Conditional Questions
 
 ```typescript
-// TypeScript ensures you handle all cases
-const handleResult = (result: QuestionnaireResult) => {
-  switch (result.status) {
-    case 'completed':
-      // TypeScript knows result.response exists
-      saveResponse(result.response);
-      break;
+import { QuestionnaireBuilder, enableWhen } from '@spezivibe/questionnaire';
 
-    case 'cancelled':
-      // TypeScript knows result has no additional properties
-      trackCancellation();
-      break;
+// Show follow-up question only if user answers "yes"
+const conditionalForm = new QuestionnaireBuilder('conditional-form')
+  .title('Health Screening')
 
-    case 'failed':
-      // TypeScript knows result.error exists
-      logError(result.error);
-      break;
+  .addBoolean('has_symptoms', 'Are you experiencing any symptoms?', { required: true })
 
-    // TypeScript will error if you forget a case
-  }
+  // This question only appears if has_symptoms is true
+  .addText('symptom_details', 'Please describe your symptoms', {
+    required: true,
+    enableWhen: [enableWhen('has_symptoms', '=', true)],
+  })
+
+  .addBoolean('taking_medication', 'Are you taking any medications?', { required: true })
+
+  // This appears if taking_medication is true
+  .addText('medication_list', 'Please list your medications', {
+    required: true,
+    enableWhen: [enableWhen('taking_medication', '=', true)],
+  })
+
+  .build();
+```
+
+### Advanced Conditional Logic
+
+```typescript
+import { QuestionnaireBuilder, enableWhen } from '@spezivibe/questionnaire';
+
+const advancedForm = new QuestionnaireBuilder('advanced-conditional')
+  .title('Pain Assessment')
+
+  .addSlider('pain_level', 'Current pain level (0-10)', { min: 0, max: 10, required: true })
+
+  // Show only if pain level > 5
+  .addChoice('pain_type', 'Type of pain', {
+    options: [
+      { code: 'sharp', display: 'Sharp' },
+      { code: 'dull', display: 'Dull' },
+      { code: 'throbbing', display: 'Throbbing' },
+      { code: 'burning', display: 'Burning' },
+    ],
+    required: true,
+    enableWhen: [enableWhen('pain_level', '>', 5)],
+  })
+
+  // Show only if pain level >= 7
+  .addBoolean('emergency_care', 'Do you need emergency care?', {
+    required: true,
+    enableWhen: [enableWhen('pain_level', '>=', 7)],
+  })
+
+  .build();
+```
+
+### Multiple Conditions (ANY or ALL)
+
+```typescript
+import type { Questionnaire } from '@spezivibe/questionnaire';
+
+// Raw FHIR for complex enableWhen logic
+const complexConditional: Questionnaire = {
+  resourceType: 'Questionnaire',
+  status: 'active',
+  title: 'Risk Assessment',
+  item: [
+    {
+      linkId: 'age',
+      type: 'integer',
+      text: 'Your age',
+      required: true,
+    },
+    {
+      linkId: 'smoker',
+      type: 'boolean',
+      text: 'Do you smoke?',
+      required: true,
+    },
+    {
+      linkId: 'high_bp',
+      type: 'boolean',
+      text: 'Do you have high blood pressure?',
+      required: true,
+    },
+    {
+      linkId: 'risk_warning',
+      type: 'display',
+      text: '⚠️ You may be at elevated risk. Please consult your physician.',
+      // Show if age > 50 AND (smoker OR high_bp)
+      enableWhen: [
+        { question: 'age', operator: '>', answerInteger: 50 },
+        { question: 'smoker', operator: '=', answerBoolean: true },
+        { question: 'high_bp', operator: '=', answerBoolean: true },
+      ],
+      // ALL conditions must be true for first (age)
+      // ANY of the remaining conditions must be true
+      enableBehavior: 'all', // Change to 'any' for OR logic
+    },
+  ],
 };
 ```
 
@@ -260,10 +465,8 @@ import {
 function ThemedQuestionnaire() {
   const colorScheme = useColorScheme();
 
-  // Start with default theme based on color scheme
   const baseTheme = colorScheme === 'dark' ? defaultDarkTheme : defaultLightTheme;
 
-  // Customize specific colors
   const customTheme = mergeTheme({
     colors: {
       primary: '#007AFF',  // iOS blue
@@ -291,20 +494,14 @@ import { AsyncStorageAdapter, QuestionnaireResponse } from '@spezivibe/questionn
 
 const storage = new AsyncStorageAdapter();
 
-function QuestionnaireScreen({ questionnaireId }: { questionnaireId: string }) {
+function QuestionnaireScreen({ questionnaire }: { questionnaire: Questionnaire }) {
   const handleResult = async (result: QuestionnaireResult) => {
     if (result.status === 'completed') {
-      // Add app-specific metadata
-      const responseWithMetadata = {
-        ...result.response,
-        metadata: {
-          userId: currentUser.id,
-          deviceType: Platform.OS,
-        },
-      };
+      // FHIR QuestionnaireResponse
+      const response = result.response;
 
       // Save to local storage
-      await storage.save(responseWithMetadata);
+      await storage.save(response);
 
       console.log('Response saved!');
       router.back();
@@ -318,8 +515,9 @@ function QuestionnaireScreen({ questionnaireId }: { questionnaireId: string }) {
     // Get all responses
     const allResponses = await storage.getAll();
 
-    // Get responses for this questionnaire
-    const thisQuestionnaire = await storage.getByQuestionnaireId(questionnaireId);
+    // Get responses for specific questionnaire (using canonical URL)
+    const questionnaireUrl = questionnaire.url || `Questionnaire/${questionnaire.id}`;
+    const thisQuestionnaire = await storage.getByQuestionnaireId(questionnaireUrl);
 
     return thisQuestionnaire;
   };
@@ -333,44 +531,40 @@ function QuestionnaireScreen({ questionnaireId }: { questionnaireId: string }) {
 }
 ```
 
-### Custom Backend Storage
+### Custom FHIR Backend Storage
 
 ```typescript
 import { QuestionnaireStorage, QuestionnaireResponse } from '@spezivibe/questionnaire';
-import { apiClient } from '@/lib/api';
+import { fhirClient } from '@/lib/fhir';
 
-class BackendStorageAdapter implements QuestionnaireStorage {
+class FHIRBackendAdapter implements QuestionnaireStorage {
   async save(response: QuestionnaireResponse): Promise<void> {
-    await apiClient.post('/questionnaire-responses', {
-      ...response,
-      // Convert Date to ISO string for JSON
-      completedAt: response.completedAt.toISOString(),
-    });
+    // POST to FHIR server
+    await fhirClient.create(response);
   }
 
   async getAll(): Promise<QuestionnaireResponse[]> {
-    const { data } = await apiClient.get('/questionnaire-responses');
-    return data.map((r: any) => ({
-      ...r,
-      completedAt: new Date(r.completedAt),
-    }));
+    // Search all QuestionnaireResponses
+    const bundle = await fhirClient.search('QuestionnaireResponse', {
+      _sort: '-authored',
+    });
+
+    return bundle.entry?.map(e => e.resource as QuestionnaireResponse) || [];
   }
 
-  async getByQuestionnaireId(id: string): Promise<QuestionnaireResponse[]> {
-    const { data } = await apiClient.get(`/questionnaire-responses?questionnaireId=${id}`);
-    return data.map((r: any) => ({
-      ...r,
-      completedAt: new Date(r.completedAt),
-    }));
+  async getByQuestionnaireId(questionnaireId: string): Promise<QuestionnaireResponse[]> {
+    // Search by questionnaire canonical URL
+    const bundle = await fhirClient.search('QuestionnaireResponse', {
+      questionnaire: questionnaireId,
+      _sort: '-authored',
+    });
+
+    return bundle.entry?.map(e => e.resource as QuestionnaireResponse) || [];
   }
 
   async getById(id: string): Promise<QuestionnaireResponse | null> {
     try {
-      const { data } = await apiClient.get(`/questionnaire-responses/${id}`);
-      return {
-        ...data,
-        completedAt: new Date(data.completedAt),
-      };
+      return await fhirClient.read('QuestionnaireResponse', id);
     } catch {
       return null;
     }
@@ -378,7 +572,7 @@ class BackendStorageAdapter implements QuestionnaireStorage {
 }
 
 // Usage
-const storage = new BackendStorageAdapter();
+const storage = new FHIRBackendAdapter();
 
 const handleResult = async (result: QuestionnaireResult) => {
   if (result.status === 'completed') {
@@ -387,263 +581,104 @@ const handleResult = async (result: QuestionnaireResult) => {
 };
 ```
 
-### Offline-First with Background Sync
-
-```typescript
-import { AsyncStorageAdapter } from '@spezivibe/questionnaire';
-import NetInfo from '@react-native-community/netinfo';
-
-const localStorage = new AsyncStorageAdapter();
-const syncQueue = new SyncQueue();
-
-const handleResult = async (result: QuestionnaireResult) => {
-  if (result.status === 'completed') {
-    try {
-      // Always save locally first
-      await localStorage.save(result.response);
-
-      // Try to sync to backend
-      const networkState = await NetInfo.fetch();
-      if (networkState.isConnected) {
-        try {
-          await api.post('/responses', result.response);
-        } catch (syncError) {
-          // Failed to sync - add to queue for later
-          console.warn('Failed to sync, queuing for later');
-          await syncQueue.add(result.response);
-        }
-      } else {
-        // No internet - queue for later
-        await syncQueue.add(result.response);
-      }
-
-      Alert.alert('Success', 'Your responses have been saved');
-      router.back();
-    } catch (error) {
-      Alert.alert('Error', 'Failed to save responses');
-    }
-  }
-};
-```
-
 ---
 
 ## Complex Questionnaires
 
-### Health Assessment with Scoring
+### Health Assessment with Groups
 
 ```typescript
-import { Questionnaire } from '@spezivibe/questionnaire';
+import { QuestionnaireBuilder } from '@spezivibe/questionnaire';
 
-const healthAssessment: Questionnaire = {
-  id: 'health-assessment',
-  title: 'Weekly Health Check-In',
-  description: 'Help us track your wellness journey',
-  questions: [
+const healthAssessment = new QuestionnaireBuilder('health-assessment')
+  .title('Weekly Health Check-In')
+  .description('Help us track your wellness journey')
+
+  // Physical Health Group
+  .addGroup('physical_health', 'Physical Health', [
     {
-      id: 'overall_health',
-      type: 'scale',
-      title: 'How would you rate your overall health this week?',
-      description: '1 = Poor, 10 = Excellent',
-      min: 1,
-      max: 10,
+      linkId: 'overall_health',
+      type: 'integer',
+      text: 'Rate your overall health this week (1-10)',
       required: true,
-    },
-    {
-      id: 'symptoms',
-      type: 'multipleChoice',
-      title: 'Have you experienced any symptoms?',
-      options: [
-        { label: 'Fatigue', value: 'fatigue' },
-        { label: 'Headache', value: 'headache' },
-        { label: 'Stress', value: 'stress' },
-        { label: 'None', value: 'none' },
+      extension: [
+        { url: 'http://hl7.org/fhir/StructureDefinition/minValue', valueInteger: 1 },
+        { url: 'http://hl7.org/fhir/StructureDefinition/maxValue', valueInteger: 10 },
+        {
+          url: 'http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl',
+          valueCodeableConcept: { coding: [{ code: 'slider' }] },
+        },
       ],
-      required: true,
     },
     {
-      id: 'exercise_days',
-      type: 'scale',
-      title: 'Days of exercise this week?',
-      description: 'At least 30 minutes of moderate activity',
-      min: 0,
-      max: 7,
+      linkId: 'exercise_days',
+      type: 'integer',
+      text: 'Days of exercise this week (0-7)',
       required: true,
+      extension: [
+        { url: 'http://hl7.org/fhir/StructureDefinition/minValue', valueInteger: 0 },
+        { url: 'http://hl7.org/fhir/StructureDefinition/maxValue', valueInteger: 7 },
+      ],
     },
     {
-      id: 'sleep_hours',
-      type: 'scale',
-      title: 'Average hours of sleep per night?',
-      min: 1,
-      max: 12,
+      linkId: 'sleep_hours',
+      type: 'integer',
+      text: 'Average hours of sleep per night',
       required: true,
+      extension: [
+        { url: 'http://hl7.org/fhir/StructureDefinition/minValue', valueInteger: 1 },
+        { url: 'http://hl7.org/fhir/StructureDefinition/maxValue', valueInteger: 12 },
+      ],
     },
+  ])
+
+  // Mental Health Group
+  .addGroup('mental_health', 'Mental Health', [
     {
-      id: 'water_intake',
-      type: 'boolean',
-      title: 'Did you drink at least 8 glasses of water daily?',
+      linkId: 'stress_level',
+      type: 'integer',
+      text: 'Stress level this week (1-10)',
       required: true,
-    },
-    {
-      id: 'notes',
-      type: 'text',
-      title: 'Additional notes or concerns',
-      placeholder: 'Any health concerns you want to share...',
-    },
-  ],
-};
-
-function calculateHealthScore(answers: Record<string, any>): number {
-  let score = 0;
-
-  // Overall health (0-30 points)
-  score += (answers.overall_health / 10) * 30;
-
-  // Exercise (0-20 points)
-  score += (answers.exercise_days / 7) * 20;
-
-  // Sleep (0-20 points)
-  const optimalSleep = 8;
-  const sleepScore = 1 - Math.abs(answers.sleep_hours - optimalSleep) / optimalSleep;
-  score += sleepScore * 20;
-
-  // Water intake (0-15 points)
-  score += answers.water_intake ? 15 : 0;
-
-  // Symptoms (0-15 points)
-  score += answers.symptoms === 'none' ? 15 : 0;
-
-  return Math.round(score);
-}
-
-function HealthAssessmentScreen() {
-  const handleResult = async (result: QuestionnaireResult) => {
-    if (result.status === 'completed') {
-      const { response } = result;
-
-      // Calculate health score
-      const healthScore = calculateHealthScore(response.answers);
-
-      // Save with score
-      const enrichedResponse = {
-        ...response,
-        metadata: {
-          ...response.metadata,
-          healthScore,
-          week: getCurrentWeek(),
+      extension: [
+        { url: 'http://hl7.org/fhir/StructureDefinition/minValue', valueInteger: 1 },
+        { url: 'http://hl7.org/fhir/StructureDefinition/maxValue', valueInteger: 10 },
+        {
+          url: 'http://hl7.org/fhir/StructureDefinition/questionnaire-itemControl',
+          valueCodeableConcept: { coding: [{ code: 'slider' }] },
         },
-      };
+      ],
+    },
+    {
+      linkId: 'mood',
+      type: 'choice',
+      text: 'Overall mood this week',
+      required: true,
+      answerOption: [
+        { valueCoding: { code: 'poor', display: 'Poor' } },
+        { valueCoding: { code: 'fair', display: 'Fair' } },
+        { valueCoding: { code: 'good', display: 'Good' } },
+        { valueCoding: { code: 'excellent', display: 'Excellent' } },
+      ],
+    },
+  ])
 
-      await storage.save(enrichedResponse);
+  .addText('notes', 'Additional notes or concerns')
 
-      // Show personalized feedback
-      if (healthScore < 50) {
-        Alert.alert(
-          'Health Alert',
-          'Your score is low. Consider scheduling a check-up.',
-          [
-            { text: 'Schedule Appointment', onPress: () => router.push('/appointments') },
-            { text: 'Maybe Later', style: 'cancel' },
-          ]
-        );
-      } else if (healthScore >= 80) {
-        Alert.alert(
-          'Great Job!',
-          `Excellent health score: ${healthScore}/100. Keep it up!`
-        );
-      }
-
-      router.back();
-    } else if (result.status === 'cancelled') {
-      router.back();
-    }
-  };
-
-  return (
-    <QuestionnaireForm
-      questionnaire={healthAssessment}
-      onResult={handleResult}
-      submitButtonText="Complete Assessment"
-      completionMessage="Thank you for completing your weekly health check-in!"
-    />
-  );
-}
-```
-
----
-
-## Integration with Task Schedulers
-
-### Scheduled Questionnaires
-
-```typescript
-import { QuestionnaireForm } from '@spezivibe/questionnaire';
-import { useScheduler } from '@/lib/scheduler';
-
-function ScheduledQuestionnaireScreen({ taskId, eventId, questionnaireId }) {
-  const { scheduler } = useScheduler();
-  const questionnaire = getQuestionnaireById(questionnaireId);
-
-  const handleResult = async (result: QuestionnaireResult) => {
-    if (result.status === 'completed') {
-      const event = scheduler.getEventById(taskId, parseInt(eventId, 10));
-
-      // Add scheduling metadata
-      const responseWithMetadata = {
-        ...result.response,
-        metadata: {
-          ...result.response.metadata,
-          taskId,
-          eventId,
-          scheduledTime: event?.scheduledTime,
-          completionDelay: event ? Date.now() - event.scheduledTime.getTime() : 0,
-        },
-      };
-
-      // Save response
-      await storage.save(responseWithMetadata);
-
-      // Mark scheduled task as complete
-      if (event) {
-        await scheduler.completeEvent(event, responseWithMetadata);
-      }
-
-      Alert.alert('Complete', 'Task completed successfully!');
-      router.back();
-    } else if (result.status === 'cancelled') {
-      Alert.alert(
-        'Skip Task?',
-        'Are you sure you want to skip this questionnaire?',
-        [
-          { text: 'Go Back', style: 'cancel' },
-          { text: 'Skip', onPress: () => router.back() },
-        ]
-      );
-    }
-  };
-
-  return (
-    <QuestionnaireForm
-      questionnaire={questionnaire}
-      onResult={handleResult}
-      cancelBehavior="confirm"
-    />
-  );
-}
+  .build();
 ```
 
 ---
 
 ## Pre-filled Forms
 
-### Edit Existing Response
+### Pre-fill from Existing FHIR Response
 
 ```typescript
 import { useState, useEffect } from 'react';
 import { ActivityIndicator } from 'react-native';
 
 function EditResponseScreen({ responseId }: { responseId: string }) {
-  const [response, setResponse] = useState<QuestionnaireResponse | null>(null);
+  const [initialResponse, setInitialResponse] = useState<QuestionnaireResponse | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -653,7 +688,7 @@ function EditResponseScreen({ responseId }: { responseId: string }) {
   const loadResponse = async () => {
     try {
       const data = await storage.getById(responseId);
-      setResponse(data);
+      setInitialResponse(data);
     } catch (error) {
       Alert.alert('Error', 'Failed to load response');
     } finally {
@@ -663,15 +698,11 @@ function EditResponseScreen({ responseId }: { responseId: string }) {
 
   const handleResult = async (result: QuestionnaireResult) => {
     if (result.status === 'completed') {
-      // Update existing response
+      // Update with new ID and timestamp
       const updated: QuestionnaireResponse = {
-        ...response!,
-        answers: result.response.answers,
-        metadata: {
-          ...response!.metadata,
-          lastModified: new Date(),
-          editCount: (response!.metadata?.editCount || 0) + 1,
-        },
+        ...result.response,
+        id: responseId, // Keep original ID
+        authored: new Date().toISOString(),
       };
 
       await storage.save(updated);
@@ -683,12 +714,12 @@ function EditResponseScreen({ responseId }: { responseId: string }) {
   };
 
   if (loading) return <ActivityIndicator />;
-  if (!response) return <ErrorView message="Response not found" />;
+  if (!initialResponse) return <ErrorView message="Response not found" />;
 
   return (
     <QuestionnaireForm
       questionnaire={questionnaire}
-      initialValues={response.answers}
+      initialResponse={initialResponse}  // Pre-fill with FHIR response
       onResult={handleResult}
       submitButtonText="Update Response"
     />
@@ -696,154 +727,15 @@ function EditResponseScreen({ responseId }: { responseId: string }) {
 }
 ```
 
-### Form with Default Values
-
-```typescript
-// Pre-fill with user preferences
-<QuestionnaireForm
-  questionnaire={questionnaire}
-  initialValues={{
-    country: currentUser.country || 'US',
-    language: currentUser.language || 'en',
-    notifications: currentUser.preferences.notifications ?? true,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-  }}
-  onResult={handleResult}
-/>
-```
-
 ---
 
-## Multi-Step Questionnaires
+## Loading FHIR Questionnaires from Backend
 
-### Paginated Long Questionnaire
-
-```typescript
-import { useState } from 'react';
-import { View, Text } from 'react-native';
-
-function MultiStepOnboarding() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [allAnswers, setAllAnswers] = useState<Record<string, any>>({});
-
-  const steps: Questionnaire[] = [
-    {
-      id: 'onboarding-step-1',
-      title: 'Personal Information',
-      description: 'Step 1 of 3',
-      questions: [
-        { id: 'name', type: 'text', title: 'Your name', required: true },
-        { id: 'email', type: 'text', title: 'Email address', required: true },
-      ],
-    },
-    {
-      id: 'onboarding-step-2',
-      title: 'Health History',
-      description: 'Step 2 of 3',
-      questions: [
-        { id: 'conditions', type: 'multipleChoice', title: 'Medical conditions', options: [/* ... */] },
-        { id: 'medications', type: 'text', title: 'Current medications' },
-      ],
-    },
-    {
-      id: 'onboarding-step-3',
-      title: 'Preferences',
-      description: 'Step 3 of 3',
-      questions: [
-        { id: 'notifications', type: 'boolean', title: 'Enable notifications?', required: true },
-        { id: 'frequency', type: 'multipleChoice', title: 'Check-in frequency', options: [/* ... */] },
-      ],
-    },
-  ];
-
-  const handleResult = async (result: QuestionnaireResult) => {
-    if (result.status === 'completed') {
-      // Merge answers from current step
-      const mergedAnswers = {
-        ...allAnswers,
-        ...result.response.answers,
-      };
-
-      if (currentStep < steps.length - 1) {
-        // More steps remaining - save and continue
-        setAllAnswers(mergedAnswers);
-        setCurrentStep(currentStep + 1);
-      } else {
-        // Final step - save everything
-        const finalResponse: QuestionnaireResponse = {
-          id: `onboarding-${Date.now()}`,
-          questionnaireId: 'onboarding',
-          completedAt: new Date(),
-          answers: mergedAnswers,
-          metadata: {
-            userId: currentUser.id,
-            totalSteps: steps.length,
-          },
-        };
-
-        await storage.save(finalResponse);
-        await completeOnboarding(finalResponse);
-
-        router.replace('/home');
-      }
-    } else if (result.status === 'cancelled') {
-      if (currentStep > 0) {
-        // Go back to previous step
-        setCurrentStep(currentStep - 1);
-      } else {
-        // First step - confirm exit
-        Alert.alert(
-          'Exit Onboarding?',
-          'Your progress will not be saved.',
-          [
-            { text: 'Continue', style: 'cancel' },
-            { text: 'Exit', onPress: () => router.back() },
-          ]
-        );
-      }
-    }
-  };
-
-  const progress = ((currentStep + 1) / steps.length) * 100;
-
-  return (
-    <View style={{ flex: 1 }}>
-      {/* Progress indicator */}
-      <View style={{ padding: 16 }}>
-        <Text>Step {currentStep + 1} of {steps.length}</Text>
-        <View style={{ height: 4, backgroundColor: '#E0E0E0', borderRadius: 2, marginTop: 8 }}>
-          <View
-            style={{
-              width: `${progress}%`,
-              height: '100%',
-              backgroundColor: '#007AFF',
-              borderRadius: 2,
-            }}
-          />
-        </View>
-      </View>
-
-      <QuestionnaireForm
-        questionnaire={steps[currentStep]}
-        onResult={handleResult}
-        initialValues={allAnswers}
-        submitButtonText={currentStep === steps.length - 1 ? 'Complete' : 'Next'}
-        cancelButtonText={currentStep > 0 ? 'Back' : 'Cancel'}
-        cancelBehavior={currentStep > 0 ? 'immediate' : 'confirm'}
-      />
-    </View>
-  );
-}
-```
-
----
-
-## Dynamic Questionnaires
-
-### Load from Backend
+### Fetch and Display FHIR Questionnaire
 
 ```typescript
 import { useState, useEffect } from 'react';
+import type { Questionnaire } from '@spezivibe/questionnaire';
 
 function DynamicQuestionnaireScreen({ questionnaireId }: { questionnaireId: string }) {
   const [questionnaire, setQuestionnaire] = useState<Questionnaire | null>(null);
@@ -856,7 +748,8 @@ function DynamicQuestionnaireScreen({ questionnaireId }: { questionnaireId: stri
 
   const loadQuestionnaire = async () => {
     try {
-      const data = await api.get(`/questionnaires/${questionnaireId}`);
+      // Fetch FHIR Questionnaire from your backend
+      const data = await fhirClient.read('Questionnaire', questionnaireId);
       setQuestionnaire(data);
     } catch (err) {
       setError('Failed to load questionnaire');
@@ -867,7 +760,8 @@ function DynamicQuestionnaireScreen({ questionnaireId }: { questionnaireId: stri
 
   const handleResult = async (result: QuestionnaireResult) => {
     if (result.status === 'completed') {
-      await storage.save(result.response);
+      // Post FHIR QuestionnaireResponse to backend
+      await fhirClient.create(result.response);
       router.back();
     } else if (result.status === 'cancelled') {
       router.back();

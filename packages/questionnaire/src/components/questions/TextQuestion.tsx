@@ -1,16 +1,23 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { FormikProps } from 'formik';
-import { Question, QuestionnaireTheme } from '../../types';
+import type { QuestionnaireItem } from 'fhir/r4';
+import { QuestionnaireTheme } from '../../types';
 
 interface TextQuestionProps {
-  question: Question;
+  item: QuestionnaireItem;
   formik: FormikProps<Record<string, unknown>>;
   theme: QuestionnaireTheme;
 }
 
-export function TextQuestion({ question, formik, theme }: TextQuestionProps) {
-  const hasError = formik.touched[question.id] && formik.errors[question.id];
+/**
+ * Renders a text input question
+ * Handles both 'string' (single-line) and 'text' (multi-line) FHIR types
+ */
+export function TextQuestion({ item, formik, theme }: TextQuestionProps) {
+  const linkId = item.linkId!;
+  const hasError = formik.touched[linkId] && formik.errors[linkId];
+  const isMultiline = item.type === 'text';
 
   return (
     <View style={[styles.container, { marginBottom: theme.spacing.lg }]}>
@@ -23,11 +30,11 @@ export function TextQuestion({ question, formik, theme }: TextQuestionProps) {
             marginBottom: theme.spacing.xs,
           },
         ]}>
-        {question.title}
-        {question.required && <Text style={{ color: theme.colors.error }}> *</Text>}
+        {item.text}
+        {item.required && <Text style={{ color: theme.colors.error }}> *</Text>}
       </Text>
 
-      {question.description && (
+      {item._text && (
         <Text
           style={[
             styles.description,
@@ -37,13 +44,15 @@ export function TextQuestion({ question, formik, theme }: TextQuestionProps) {
               marginBottom: theme.spacing.sm,
             },
           ]}>
-          {question.description}
+          {item._text.extension?.[0]?.valueString}
         </Text>
       )}
 
       <TextInput
+        testID={`text-input-${linkId}`}
         style={[
           styles.input,
+          isMultiline && styles.multilineInput,
           {
             backgroundColor: theme.colors.cardBackground,
             color: theme.colors.text,
@@ -54,16 +63,14 @@ export function TextQuestion({ question, formik, theme }: TextQuestionProps) {
             fontSize: theme.fontSize.md,
           },
         ]}
-        placeholder={question.placeholder}
-        placeholderTextColor={theme.colors.textSecondary}
-        value={formik.values[question.id] || ''}
-        onChangeText={formik.handleChange(question.id)}
-        onBlur={formik.handleBlur(question.id)}
-        multiline
-        numberOfLines={3}
-        accessibilityLabel={question.title}
-        accessibilityHint={question.description || `Enter your response for ${question.title}`}
-        accessibilityRequired={question.required}
+        value={(formik.values[linkId] as string) || ''}
+        onChangeText={formik.handleChange(linkId)}
+        onBlur={formik.handleBlur(linkId)}
+        multiline={isMultiline}
+        numberOfLines={isMultiline ? 3 : 1}
+        maxLength={item.maxLength}
+        accessibilityLabel={item.text}
+        accessibilityHint={`Enter your response for ${item.text}`}
       />
 
       {hasError && (
@@ -76,9 +83,8 @@ export function TextQuestion({ question, formik, theme }: TextQuestionProps) {
               marginTop: theme.spacing.xs,
             },
           ]}
-          accessibilityRole="alert"
-          accessibilityLive="polite">
-          {formik.errors[question.id] as string}
+          accessibilityRole="alert">
+          {formik.errors[linkId] as string}
         </Text>
       )}
     </View>
@@ -95,6 +101,9 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
+    minHeight: 44,
+  },
+  multilineInput: {
     minHeight: 80,
     textAlignVertical: 'top',
   },

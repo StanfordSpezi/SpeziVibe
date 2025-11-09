@@ -8,19 +8,19 @@ let DateTimePicker: any = null;
 try {
   DateTimePicker = require('react-native-ui-datepicker').DateTimePicker;
 } catch (e) {
-  console.warn('react-native-ui-datepicker is not installed. DateQuestion will not work.');
+  console.warn('react-native-ui-datepicker is not installed. DateTimeQuestion will not work.');
 }
 
-interface DateQuestionProps {
+interface DateTimeQuestionProps {
   item: QuestionnaireItem;
   formik: FormikProps<Record<string, unknown>>;
   theme: QuestionnaireTheme;
 }
 
 /**
- * Renders a date question (date only, no time)
+ * Renders a dateTime question (date + time)
  */
-export function DateQuestion({ item, formik, theme }: DateQuestionProps) {
+export function DateTimeQuestion({ item, formik, theme }: DateTimeQuestionProps) {
   const linkId = item.linkId!;
   const hasError = formik.touched[linkId] && formik.errors[linkId];
   const currentValue = formik.values[linkId];
@@ -84,12 +84,12 @@ export function DateQuestion({ item, formik, theme }: DateQuestionProps) {
           mode="single"
           date={selectedDate}
           onChange={handleDateChange}
+          timePicker={true}
           selectedItemColor={theme.colors.primary}
           headerButtonColor={theme.colors.primary}
           calendarTextStyle={{ color: theme.colors.text }}
           headerTextStyle={{ color: theme.colors.text }}
           weekDaysTextStyle={{ color: theme.colors.textSecondary }}
-          todayTextStyle={{ color: theme.colors.primary }}
         />
       </View>
 

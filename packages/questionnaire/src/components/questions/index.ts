@@ -1,5 +1,10 @@
-export { TextQuestion } from './TextQuestion';
-export { ScaleQuestion } from './ScaleQuestion';
-export { MultipleChoiceQuestion } from './MultipleChoiceQuestion';
 export { BooleanQuestion } from './BooleanQuestion';
+export { TextQuestion } from './TextQuestion';
+export { ChoiceQuestion } from './ChoiceQuestion';
+export { IntegerQuestion } from './IntegerQuestion';
+export { DecimalQuestion } from './DecimalQuestion';
 export { DateQuestion } from './DateQuestion';
+export { DateTimeQuestion } from './DateTimeQuestion';
+export { TimeQuestion } from './TimeQuestion';
+export { DisplayQuestion } from './DisplayQuestion';
+export { GroupQuestion } from './GroupQuestion';

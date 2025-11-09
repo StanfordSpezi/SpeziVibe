@@ -1,16 +1,18 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { FormikProps } from 'formik';
-import { Question, QuestionnaireTheme } from '../../types';
+import type { QuestionnaireItem } from 'fhir/r4';
+import { QuestionnaireTheme } from '../../types';
 
 interface BooleanQuestionProps {
-  question: Question;
+  item: QuestionnaireItem;
   formik: FormikProps<Record<string, unknown>>;
   theme: QuestionnaireTheme;
 }
 
-export function BooleanQuestion({ question, formik, theme }: BooleanQuestionProps) {
-  const hasError = formik.touched[question.id] && formik.errors[question.id];
+export function BooleanQuestion({ item, formik, theme }: BooleanQuestionProps) {
+  const linkId = item.linkId!;
+  const hasError = formik.touched[linkId] && formik.errors[linkId];
 
   return (
     <View style={[styles.container, { marginBottom: theme.spacing.lg }]}>
@@ -23,11 +25,11 @@ export function BooleanQuestion({ question, formik, theme }: BooleanQuestionProp
             marginBottom: theme.spacing.xs,
           },
         ]}>
-        {question.title}
-        {question.required && <Text style={{ color: theme.colors.error }}> *</Text>}
+        {item.text}
+        {item.required && <Text style={{ color: theme.colors.error }}> *</Text>}
       </Text>
 
-      {question.description && (
+      {item._text && (
         <Text
           style={[
             styles.description,
@@ -37,7 +39,7 @@ export function BooleanQuestion({ question, formik, theme }: BooleanQuestionProp
               marginBottom: theme.spacing.sm,
             },
           ]}>
-          {question.description}
+          {item._text.extension?.[0]?.valueString}
         </Text>
       )}
 
@@ -46,7 +48,7 @@ export function BooleanQuestion({ question, formik, theme }: BooleanQuestionProp
           { label: 'Yes', value: true },
           { label: 'No', value: false },
         ].map((option) => {
-          const isSelected = formik.values[question.id] === option.value;
+          const isSelected = formik.values[linkId] === option.value;
           return (
             <Pressable
               key={option.label}
@@ -63,9 +65,9 @@ export function BooleanQuestion({ question, formik, theme }: BooleanQuestionProp
                   transform: [{ scale: pressed ? 0.98 : 1 }],
                 },
               ]}
-              onPress={() => formik.setFieldValue(question.id, option.value)}
+              onPress={() => formik.setFieldValue(linkId, option.value)}
               accessibilityRole="button"
-              accessibilityLabel={`${option.label} for ${question.title}`}
+              accessibilityLabel={`${option.label} for ${item.text}`}
               accessibilityHint={`Select ${option.label.toLowerCase()} as answer`}
               accessibilityState={{ selected: isSelected }}>
               <Text
@@ -93,9 +95,8 @@ export function BooleanQuestion({ question, formik, theme }: BooleanQuestionProp
               marginTop: theme.spacing.xs,
             },
           ]}
-          accessibilityRole="alert"
-          accessibilityLive="polite">
-          {formik.errors[question.id] as string}
+          accessibilityRole="alert">
+          {formik.errors[linkId] as string}
         </Text>
       )}
     </View>

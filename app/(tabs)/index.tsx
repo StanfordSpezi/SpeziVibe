@@ -9,6 +9,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Link } from 'expo-router';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useAuth } from '@/lib/services/auth-context';
 
 const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
 
@@ -16,6 +17,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { logout, isAuthenticated } = useAuth();
 
   const handleViewOnboarding = async () => {
     Alert.alert(
@@ -35,6 +37,29 @@ export default function HomeScreen() {
               }, 150);
             } catch (error) {
               // Silent error
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleLogout = async () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+              // The root layout will automatically redirect to sign-in
+            } catch (error) {
+              console.error('Logout failed:', error);
+              Alert.alert('Error', 'Failed to sign out. Please try again.');
             }
           },
         },
@@ -116,6 +141,26 @@ export default function HomeScreen() {
           </ThemedText>
         </Pressable>
       </ThemedView>
+
+      {isAuthenticated && (
+        <ThemedView style={styles.stepContainer}>
+          <ThemedText type="subtitle">Account</ThemedText>
+          <ThemedText>
+            You are currently signed in. Tap the button below to sign out.
+          </ThemedText>
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              styles.logoutButton,
+              { opacity: pressed ? 0.8 : 1, marginTop: 12 },
+            ]}
+            onPress={handleLogout}>
+            <ThemedText style={[styles.buttonText, { color: '#DC3545' }]}>
+              Sign Out
+            </ThemedText>
+          </Pressable>
+        </ThemedView>
+      )}
     </ParallaxScrollView>
   );
 }
@@ -143,6 +188,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  logoutButton: {
+    backgroundColor: 'transparent',
+    borderWidth: 2,
+    borderColor: '#DC3545',
   },
   buttonText: {
     fontSize: 15,

@@ -34,32 +34,39 @@ export default function QuestionnaireScreen() {
     switch (result.status) {
       case 'completed': {
         try {
-          // Add app-specific metadata to the response
-          const responseWithMetadata = {
-            ...result.response,
+          const response = result.response;
+
+          // Generate a unique ID for this response if it doesn't have one
+          if (!response.id) {
+            response.id = `qr-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+          }
+
+          // Store response with app-specific metadata separately
+          const responseRecord = {
+            response,
             metadata: {
-              ...result.response.metadata,
               taskId,
               eventId,
+              savedAt: new Date().toISOString(),
             },
           };
 
-          // Store response in AsyncStorage (for offline support/backup)
+          // Store in AsyncStorage (for offline support/backup)
           const existingResponses = await AsyncStorage.getItem(RESPONSES_KEY);
           const responses = existingResponses ? JSON.parse(existingResponses) : [];
-          responses.push(responseWithMetadata);
+          responses.push(responseRecord);
           await AsyncStorage.setItem(RESPONSES_KEY, JSON.stringify(responses));
 
           // Save to Firebase through the backend service
           if (backend) {
-            await backend.saveQuestionnaireResponse(responseWithMetadata);
+            await backend.saveQuestionnaireResponse(response);
           }
 
           // Mark the task as complete if we have the necessary info
           if (taskId && eventId && scheduler) {
             const event = scheduler.getEventById(taskId, parseInt(eventId, 10));
             if (event) {
-              await scheduler.completeEvent(event, responseWithMetadata);
+              await scheduler.completeEvent(event, response);
             }
           }
 
@@ -77,7 +84,6 @@ export default function QuestionnaireScreen() {
       }
 
       case 'cancelled':
-        // User cancelled - just go back
         router.back();
         break;
 

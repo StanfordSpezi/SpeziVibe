@@ -2,7 +2,8 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import { QuestionnaireForm } from '../../components/QuestionnaireForm';
-import { Questionnaire, QuestionnaireResult } from '../../types';
+import { QuestionnaireResult } from '../../types';
+import type { Questionnaire } from 'fhir/r4';
 import { defaultLightTheme } from '../../theme/default-theme';
 
 // Mock Alert
@@ -10,23 +11,32 @@ jest.spyOn(Alert, 'alert');
 
 describe('QuestionnaireForm', () => {
   const mockQuestionnaire: Questionnaire = {
-    id: 'test-questionnaire',
+    resourceType: 'Questionnaire',
+    status: 'active',
     title: 'Test Survey',
     description: 'This is a test survey',
-    questions: [
+    item: [
       {
-        id: 'name',
+        linkId: 'name',
         type: 'text',
-        title: 'Your name',
+        text: 'Your name',
         required: true,
       },
       {
-        id: 'rating',
-        type: 'scale',
-        title: 'Rate us',
-        min: 1,
-        max: 5,
+        linkId: 'rating',
+        type: 'integer',
+        text: 'Rate us',
         required: true,
+        extension: [
+          {
+            url: 'http://hl7.org/fhir/StructureDefinition/minValue',
+            valueInteger: 1,
+          },
+          {
+            url: 'http://hl7.org/fhir/StructureDefinition/maxValue',
+            valueInteger: 5,
+          },
+        ],
       },
     ],
   };
@@ -49,8 +59,8 @@ describe('QuestionnaireForm', () => {
       <QuestionnaireForm questionnaire={mockQuestionnaire} onResult={jest.fn()} />
     );
 
-    expect(getByText('Your name')).toBeTruthy();
-    expect(getByText('Rate us')).toBeTruthy();
+    expect(getByText(/Your name/)).toBeTruthy();
+    expect(getByText(/Rate us/)).toBeTruthy();
   });
 
   it('should render submit button with default text', () => {
@@ -138,7 +148,7 @@ describe('QuestionnaireForm', () => {
     expect(submitButton).toBeTruthy();
   });
 
-  it('should show alert when submitting with validation errors', async () => {
+  it('should not submit when there are validation errors', async () => {
     const onResult = jest.fn();
     const { getByText } = render(
       <QuestionnaireForm questionnaire={mockQuestionnaire} onResult={onResult} />
@@ -148,12 +158,11 @@ describe('QuestionnaireForm', () => {
     const submitButton = getByText('Submit');
     fireEvent.press(submitButton);
 
-    await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith(
-        'Incomplete Form',
-        'Please fill in all required fields'
-      );
-    });
+    // Wait a bit to ensure no submission happens
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // onResult should not be called when validation fails
+    expect(onResult).not.toHaveBeenCalled();
   });
 
   it('should apply custom theme', () => {
@@ -210,17 +219,18 @@ describe('QuestionnaireForm', () => {
     expect(onResult).toEqual(expect.any(Function));
   });
 
-  it('should create response with correct structure', async () => {
+  it('should create response with correct FHIR structure', async () => {
     const onResult = jest.fn();
     const questionnaire: Questionnaire = {
-      id: 'simple',
+      resourceType: 'Questionnaire',
+      status: 'active',
       title: 'Simple',
       description: 'Simple questionnaire',
-      questions: [
+      item: [
         {
-          id: 'q1',
+          linkId: 'q1',
           type: 'boolean',
-          title: 'Agree?',
+          text: 'Agree?',
           required: false,
         },
       ],
@@ -236,17 +246,101 @@ describe('QuestionnaireForm', () => {
     // Submit
     fireEvent.press(getByText('Submit'));
 
-    // Response should be created with proper structure
+    // Response should be created with proper FHIR structure
     await waitFor(() => {
       if (onResult.mock.calls.length > 0) {
         const result: QuestionnaireResult = onResult.mock.calls[0][0];
         if (result.status === 'completed') {
-          expect(result.response.id).toBeDefined();
-          expect(result.response.questionnaireId).toBe('simple');
-          expect(result.response.completedAt).toBeInstanceOf(Date);
-          expect(result.response.answers).toBeDefined();
+          expect(result.response.resourceType).toBe('QuestionnaireResponse');
+          expect(result.response.status).toBe('completed');
+          expect(result.response.authored).toBeDefined();
+          expect(result.response.item).toBeDefined();
         }
       }
     });
+  });
+
+  it('should handle conditional questions with enableWhen', () => {
+    const conditionalQuestionnaire: Questionnaire = {
+      resourceType: 'Questionnaire',
+      status: 'active',
+      title: 'Conditional Survey',
+      item: [
+        {
+          linkId: 'has-symptoms',
+          type: 'boolean',
+          text: 'Do you have symptoms?',
+          required: true,
+        },
+        {
+          linkId: 'describe-symptoms',
+          type: 'text',
+          text: 'Please describe your symptoms',
+          required: false,
+          enableWhen: [
+            {
+              question: 'has-symptoms',
+              operator: '=',
+              answerBoolean: true,
+            },
+          ],
+        },
+      ],
+    };
+
+    const { getByText } = render(
+      <QuestionnaireForm questionnaire={conditionalQuestionnaire} onResult={jest.fn()} />
+    );
+
+    expect(getByText(/Do you have symptoms\?/)).toBeTruthy();
+  });
+
+  it('should handle questionnaire with groups', () => {
+    const groupedQuestionnaire: Questionnaire = {
+      resourceType: 'Questionnaire',
+      status: 'active',
+      title: 'Grouped Survey',
+      item: [
+        {
+          linkId: 'demographics',
+          type: 'group',
+          text: 'Demographics',
+          item: [
+            {
+              linkId: 'age',
+              type: 'integer',
+              text: 'What is your age?',
+              required: true,
+            },
+            {
+              linkId: 'gender',
+              type: 'choice',
+              text: 'What is your gender?',
+              required: false,
+              answerOption: [
+                {
+                  valueCoding: {
+                    code: 'male',
+                    display: 'Male',
+                  },
+                },
+                {
+                  valueCoding: {
+                    code: 'female',
+                    display: 'Female',
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const { getByText } = render(
+      <QuestionnaireForm questionnaire={groupedQuestionnaire} onResult={jest.fn()} />
+    );
+
+    expect(getByText('Demographics')).toBeTruthy();
   });
 });

@@ -36,7 +36,6 @@ export class QuestionnaireErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log error for debugging
     console.error('Questionnaire Error:', error);
     console.error('Error Info:', errorInfo);
 
@@ -50,12 +49,10 @@ export class QuestionnaireErrorBoundary extends React.Component<Props, State> {
 
   render() {
     if (this.state.hasError && this.state.error) {
-      // If custom fallback is provided, use it
       if (this.props.fallback) {
         return this.props.fallback(this.state.error, this.resetError);
       }
 
-      // Default fallback UI
       const theme = this.props.theme || defaultLightTheme;
 
       return (

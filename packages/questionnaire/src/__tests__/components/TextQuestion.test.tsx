@@ -2,82 +2,142 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { Formik } from 'formik';
 import { TextQuestion } from '../../components/questions/TextQuestion';
-import { Question } from '../../types';
+import type { QuestionnaireItem } from 'fhir/r4';
 import { defaultLightTheme } from '../../theme/default-theme';
 
 describe('TextQuestion', () => {
-  const mockQuestion: Question = {
-    id: 'test-text',
+  const mockTextItem: QuestionnaireItem = {
+    linkId: 'test-text',
     type: 'text',
-    title: 'Test Question',
-    description: 'Test description',
-    placeholder: 'Enter text here...',
+    text: 'Test Question',
     required: true,
+    _text: {
+      extension: [
+        {
+          url: 'http://hl7.org/fhir/StructureDefinition/rendering-markdown',
+          valueString: 'Test description',
+        },
+      ],
+    },
   };
 
-  const renderWithFormik = (question: Question, initialValues = {}) => {
+  const mockStringItem: QuestionnaireItem = {
+    linkId: 'test-string',
+    type: 'string',
+    text: 'String Question',
+    maxLength: 100,
+    required: false,
+  };
+
+  const renderWithFormik = (item: QuestionnaireItem, initialValues = {}) => {
     return render(
       <Formik initialValues={initialValues} onSubmit={jest.fn()}>
-        {(formik) => <TextQuestion question={question} formik={formik} theme={defaultLightTheme} />}
+        {(formik) => <TextQuestion item={item} formik={formik} theme={defaultLightTheme} />}
       </Formik>
     );
   };
 
-  it('should render question title', () => {
-    const { getByText } = renderWithFormik(mockQuestion);
-    expect(getByText('Test Question')).toBeTruthy();
-  });
-
-  it('should render question description', () => {
-    const { getByText } = renderWithFormik(mockQuestion);
-    expect(getByText('Test description')).toBeTruthy();
-  });
-
-  it('should render required asterisk', () => {
-    const { getByText } = renderWithFormik(mockQuestion);
-    expect(getByText('*')).toBeTruthy();
-  });
-
-  it('should not render required asterisk when not required', () => {
-    const optionalQuestion = { ...mockQuestion, required: false };
-    const { queryByText } = renderWithFormik(optionalQuestion);
-    expect(queryByText('*')).toBeNull();
-  });
-
-  it('should render placeholder text', () => {
-    const { getByPlaceholderText } = renderWithFormik(mockQuestion);
-    expect(getByPlaceholderText('Enter text here...')).toBeTruthy();
-  });
-
-  it('should update formik value on text change', () => {
-    const { getByPlaceholderText } = renderWithFormik(mockQuestion);
-    const input = getByPlaceholderText('Enter text here...');
-
-    fireEvent.changeText(input, 'New text value');
-
-    // Value should be in the input
-    expect(input.props.value).toBe('New text value');
-  });
-
-  it('should display initial value', () => {
-    const { getByPlaceholderText } = renderWithFormik(mockQuestion, {
-      'test-text': 'Initial value',
+  describe('text type (multi-line)', () => {
+    it('should render question text', () => {
+      const { getByText } = renderWithFormik(mockTextItem);
+      expect(getByText(/Test Question/)).toBeTruthy();
     });
-    const input = getByPlaceholderText('Enter text here...');
 
-    expect(input.props.value).toBe('Initial value');
+    it('should render description from extension', () => {
+      const { getByText } = renderWithFormik(mockTextItem);
+      expect(getByText('Test description')).toBeTruthy();
+    });
+
+    it('should render required asterisk', () => {
+      const { getByText } = renderWithFormik(mockTextItem);
+      expect(getByText('*')).toBeTruthy();
+    });
+
+    it('should be multiline', () => {
+      const { getByTestId } = renderWithFormik(mockTextItem);
+      const input = getByTestId('text-input-test-text');
+      expect(input.props.multiline).toBe(true);
+    });
+
+    it('should update formik value on text change', () => {
+      const { getByTestId } = renderWithFormik(mockTextItem);
+      const input = getByTestId('text-input-test-text');
+
+      fireEvent.changeText(input, 'New text value');
+
+      expect(input.props.value).toBe('New text value');
+    });
+
+    it('should display initial value', () => {
+      const { getByTestId } = renderWithFormik(mockTextItem, {
+        'test-text': 'Initial value',
+      });
+      const input = getByTestId('text-input-test-text');
+
+      expect(input.props.value).toBe('Initial value');
+    });
   });
 
-  it('should not render description if not provided', () => {
-    const questionWithoutDesc = { ...mockQuestion, description: undefined };
-    const { queryByText } = renderWithFormik(questionWithoutDesc);
-    expect(queryByText('Test description')).toBeNull();
+  describe('string type (single-line)', () => {
+    it('should render question text', () => {
+      const { getByText } = renderWithFormik(mockStringItem);
+      expect(getByText('String Question')).toBeTruthy();
+    });
+
+    it('should not render asterisk when not required', () => {
+      const { queryByText } = renderWithFormik(mockStringItem);
+      expect(queryByText('*')).toBeNull();
+    });
+
+    it('should be single-line', () => {
+      const { getByTestId } = renderWithFormik(mockStringItem);
+      const input = getByTestId('text-input-test-string');
+      expect(input.props.multiline).toBe(false);
+    });
+
+    it('should respect maxLength', () => {
+      const { getByTestId } = renderWithFormik(mockStringItem);
+      const input = getByTestId('text-input-test-string');
+      expect(input.props.maxLength).toBe(100);
+    });
+
+    it('should update formik value on text change', () => {
+      const { getByTestId } = renderWithFormik(mockStringItem);
+      const input = getByTestId('text-input-test-string');
+
+      fireEvent.changeText(input, 'Short text');
+
+      expect(input.props.value).toBe('Short text');
+    });
   });
 
-  it('should be multiline', () => {
-    const { getByPlaceholderText } = renderWithFormik(mockQuestion);
-    const input = getByPlaceholderText('Enter text here...');
+  describe('without description', () => {
+    it('should not render description if not provided', () => {
+      const itemWithoutDesc: QuestionnaireItem = {
+        linkId: 'no-desc',
+        type: 'text',
+        text: 'Question without description',
+        required: false,
+      };
 
-    expect(input.props.multiline).toBe(true);
+      const { queryByText } = renderWithFormik(itemWithoutDesc);
+      expect(queryByText('Test description')).toBeNull();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should display error message when touched and has error', () => {
+      const { getByTestId, getByText } = render(
+        <Formik
+          initialValues={{ 'test-text': '' }}
+          initialErrors={{ 'test-text': 'This field is required' }}
+          initialTouched={{ 'test-text': true }}
+          onSubmit={jest.fn()}>
+          {(formik) => <TextQuestion item={mockTextItem} formik={formik} theme={defaultLightTheme} />}
+        </Formik>
+      );
+
+      expect(getByText('This field is required')).toBeTruthy();
+    });
   });
 });

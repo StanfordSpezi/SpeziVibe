@@ -1,11 +1,10 @@
-// Re-export types from the @spezivibe/questionnaire package
+// Re-export FHIR R4 types from the @spezivibe/questionnaire package
 export type {
-  QuestionType,
-  QuestionOption,
-  Question,
   Questionnaire,
   QuestionnaireResponse,
+  QuestionnaireItem,
   QuestionnaireTheme,
-  QuestionnaireStorage,
   QuestionnaireFormProps,
+  QuestionnaireResult,
+  CancelBehavior,
 } from '@spezivibe/questionnaire';

@@ -1,16 +1,26 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { FormikProps } from 'formik';
-import { Question, QuestionnaireTheme } from '../../types';
+import type { QuestionnaireItem } from 'fhir/r4';
+import { QuestionnaireTheme } from '../../types';
 
-interface MultipleChoiceQuestionProps {
-  question: Question;
+interface ChoiceQuestionProps {
+  item: QuestionnaireItem;
   formik: FormikProps<Record<string, unknown>>;
   theme: QuestionnaireTheme;
 }
 
-export function MultipleChoiceQuestion({ question, formik, theme }: MultipleChoiceQuestionProps) {
-  const hasError = formik.touched[question.id] && formik.errors[question.id];
+/**
+ * Renders a choice (single-select) question
+ * Handles FHIR 'choice' type with answerOption
+ */
+export function ChoiceQuestion({ item, formik, theme }: ChoiceQuestionProps) {
+  const linkId = item.linkId!;
+  const hasError = formik.touched[linkId] && formik.errors[linkId];
+
+  if (!item.answerOption || item.answerOption.length === 0) {
+    return null;
+  }
 
   return (
     <View style={[styles.container, { marginBottom: theme.spacing.lg }]}>
@@ -23,11 +33,11 @@ export function MultipleChoiceQuestion({ question, formik, theme }: MultipleChoi
             marginBottom: theme.spacing.xs,
           },
         ]}>
-        {question.title}
-        {question.required && <Text style={{ color: theme.colors.error }}> *</Text>}
+        {item.text}
+        {item.required && <Text style={{ color: theme.colors.error }}> *</Text>}
       </Text>
 
-      {question.description && (
+      {item._text && (
         <Text
           style={[
             styles.description,
@@ -37,16 +47,22 @@ export function MultipleChoiceQuestion({ question, formik, theme }: MultipleChoi
               marginBottom: theme.spacing.sm,
             },
           ]}>
-          {question.description}
+          {item._text.extension?.[0]?.valueString}
         </Text>
       )}
 
       <View style={[styles.optionsContainer, { gap: theme.spacing.sm }]}>
-        {question.options?.map((option) => {
-          const isSelected = formik.values[question.id] === option.value;
+        {item.answerOption.map((option, index) => {
+          // Get the value - can be valueCoding, valueInteger, valueString, etc.
+          const coding = option.valueCoding;
+          const value = option.valueInteger ?? option.valueString ?? coding?.code;
+          const display = coding?.display || value?.toString() || `Option ${index + 1}`;
+
+          const isSelected = formik.values[linkId] === value;
+
           return (
             <Pressable
-              key={option.value.toString()}
+              key={value?.toString() || index}
               style={({ pressed }) => [
                 styles.optionButton,
                 {
@@ -61,10 +77,10 @@ export function MultipleChoiceQuestion({ question, formik, theme }: MultipleChoi
                   transform: [{ scale: pressed ? 0.98 : 1 }],
                 },
               ]}
-              onPress={() => formik.setFieldValue(question.id, option.value)}
+              onPress={() => formik.setFieldValue(linkId, value)}
               accessibilityRole="button"
-              accessibilityLabel={option.label}
-              accessibilityHint={`Select ${option.label} for ${question.title}`}
+              accessibilityLabel={display}
+              accessibilityHint={`Select ${display}`}
               accessibilityState={{ selected: isSelected }}>
               <Text
                 style={[
@@ -74,7 +90,7 @@ export function MultipleChoiceQuestion({ question, formik, theme }: MultipleChoi
                     fontSize: theme.fontSize.md,
                   },
                 ]}>
-                {option.label}
+                {display}
               </Text>
             </Pressable>
           );
@@ -91,9 +107,8 @@ export function MultipleChoiceQuestion({ question, formik, theme }: MultipleChoi
               marginTop: theme.spacing.xs,
             },
           ]}
-          accessibilityRole="alert"
-          accessibilityLive="polite">
-          {formik.errors[question.id] as string}
+          accessibilityRole="alert">
+          {formik.errors[linkId] as string}
         </Text>
       )}
     </View>

@@ -252,7 +252,7 @@ export class FirebaseBackend implements BackendService {
       return;
     }
 
-    const responseId = response.id || `${response.questionnaireId}-${Date.now()}`;
+    const responseId = response.id || `qr-${Date.now()}`;
     // Remove undefined values before saving
     const serialized = this.removeUndefined(response);
     await setDoc(
@@ -265,16 +265,10 @@ export class FirebaseBackend implements BackendService {
     if (!this.db || !this.userId) return [];
 
     const collectionRef = collection(this.db, `users/${this.userId}/questionnaire-responses`);
-    const q = taskId ? query(collectionRef, where('metadata.taskId', '==', taskId)) : collectionRef;
-
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(
-      (doc) =>
-        ({
-          ...doc.data(),
-          completedAt: doc.data().completedAt.toDate(),
-        }) as QuestionnaireResponse
-    );
+    // Note: taskId filtering would require storing responses with metadata in a wrapper
+    // For now, return all responses and filter client-side if needed
+    const snapshot = await getDocs(collectionRef);
+    return snapshot.docs.map((doc) => doc.data() as QuestionnaireResponse);
   }
 
   async syncToRemote(): Promise<void> {
