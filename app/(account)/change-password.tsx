@@ -1,0 +1,181 @@
+import {
+  StyleSheet,
+  ScrollView,
+  View,
+  Pressable,
+  Alert,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { ChangePasswordForm } from '@spezivibe/account';
+import { Ionicons } from '@expo/vector-icons';
+
+export default function ChangePasswordScreen() {
+  const router = useRouter();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
+  const handleClose = () => router.navigate('/(tabs)');
+
+  const handleError = (error: Error) => {
+    Alert.alert('Error', error.message || 'Failed to change password. Please try again.');
+  };
+
+  return (
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: isDark ? '#000' : '#f2f2f7' }]}>
+      <ThemedView style={styles.header}>
+        <ThemedText type="title" style={styles.headerTitle}>
+          Change Password
+        </ThemedText>
+        <Pressable
+          onPress={handleClose}
+          style={({ pressed }) => [
+            styles.closeButton,
+            { opacity: pressed ? 0.5 : 1 },
+          ]}
+          accessibilityLabel="Close"
+          accessibilityRole="button"
+        >
+          <Ionicons
+            name="close"
+            size={28}
+            color={isDark ? '#fff' : '#000'}
+          />
+        </Pressable>
+      </ThemedView>
+
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <ThemedView style={styles.container}>
+          {/* Information Card */}
+          <View
+            style={[
+              styles.infoCard,
+              {
+                backgroundColor: isDark ? 'rgba(184, 58, 75, 0.15)' : 'rgba(140, 21, 21, 0.1)',
+                borderColor: isDark ? 'rgba(184, 58, 75, 0.3)' : 'rgba(140, 21, 21, 0.2)',
+              },
+            ]}
+          >
+            <Ionicons
+              name="information-circle"
+              size={24}
+              color={isDark ? '#B83A4B' : '#8C1515'}
+              style={styles.infoIcon}
+            />
+            <ThemedText style={styles.infoText}>
+              For your security, please enter your current password to make changes.
+            </ThemedText>
+          </View>
+
+          <ChangePasswordForm
+            onSuccess={handleClose}
+            onError={handleError}
+            containerStyle={styles.form}
+            inputStyle={[
+              styles.input,
+              {
+                backgroundColor: isDark ? '#000' : '#f5f5f5',
+                color: isDark ? '#fff' : '#000',
+                borderColor: isDark ? '#333' : '#e0e0e0',
+              },
+            ]}
+            labelStyle={styles.label}
+            buttonStyle={[
+              styles.saveButton,
+              { backgroundColor: isDark ? '#B83A4B' : '#8C1515' },
+            ]}
+            buttonTextStyle={[
+              styles.saveButtonText,
+              { color: isDark ? '#000' : '#fff' },
+            ]}
+            buttonText="Change Password"
+            showRequirements={true}
+          />
+        </ThemedView>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#ccc',
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+  },
+  closeButton: {
+    padding: 4,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 32,
+  },
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  infoCard: {
+    flexDirection: 'row',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+  },
+  infoIcon: {
+    marginRight: 12,
+    marginTop: 2,
+  },
+  infoText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.9,
+  },
+  form: {
+    width: '100%',
+  },
+  label: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+  },
+  saveButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    gap: 8,
+  },
+  saveButtonText: {
+    fontSize: 17,
+    fontWeight: '600',
+  },
+});

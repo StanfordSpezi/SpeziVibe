@@ -28,19 +28,20 @@ Inspired by Stanford Spezi, the **Standard** is the central orchestrator that ma
 
 ```typescript
 app/_layout.tsx:
-  <StandardProvider>              // Step 1: Initialize backend
+  <StandardProvider>              // Step 1: Initialize backend & accountService
     <SchedulerProvider>           // Step 2: Initialize scheduler using backend
-      <AuthProvider>              // Step 3: Check auth status using backend
+      <AccountProvider>           // Step 3: Provide auth UI components & state
         <App />                   // Step 4: Render app when all ready
-      </AuthProvider>
+      </AccountProvider>
     </SchedulerProvider>
   </StandardProvider>
 ```
 
 **Why this order?**
-- Standard must initialize first (provides backend)
-- Scheduler and Auth depend on backend
-- Both can initialize in parallel (no dependency on each other)
+- Standard must initialize first (provides backend and accountService)
+- Standard syncs user ID from accountService to backend automatically
+- Scheduler depends on backend for data storage
+- AccountProvider wraps accountService to provide React hooks/components
 - Children render during loading for smooth UX
 
 ### Backend System Architecture
@@ -48,23 +49,38 @@ app/_layout.tsx:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      Application Layer                       │
-│              (Scheduler, Auth, Questionnaires)              │
-└───────────────────────────┬─────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   Standard (Backend Service)                 │
-│     (Single source of truth for data operations)            │
-└───────────────────────────┬─────────────────────────────────┘
-                            │
-          ┌─────────────────┴─────────────────┐
-          │                                   │
-          ▼                                   ▼
-┌──────────────────┐              ┌──────────────────┐
-│  LocalStorage    │              │    Firebase      │
-│    Backend       │              │    Backend       │
-└──────────────────┘              └──────────────────┘
+│              (Scheduler, Auth UI, Questionnaires)           │
+└─────────────┬────────────────────────────────┬──────────────┘
+              │                                │
+              ▼                                ▼
+┌──────────────────────────┐   ┌──────────────────────────────┐
+│  BackendService          │   │    AccountService            │
+│  (Data Storage)          │   │    (Authentication)          │
+│  - Tasks                 │   │    - Login/Register/Logout   │
+│  - Outcomes              │   │    - Profile Management      │
+│  - Questionnaire Data    │   │    - Password Reset          │
+└──────────┬───────────────┘   └──────────────┬───────────────┘
+           │                                  │
+           │        ┌─────────────────────────┘
+           │        │  User ID sync
+           │        ▼
+           │   ┌─────────────────────────────┐
+           │   │        Standard             │
+           │   │   (Orchestrator)            │
+           │   └─────────────────────────────┘
+           │
+┌──────────┴───────────┐              ┌────────────────────┐
+│  LocalStorage        │              │    Firebase        │
+│  Backend             │              │    Backend         │
+│  (AsyncStorage)      │              │    (Firestore)     │
+└──────────────────────┘              └────────────────────┘
 ```
+
+**Separation of Concerns**:
+- **AccountService**: Handles ALL authentication and profile management
+- **BackendService**: Handles ONLY data storage (tasks, outcomes, questionnaires)
+- **Standard**: Coordinates by syncing user ID from AccountService to BackendService
+- **No Overlap**: Authentication never touches backend; backend never handles auth
 
 ## Project Structure
 
@@ -93,16 +109,25 @@ spezivibe/
 │   ├── themed-*.tsx             # Theme-aware components
 │   ├── calendar-strip.tsx       # Calendar navigation
 │   └── questionnaire-form.tsx   # Dynamic form component
+├── hooks/                       # Shared React hooks
+│   ├── use-color-scheme.ts     # Theme detection
+│   ├── use-theme-color.ts      # Color utilities
+│   ├── use-onboarding-status.ts # Onboarding completion check
+│   └── use-auto-skip-if-authenticated.ts # Auth skip logic
 ├── lib/                         # Business logic modules
-│   ├── services/                # Backend and auth services
+│   ├── constants.ts            # App-wide constants
+│   ├── services/                # Backend services
 │   │   ├── standard-context.tsx # The Standard (core orchestrator)
-│   │   ├── auth-context.tsx    # Authentication module
+│   │   ├── account-service-factory.ts # Creates account service instances
 │   │   ├── backend-factory.ts  # Creates backend instances
 │   │   ├── config.ts           # Backend configuration
 │   │   ├── types.ts            # Shared type definitions
 │   │   ├── backends/           # Backend implementations
 │   │   │   ├── local-storage.ts # Local AsyncStorage backend
 │   │   │   └── firebase.ts     # Firebase backend
+│   │   ├── utils/              # Shared utilities
+│   │   │   ├── task-serialization.ts # Task serialization helpers
+│   │   │   └── object-utils.ts # removeUndefined utility
 │   │   └── README.md           # Backend documentation
 │   ├── scheduler/               # Task scheduling system
 │   │   ├── types.ts            # TypeScript definitions
@@ -115,6 +140,20 @@ spezivibe/
 │       ├── types.ts            # TypeScript definitions
 │       ├── sample-questionnaires.ts  # Predefined questionnaires
 │       └── index.ts            # Module exports
+├── packages/                    # Reusable npm packages
+│   ├── account/                # @spezivibe/account package
+│   │   ├── src/
+│   │   │   ├── types.ts        # User, AccountService interfaces
+│   │   │   ├── services/       # Firebase & Local implementations
+│   │   │   ├── providers/      # AccountProvider & useAccount hook
+│   │   │   ├── components/     # SignInForm, RegisterForm, etc.
+│   │   │   └── __tests__/      # Test suite (111 tests)
+│   │   └── README.md           # Account module documentation
+│   └── questionnaire/          # @spezivibe/questionnaire package
+│       ├── src/
+│       │   ├── types.ts        # FHIR-compatible questionnaire types
+│       │   └── index.ts        # Module exports
+│       └── README.md           # Questionnaire module documentation
 ├── constants/                   # App-wide constants
 │   └── theme.ts                # Color scheme and fonts
 └── assets/                      # Static resources
@@ -190,24 +229,61 @@ type RecurrenceRule =
 
 ### 3. Navigation System
 
-**Pattern**: File-based routing with Expo Router
+**Pattern**: File-based routing with Expo Router + declarative redirects
 
 **Route Groups**:
 - `(onboarding)` - Sequential flow, no tabs
 - `(tabs)` - Main app with bottom navigation
 - `questionnaire` - Modal presentation
 
-**Navigation Logic**:
+**Navigation Guards** (app/_layout.tsx):
+The root layout uses declarative `<Redirect />` components to control navigation based on authentication and onboarding state. This follows the official Expo Router pattern for authentication flows.
+
 ```typescript
-// Check onboarding status
-const [isOnboardingCompleted, setIsOnboardingCompleted] = useState<boolean | null>(null);
+function RootLayoutNav() {
+  const { signedIn, isLoading: authLoading } = useAccount();
+  const onboardingComplete = useOnboardingStatus();
+  const segments = useSegments();
 
-// Navigate based on status
-if (!isOnboardingCompleted && !inOnboarding) {
-  router.replace('/(onboarding)/welcome');
+  // LOADING: Wait for auth and onboarding status to load
+  if (onboardingComplete === null || authLoading) {
+    return null; // Show nothing while loading (splash screen visible)
+  }
+
+  // Determine current location
+  const inAuthFlow = segments[0] === '(onboarding)';
+
+  // GUARD 1: Redirect to onboarding if not completed
+  if (!onboardingComplete && !inAuthFlow) {
+    return <Redirect href="/(onboarding)/welcome" />;
+  }
+
+  // GUARD 2: Redirect to sign-in if onboarding done but not authenticated
+  if (onboardingComplete && !signedIn && !inAuthFlow) {
+    return <Redirect href="/(onboarding)/sign-in" />;
+  }
+
+  // GUARD 3: Redirect authenticated users away from auth screens
+  if (signedIn && inAuthFlow) {
+    return <Redirect href="/(tabs)" />;
+  }
+
+  // RENDER: All guards passed, render the navigation stack
+  return <Stack>...</Stack>;
 }
+```
 
-// Push to modal
+**Benefits of This Pattern**:
+- **Declarative**: Uses React components instead of imperative navigation
+- **Self-documenting**: Clear sequence of guards in top-to-bottom order
+- **Standard Expo Router pattern**: Follows official documentation
+- **No redirect loops**: Redirect component handles timing automatically
+- **Easy to modify**: Adding a new guard is straightforward
+- **LLM-friendly**: All logic visible in one place
+
+**Imperative Navigation** (for user actions):
+```typescript
+// Push to modal from user action
 router.push({
   pathname: '/questionnaire/[id]',
   params: { id: 'wellness-checkin' }
@@ -240,26 +316,32 @@ router.push({
 
 **Persistence**:
 ```typescript
-// Keys used in AsyncStorage (local backend)
+// App-wide constants (lib/constants.ts)
+export const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
+
+// Backend storage keys
 const STORAGE_KEYS = {
   SCHEDULER: '@scheduler_state',
-  ONBOARDING: '@onboarding_completed',
   RESPONSES: '@questionnaire_responses',
 };
 ```
 
 **Backend Abstraction**:
 - All data operations go through Standard's backend
+- BackendService handles data storage only (no authentication)
+- AccountService handles authentication only (no data storage)
+- Standard coordinates between them via user ID sync
 - Switch backends without changing application code
 - Supports local storage and Firebase out of the box
 
 ## Design Patterns
 
 ### 1. Standard Pattern (Spezi-Inspired)
-Central orchestrator for data flow:
+Central orchestrator for data flow with automatic user ID synchronization:
 ```typescript
 export function StandardProvider({ children }) {
   const [backend, setBackend] = useState<BackendService | null>(null);
+  const [accountService, setAccountService] = useState<AccountService | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -269,11 +351,17 @@ export function StandardProvider({ children }) {
       try {
         const config = await getBackendConfig();
         const backendInstance = BackendFactory.createBackend(config);
-        await backendInstance.initialize();
+        const accountServiceInstance = AccountServiceFactory.createAccountService(config);
+
+        await Promise.all([
+          backendInstance.initialize(),
+          accountServiceInstance.initialize(),
+        ]);
 
         if (cancelled) return; // Check before setState
 
         setBackend(backendInstance);
+        setAccountService(accountServiceInstance);
       } catch (err) {
         if (!cancelled) setError(err);
       }
@@ -283,10 +371,21 @@ export function StandardProvider({ children }) {
     return () => { cancelled = true }; // Cleanup
   }, []);
 
+  // Sync user ID from account service to backend
+  useEffect(() => {
+    if (!backend || !accountService) return;
+
+    const unsubscribe = accountService.onAuthStateChanged((user) => {
+      backend.setUserId(user?.uid || null);
+    });
+
+    return unsubscribe;
+  }, [backend, accountService]);
+
   // Memoize to prevent re-renders
   const value = useMemo(
-    () => ({ backend, error, retry }),
-    [backend, error]
+    () => ({ backend, accountService, error, retry }),
+    [backend, accountService, error]
   );
 
   return <StandardContext.Provider value={value}>{children}</StandardContext.Provider>;
@@ -442,7 +541,7 @@ interface Questionnaire {
 
 1. **Cancellation Tokens**: Use `let cancelled = false` pattern in effects with async
 2. **Cleanup Functions**: Always return cleanup from `useEffect`
-3. **Navigation Guards**: Use `useRef` to prevent navigation loops
+3. **Navigation Guards**: Use declarative `<Redirect />` components in layouts for auth flows
 4. **Error Boundaries**: Expose error states for UI error handling
 
 ### Data Management
@@ -456,7 +555,7 @@ interface Questionnaire {
 
 1. **Loading States**: Show loading overlays during async operations
 2. **Theming**: Always support dark mode with themed components
-3. **Navigation**: Use `router` from Expo Router, avoid imperative navigation
+3. **Navigation**: Use declarative `<Redirect />` for guards, `router` for user actions
 4. **Accessibility**: Consider screen readers and accessibility
 
 ## Common Pitfalls
@@ -465,12 +564,15 @@ interface Questionnaire {
 2. **Missing cleanup**: Return cleanup functions from all effects with subscriptions
 3. **Unmemoized context values**: Always wrap context values in `useMemo`
 4. **Missing callback deps**: Include all used variables in `useCallback` dependencies
-5. **Navigation loops**: Use refs to guard against repeated navigation
+5. **Imperative navigation guards**: Use declarative `<Redirect />` in layouts, not `router.replace()` in effects
 6. **Early provider returns**: Don't return `null` from providers during loading
 7. **AsyncStorage is async**: Always `await` operations
 8. **Date serialization**: Convert dates to/from ISO strings when persisting
 9. **Direct backend access**: Always use Standard, never import backends directly
 10. **Blocking sync**: Run sync operations in background, don't block user actions
+11. **Authentication in backend**: Never add auth methods to BackendService - use AccountService
+12. **Duplicating constants**: Always import from lib/constants.ts instead of defining inline
+13. **Manual user ID sync**: Let Standard handle user ID sync automatically
 
 ## Testing Strategy
 

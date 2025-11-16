@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, useMemo, ReactNode } from 'react';
+import { AccountService } from '@spezivibe/account';
 import { BackendService, BackendType } from './types';
 import { BackendFactory } from './backend-factory';
+import { AccountServiceFactory } from './account-service-factory';
 import { getBackendConfig } from './config';
 
 /**
@@ -8,7 +10,7 @@ import { getBackendConfig } from './config';
  *
  * Inspired by Stanford Spezi's Standard pattern, this context serves as the central
  * orchestrator for data flow within the application. It provides the backend service
- * instance to all modules (Scheduler, Auth, etc.) and manages the core data layer.
+ * instance and account service to all modules and manages the core data layer.
  *
  * In Spezi terminology, the Standard is the key module that coordinates all other
  * modules and enforces architectural constraints.
@@ -16,6 +18,7 @@ import { getBackendConfig } from './config';
 
 interface StandardContextValue {
   backend: BackendService | null;
+  accountService: AccountService | null;
   backendType: BackendType | null;
   isLoading: boolean;
   error: Error | null;
@@ -30,6 +33,7 @@ interface StandardProviderProps {
 
 export function StandardProvider({ children }: StandardProviderProps) {
   const [backend, setBackend] = useState<BackendService | null>(null);
+  const [accountService, setAccountService] = useState<AccountService | null>(null);
   const [backendType, setBackendType] = useState<BackendType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -47,14 +51,23 @@ export function StandardProvider({ children }: StandardProviderProps) {
       try {
         // Load backend configuration
         const config = await getBackendConfig();
+
+        // Create backend instance for data operations
         const backendInstance = BackendFactory.createBackend(config);
 
-        // Initialize the backend
-        await backendInstance.initialize();
+        // Create account service instance for authentication
+        const accountServiceInstance = AccountServiceFactory.createAccountService(config);
+
+        // Initialize both services
+        await Promise.all([
+          backendInstance.initialize(),
+          accountServiceInstance.initialize(),
+        ]);
 
         if (cancelled) return;
 
         setBackend(backendInstance);
+        setAccountService(accountServiceInstance);
         setBackendType(config.type);
         setIsLoading(false);
       } catch (err) {
@@ -74,13 +87,24 @@ export function StandardProvider({ children }: StandardProviderProps) {
     };
   }, [retryCount]);
 
+  // Sync user ID from account service to backend
+  useEffect(() => {
+    if (!backend || !accountService) return;
+
+    const unsubscribe = accountService.onAuthStateChanged((user) => {
+      backend.setUserId(user?.uid || null);
+    });
+
+    return unsubscribe;
+  }, [backend, accountService]);
+
   const retry = () => {
     setRetryCount(prev => prev + 1);
   };
 
   const value = useMemo(
-    () => ({ backend, backendType, isLoading, error, retry }),
-    [backend, backendType, isLoading, error]
+    () => ({ backend, accountService, backendType, isLoading, error, retry }),
+    [backend, accountService, backendType, isLoading, error]
   );
 
   return (

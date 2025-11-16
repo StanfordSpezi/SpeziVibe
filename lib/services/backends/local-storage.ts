@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BackendService } from '../types';
 import { Task, Outcome, SchedulerState } from '../../scheduler/types';
 import { QuestionnaireResponse } from '../../questionnaires/types';
+import { deserializeTask } from '../utils/task-serialization';
 
 const STORAGE_KEYS = {
   SCHEDULER: '@scheduler_state',
@@ -9,24 +10,17 @@ const STORAGE_KEYS = {
 };
 
 /**
- * Local AsyncStorage backend - existing implementation
- * This is the default backend that stores all data locally on the device
+ * Local AsyncStorage backend
+ * Stores all data locally on the device
+ * No authentication required - user ID management is a no-op
  */
 export class LocalStorageBackend implements BackendService {
   async initialize(): Promise<void> {
     // No initialization needed for AsyncStorage
   }
 
-  async isAuthenticated(): Promise<boolean> {
-    return true; // Always authenticated for local storage
-  }
-
-  async login(): Promise<void> {
-    throw new Error('Authentication not required for local storage');
-  }
-
-  async logout(): Promise<void> {
-    // No-op for local storage
+  setUserId(_userId: string | null): void {
+    // No-op for local storage - doesn't need user ID
   }
 
   async loadSchedulerState(): Promise<SchedulerState | null> {
@@ -37,7 +31,7 @@ export class LocalStorageBackend implements BackendService {
       const parsed = JSON.parse(data);
       // Deserialize dates
       return {
-        tasks: parsed.tasks.map((task: any) => this.deserializeTask(task)),
+        tasks: parsed.tasks.map((task: any) => deserializeTask(task)),
         outcomes: parsed.outcomes.map((outcome: any) => ({
           ...outcome,
           completedAt: new Date(outcome.completedAt),
@@ -137,25 +131,5 @@ export class LocalStorageBackend implements BackendService {
 
   async syncFromRemote(): Promise<void> {
     // No-op for local storage
-  }
-
-  private deserializeTask(task: any): Task {
-    return {
-      ...task,
-      createdAt: new Date(task.createdAt),
-      effectiveFrom: new Date(task.effectiveFrom),
-      schedule: {
-        ...task.schedule,
-        startDate: new Date(task.schedule.startDate),
-        endDate: task.schedule.endDate ? new Date(task.schedule.endDate) : undefined,
-        recurrence:
-          task.schedule.recurrence.type === 'once'
-            ? {
-                ...task.schedule.recurrence,
-                date: new Date(task.schedule.recurrence.date),
-              }
-            : task.schedule.recurrence,
-      },
-    };
   }
 }

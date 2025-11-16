@@ -1,87 +1,25 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  ActivityIndicator,
-} from 'react-native';
+import React from 'react';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
-import { useAuth } from '@/lib/services/auth-context';
+import { RegisterForm } from '@spezivibe/account';
 import { useThemeColor } from '@/hooks/use-theme-color';
-import { useStandard } from '@/lib/services/standard-context';
-
-const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
+import { useAutoSkipIfAuthenticated } from '@/hooks/use-auto-skip-if-authenticated';
+import { ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
 
 export default function RegisterScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isSkipping, setIsSkipping] = useState(false);
-  const { register, isLoading, isAuthenticated } = useAuth();
-  const { backendType } = useStandard();
-  const hasAttemptedSkip = useRef(false);
+  const isSkipping = useAutoSkipIfAuthenticated();
 
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const tintColor = useThemeColor({}, 'tint');
   const borderColor = useThemeColor({ light: '#ddd', dark: '#444' }, 'border');
 
-  // Auto-skip auth screen if already authenticated or using local storage
-  useEffect(() => {
-    if (hasAttemptedSkip.current || isSkipping) return;
-
-    async function checkAuthAndSkip() {
-      if (isAuthenticated || backendType === 'local') {
-        hasAttemptedSkip.current = true;
-        setIsSkipping(true);
-        try {
-          await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
-          router.replace('/(tabs)');
-        } catch (error) {
-          setIsSkipping(false);
-          hasAttemptedSkip.current = false;
-          console.error('Failed to skip:', error);
-        }
-      }
-    }
-
-    if (!isLoading && backendType) {
-      checkAuthAndSkip();
-    }
-  }, [isAuthenticated, isLoading, backendType, isSkipping]);
-
-  async function handleRegister() {
-    if (!email || !password || !confirmPassword) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
-      return;
-    }
-
-    if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
-      return;
-    }
-
-    try {
-      await register(email, password);
-      // Mark onboarding as complete after successful registration
-      await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
-      router.replace('/(tabs)');
-    } catch (error: any) {
-      Alert.alert('Registration Failed', error.message || 'Could not create account');
-    }
+  async function handleSuccess() {
+    await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
+    router.replace('/(tabs)');
   }
 
   // Show loading overlay during auto-skip
@@ -98,92 +36,28 @@ export default function RegisterScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.header}>
-            <ThemedText type="title" style={styles.title}>
-              Create Account
-            </ThemedText>
-            <ThemedText style={styles.subtitle}>Sign up to get started</ThemedText>
-          </View>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <ThemedText type="title" style={styles.title}>
+            Create Account
+          </ThemedText>
+          <ThemedText style={styles.subtitle}>Sign up to get started</ThemedText>
+        </View>
 
-          <View style={styles.form}>
-            <View style={styles.inputContainer}>
-              <ThemedText style={styles.label}>Email</ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  { color: textColor, borderColor, backgroundColor: backgroundColor },
-                ]}
-                placeholder="your@email.com"
-                placeholderTextColor="#999"
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                editable={!isLoading}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <ThemedText style={styles.label}>Password</ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  { color: textColor, borderColor, backgroundColor: backgroundColor },
-                ]}
-                placeholder="At least 6 characters"
-                placeholderTextColor="#999"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                editable={!isLoading}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <ThemedText style={styles.label}>Confirm Password</ThemedText>
-              <TextInput
-                style={[
-                  styles.input,
-                  { color: textColor, borderColor, backgroundColor: backgroundColor },
-                ]}
-                placeholder="Re-enter your password"
-                placeholderTextColor="#999"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-                editable={!isLoading}
-              />
-            </View>
-
-            <TouchableOpacity
-              style={[styles.button, { backgroundColor: tintColor }]}
-              onPress={handleRegister}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <ThemedText style={styles.buttonText}>Create Account</ThemedText>
-              )}
-            </TouchableOpacity>
-
-            <View style={styles.footer}>
-              <ThemedText style={styles.footerText}>Already have an account? </ThemedText>
-              <TouchableOpacity onPress={() => router.push('/(onboarding)/sign-in')}>
-                <ThemedText style={[styles.link, { color: tintColor }]}>Sign In</ThemedText>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        <RegisterForm
+          onSuccess={handleSuccess}
+          onSignInPress={() => router.push('/(onboarding)/sign-in')}
+          containerStyle={styles.form}
+          inputStyle={[
+            styles.input,
+            { color: textColor, borderColor, backgroundColor },
+          ]}
+          buttonStyle={[styles.button, { backgroundColor: tintColor }]}
+          buttonTextStyle={styles.buttonText}
+          buttonText="Create Account"
+          minPasswordLength={6}
+        />
+      </View>
     </ThemedView>
   );
 }
@@ -202,11 +76,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     opacity: 0.7,
   },
-  keyboardView: {
+  content: {
     flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
     justifyContent: 'center',
     padding: 24,
   },
@@ -226,14 +97,6 @@ const styles = StyleSheet.create({
   form: {
     width: '100%',
   },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
   input: {
     height: 50,
     borderWidth: 1,
@@ -244,26 +107,10 @@ const styles = StyleSheet.create({
   button: {
     height: 50,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  footerText: {
-    fontSize: 14,
-  },
-  link: {
-    fontSize: 14,
     fontWeight: '600',
   },
 });
