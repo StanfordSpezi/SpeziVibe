@@ -15,7 +15,7 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAccount } from '../hooks/useAccount';
 import { validateEmail, validatePasswordStrength, normalizeEmail, sanitizeInput } from '../utils/validation';
-import { Sex } from '../types';
+import { Sex, PersonName } from '../types';
 
 export interface RegisterFormProps {
   /** Callback when registration is successful */
@@ -253,7 +253,14 @@ export function RegisterForm({
       // Build profile details
       const details: any = {};
       if (collectsName && (firstName.trim() || lastName.trim())) {
-        details.name = `${firstName.trim()} ${lastName.trim()}`.trim();
+        const name: PersonName = {};
+        if (firstName.trim()) {
+          name.givenName = firstName.trim();
+        }
+        if (lastName.trim()) {
+          name.familyName = lastName.trim();
+        }
+        details.name = name;
       }
       if (collectsDateOfBirth && dateOfBirth) {
         details.dateOfBirth = dateOfBirth;

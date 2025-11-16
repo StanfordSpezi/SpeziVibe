@@ -44,7 +44,7 @@ describe('InMemoryAccountService', () => {
       await service.login({ email: 'john.doe@example.com', password: 'password' });
 
       const user = await service.getCurrentUser();
-      expect(user?.name).toBe('john.doe');
+      expect(user?.name?.givenName).toBe('john.doe');
     });
 
     it('should notify auth state listeners', async () => {
@@ -68,14 +68,18 @@ describe('InMemoryAccountService', () => {
       await service.register({
         email: 'newuser@example.com',
         password: 'password',
-        name: 'New User',
+        name: {
+          givenName: 'New',
+          familyName: 'User',
+        },
         dateOfBirth: new Date('1995-05-15'),
         sex: 'female',
       });
 
       const user = await service.getCurrentUser();
       expect(user?.email).toBe('newuser@example.com');
-      expect(user?.name).toBe('New User');
+      expect(user?.name?.givenName).toBe('New');
+      expect(user?.name?.familyName).toBe('User');
       expect(user?.dateOfBirth).toEqual(new Date('1995-05-15'));
       expect(user?.sex).toBe('female');
     });
@@ -89,7 +93,7 @@ describe('InMemoryAccountService', () => {
       });
 
       const user = await service.getCurrentUser();
-      expect(user?.name).toBe('jane.smith');
+      expect(user?.name?.givenName).toBe('jane.smith');
     });
   });
 
@@ -137,13 +141,17 @@ describe('InMemoryAccountService', () => {
       await service.initialize();
 
       await service.updateProfile({
-        name: 'Updated Name',
+        name: {
+          givenName: 'Updated',
+          familyName: 'Name',
+        },
         phoneNumber: '+1234567890',
         biography: 'Test bio',
       });
 
       const user = await service.getCurrentUser();
-      expect(user?.name).toBe('Updated Name');
+      expect(user?.name?.givenName).toBe('Updated');
+      expect(user?.name?.familyName).toBe('Name');
       expect(user?.phoneNumber).toBe('+1234567890');
       expect(user?.biography).toBe('Test bio');
     });
@@ -156,7 +164,12 @@ describe('InMemoryAccountService', () => {
       // Wait a bit to ensure different timestamp
       await new Promise((resolve) => setTimeout(resolve, 10));
 
-      await service.updateProfile({ name: 'New Name' });
+      await service.updateProfile({
+        name: {
+          givenName: 'New',
+          familyName: 'Name',
+        },
+      });
 
       const updatedUser = await service.getCurrentUser();
       expect(updatedUser?.updatedAt).not.toEqual(originalUpdatedAt);
@@ -168,10 +181,16 @@ describe('InMemoryAccountService', () => {
       service.onAuthStateChanged(listener);
       listener.mockClear();
 
-      await service.updateProfile({ name: 'Updated' });
+      await service.updateProfile({
+        name: {
+          givenName: 'Updated',
+        },
+      });
 
       expect(listener).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'Updated' })
+        expect.objectContaining({
+          name: expect.objectContaining({ givenName: 'Updated' })
+        })
       );
     });
   });

@@ -68,7 +68,10 @@ describe('AccountOverview', () => {
     const service = new InMemoryAccountService();
     await service.initialize();
     await service.updateProfile({
-      name: 'Test User',
+      name: {
+        givenName: 'Test',
+        familyName: 'User',
+      },
       dateOfBirth: new Date('1990-01-01'),
       sex: 'male',
       phoneNumber: '+1234567890',

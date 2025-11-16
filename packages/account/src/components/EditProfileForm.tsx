@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAccount } from '../hooks/useAccount';
-import { Sex } from '../types';
+import { Sex, PersonName } from '../types';
 
 export interface EditProfileFormProps {
   /** Callback when profile update is successful */
@@ -111,10 +111,9 @@ export function EditProfileForm({
   const isDateOfBirthRequired = configuration?.required?.includes('dateOfBirth') ?? false;
   const isSexRequired = configuration?.required?.includes('sex') ?? false;
 
-  // Split existing name into first and last if it exists
-  const nameParts = user?.name?.split(' ') || ['', ''];
-  const existingFirstName = nameParts[0] || '';
-  const existingLastName = nameParts.slice(1).join(' ') || '';
+  // Load existing PersonName components
+  const existingFirstName = user?.name?.givenName || '';
+  const existingLastName = user?.name?.familyName || '';
 
   const [firstName, setFirstName] = useState(existingFirstName);
   const [lastName, setLastName] = useState(existingLastName);
@@ -167,15 +166,17 @@ export function EditProfileForm({
     }
 
     try {
-      // Combine first and last name
-      const fullName = showFirstName && showLastName
-        ? `${firstName.trim()} ${lastName.trim()}`
-        : showFirstName
-        ? firstName.trim()
-        : lastName.trim();
+      // Build PersonName object from first and last name
+      const name: PersonName = {};
+      if (showFirstName && firstName.trim()) {
+        name.givenName = firstName.trim();
+      }
+      if (showLastName && lastName.trim()) {
+        name.familyName = lastName.trim();
+      }
 
       await updateProfile({
-        name: fullName,
+        name: (name.givenName || name.familyName) ? name : undefined,
         dateOfBirth: showDateOfBirth ? dateOfBirth : undefined,
         sex: showSex ? sex.trim() : undefined,
       });

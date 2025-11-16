@@ -54,8 +54,10 @@ export const waitFor = (ms: number = 0) => new Promise((resolve) => setTimeout(r
 export const mockUser = {
   uid: 'test-user-123',
   email: 'test@example.com',
-  name: 'Test User',
-  displayName: 'Test User',
+  name: {
+    givenName: 'Test',
+    familyName: 'User',
+  },
   dateOfBirth: new Date('1990-01-01'),
   sex: 'male' as const,
   createdAt: new Date('2024-01-01'),

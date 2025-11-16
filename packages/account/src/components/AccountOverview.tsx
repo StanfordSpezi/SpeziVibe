@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle, TextStyle, ScrollView } from 'react-native';
 import { useAccount } from '../hooks/useAccount';
+import { formatPersonName, isPersonNameEmpty, PersonNameStyle } from '../utils/person-name';
 
 export interface AccountOverviewProps {
   /** Custom styles for the container */
@@ -143,7 +144,7 @@ export function AccountOverview({
       </View>
 
       {/* Profile Information Section */}
-      {(user.name || user.dateOfBirth || user.sex) && (
+      {(!isPersonNameEmpty(user.name) || user.dateOfBirth || user.sex) && (
         <View style={styles.section} accessibilityRole="summary">
           <Text
             style={[styles.sectionHeader, sectionHeaderStyle]}
@@ -152,13 +153,15 @@ export function AccountOverview({
             Profile Information
           </Text>
 
-          {user.name && (
+          {!isPersonNameEmpty(user.name) && (
             <View
               style={styles.field}
-              accessibilityLabel={`Name: ${user.name}`}
+              accessibilityLabel={`Name: ${formatPersonName(user.name, PersonNameStyle.Long)}`}
             >
               <Text style={[styles.label, labelStyle]}>Name</Text>
-              <Text style={[styles.value, valueStyle]}>{user.name}</Text>
+              <Text style={[styles.value, valueStyle]}>
+                {formatPersonName(user.name, PersonNameStyle.Long)}
+              </Text>
             </View>
           )}
 

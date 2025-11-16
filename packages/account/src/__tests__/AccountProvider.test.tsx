@@ -157,12 +157,16 @@ describe('AccountProvider', () => {
 
       await act(async () => {
         await result.current.register('newuser@example.com', 'password', {
-          name: 'New User',
+          name: {
+            givenName: 'New',
+            familyName: 'User',
+          },
         });
       });
 
       expect(result.current.user?.email).toBe('newuser@example.com');
-      expect(result.current.user?.name).toBe('New User');
+      expect(result.current.user?.name?.givenName).toBe('New');
+      expect(result.current.user?.name?.familyName).toBe('User');
     });
 
     it('should call onLogin callback after registration', async () => {
@@ -253,12 +257,16 @@ describe('AccountProvider', () => {
 
       await act(async () => {
         await result.current.updateProfile({
-          name: 'Updated Name',
+          name: {
+            givenName: 'Updated',
+            familyName: 'Name',
+          },
           phoneNumber: '+1234567890',
         });
       });
 
-      expect(result.current.user?.name).toBe('Updated Name');
+      expect(result.current.user?.name?.givenName).toBe('Updated');
+      expect(result.current.user?.name?.familyName).toBe('Name');
       expect(result.current.user?.phoneNumber).toBe('+1234567890');
     });
   });
