@@ -17,50 +17,63 @@ Think of the Standard as the "kernel" of your application's data layer.
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      Application Layer                       │
-│              (Scheduler, Auth, Questionnaires)              │
-└───────────────────────────┬─────────────────────────────────┘
-                            │
-                            ▼ useStandard()
-┌─────────────────────────────────────────────────────────────┐
-│                   Standard Context                           │
-│     (Centralized orchestrator for data flow)                │
-│     Provides: backend, backendType, error, retry            │
-└───────────────────────────┬─────────────────────────────────┘
-                            │
-                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   BackendService Interface                   │
-│     (Common API for all backend implementations)            │
-└───────────────────────────┬─────────────────────────────────┘
-                            │
-          ┌─────────────────┴─────────────────┐
-          │                                   │
-          ▼                                   ▼
-┌──────────────────┐              ┌──────────────────┐
-│  LocalStorage    │              │    Firebase      │
-│    Backend       │              │    Backend       │
-└──────────────────┘              └──────────────────┘
+│              (Scheduler, Auth UI, Questionnaires)           │
+└─────────────┬────────────────────────────────┬──────────────┘
+              │                                │
+              ▼                                ▼
+┌──────────────────────────┐   ┌──────────────────────────────┐
+│  BackendService          │   │    AccountService            │
+│  (Data Storage)          │   │    (Authentication)          │
+│  - Tasks                 │   │    - Login/Register/Logout   │
+│  - Outcomes              │   │    - Profile Management      │
+│  - Questionnaire Data    │   │    - Password Reset          │
+└──────────┬───────────────┘   └──────────────┬───────────────┘
+           │                                  │
+           │        ┌─────────────────────────┘
+           │        │  User ID sync
+           │        ▼
+           │   ┌─────────────────────────────┐
+           │   │   Standard Context          │
+           │   │   (Orchestrator)            │
+           │   │   Provides: backend,        │
+           │   │   accountService, error     │
+           │   └─────────────────────────────┘
+           │
+┌──────────┴───────────┐              ┌────────────────────┐
+│  LocalStorage        │              │    Firebase        │
+│  Backend             │              │    Backend         │
+│  (AsyncStorage)      │              │    (Firestore)     │
+└──────────────────────┘              └────────────────────┘
 ```
+
+**Key Separation of Concerns:**
+- **AccountService**: Handles ALL authentication and user profile management
+- **BackendService**: Handles ONLY data storage (tasks, outcomes, questionnaires)
+- **Standard**: Coordinates by automatically syncing user ID from AccountService to BackendService
+- **No Overlap**: Authentication is completely separate from data storage
 
 ## Features
 
 - **Pluggable Architecture**: Switch backends without code changes
 - **Type-Safe**: Full TypeScript support across all implementations
 - **Offline-First**: Local storage as default with optional cloud sync
-- **Authentication**: Built-in support for remote backend authentication
+- **Separation of Concerns**: Data storage completely separated from authentication
 - **Data Persistence**: Consistent API for tasks, outcomes, and questionnaire responses
+- **Automatic User Context**: Standard automatically syncs user ID to backend
 
 ## Available Backends
 
 ### 1. Local Storage Backend (Default)
 
-Stores all data locally on the device using AsyncStorage. No authentication required.
+Stores all scheduler data locally on the device using AsyncStorage. Does not handle authentication.
 
 **Use Cases:**
 - Offline-only apps
 - Privacy-sensitive applications
 - Development and testing
 - No backend setup required
+
+**Note**: Authentication is handled separately by AccountService (see @spezivibe/account package)
 
 **Configuration:**
 ```typescript
@@ -71,7 +84,7 @@ const config: BackendConfig = {
 
 ### 2. Firebase Backend
 
-Uses Firebase Authentication and Firestore for real-time cloud sync.
+Uses Firestore for real-time cloud data storage. Authentication is handled separately by FirebaseAccountService.
 
 **Use Cases:**
 - Real-time data synchronization
@@ -88,7 +101,7 @@ npm install firebase
 
 2. Create a Firebase project at https://console.firebase.google.com
 
-3. Enable Authentication (Email/Password) and Firestore
+3. Enable Firestore database (Authentication is configured separately in AccountService)
 
 4. Get your configuration from Project Settings
 
@@ -132,15 +145,17 @@ The Standard is configured at the root of your application. All modules access i
 // In your app root (_layout.tsx)
 import { StandardProvider } from '@/lib/services/standard-context';
 import { SchedulerProvider } from '@/lib/scheduler/context';
-import { AuthProvider } from '@/lib/services/auth-context';
+import { AccountProvider } from '@spezivibe/account';
 
 export default function RootLayout() {
+  const { accountService } = useStandard();
+
   return (
     <StandardProvider>
       <SchedulerProvider>
-        <AuthProvider>
+        <AccountProvider accountService={accountService}>
           {/* Your app content */}
-        </AuthProvider>
+        </AccountProvider>
       </SchedulerProvider>
     </StandardProvider>
   );
@@ -211,18 +226,40 @@ Then update the backend type in the same file.
 
 ### Authentication (Remote Backends)
 
-Use the `AuthProvider` for authentication:
+Use the `@spezivibe/account` package for authentication:
 
 ```typescript
-import { useAuth } from '@/lib/services/auth-context';
+import { useAccount } from '@spezivibe/account';
+import { SignInForm } from '@spezivibe/account';
 
 function LoginScreen() {
-  const { login, register, isAuthenticated, isLoading, error } = useAuth();
+  const router = useRouter();
+
+  return (
+    <SignInForm
+      onSuccess={() => {
+        // Auth successful, sync happens automatically in background
+        router.replace('/(tabs)');
+      }}
+      onError={(error) => {
+        Alert.alert('Login Failed', error.message);
+      }}
+    />
+  );
+}
+```
+
+Or use the hook directly for custom UI:
+
+```typescript
+import { useAccount } from '@spezivibe/account';
+
+function CustomLoginScreen() {
+  const { login, isAuthenticated, isLoading, error } = useAccount();
 
   async function handleLogin(email: string, password: string) {
     try {
       await login(email, password);
-      // Auth successful, sync happens automatically in background
       router.replace('/(tabs)');
     } catch (err) {
       Alert.alert('Login Failed', err.message);
@@ -230,32 +267,33 @@ function LoginScreen() {
   }
 
   return (
-    // Your login UI
+    // Your custom login UI
   );
 }
 ```
 
-The `AuthProvider` automatically:
+The `AccountProvider` automatically:
 - Checks authentication status on app start
 - Syncs data in background (doesn't block UX)
-- Manages authentication state
-- Provides stable memoized callbacks
+- Manages authentication and user state
+- Provides pre-built UI components (SignInForm, RegisterForm, AccountOverview)
+- Supports profile management, password reset, and account operations
+
+See `packages/account/README.md` for full documentation.
 
 ## API Reference
 
 ### BackendService Interface
 
-All backends implement this interface:
+All backends implement this interface for data storage only:
 
 ```typescript
 interface BackendService {
   // Initialization
   initialize(): Promise<void>;
 
-  // Authentication
-  isAuthenticated(): Promise<boolean>;
-  login(credentials: any): Promise<void>;
-  logout(): Promise<void>;
+  // User Context (set by Standard automatically)
+  setUserId(userId: string | null): void;
 
   // Scheduler State
   loadSchedulerState(): Promise<SchedulerState | null>;
@@ -280,6 +318,9 @@ interface BackendService {
   syncFromRemote(): Promise<void>;
 }
 ```
+
+**Note**: Authentication methods (login, register, logout) are NOT part of BackendService.
+Use AccountService from @spezivibe/account package for authentication.
 
 ## Adding a New Backend
 
@@ -330,11 +371,12 @@ To add support for a new backend (e.g., Supabase, AWS, custom API):
 
 ### Standard Context Implementation
 
-The Standard uses production-ready React patterns:
+The Standard uses production-ready React patterns and automatically syncs user ID:
 
 ```typescript
 export function StandardProvider({ children }) {
   const [backend, setBackend] = useState<BackendService | null>(null);
+  const [accountService, setAccountService] = useState<AccountService | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -344,11 +386,17 @@ export function StandardProvider({ children }) {
       try {
         const config = await getBackendConfig();
         const backendInstance = BackendFactory.createBackend(config);
-        await backendInstance.initialize();
+        const accountServiceInstance = AccountServiceFactory.createAccountService(config);
+
+        await Promise.all([
+          backendInstance.initialize(),
+          accountServiceInstance.initialize(),
+        ]);
 
         if (cancelled) return; // Prevent setState after unmount
 
         setBackend(backendInstance);
+        setAccountService(accountServiceInstance);
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err : new Error('Init failed'));
@@ -363,10 +411,21 @@ export function StandardProvider({ children }) {
     };
   }, [retryCount]);
 
+  // Sync user ID from account service to backend
+  useEffect(() => {
+    if (!backend || !accountService) return;
+
+    const unsubscribe = accountService.onAuthStateChanged((user) => {
+      backend.setUserId(user?.uid || null);
+    });
+
+    return unsubscribe;
+  }, [backend, accountService]);
+
   // Memoize to prevent unnecessary re-renders
   const value = useMemo(
-    () => ({ backend, backendType, isLoading, error, retry }),
-    [backend, backendType, isLoading, error]
+    () => ({ backend, accountService, backendType, isLoading, error, retry }),
+    [backend, accountService, backendType, isLoading, error]
   );
 
   return <StandardContext.Provider value={value}>{children}</StandardContext.Provider>;
@@ -379,6 +438,8 @@ export function StandardProvider({ children }) {
 - ✅ Memoized context value prevents re-renders
 - ✅ Error state with retry mechanism
 - ✅ No early returns - children render during loading
+- ✅ Automatic user ID synchronization between services
+- ✅ Parallel initialization of backend and account service
 
 ### Module Implementation Best Practices
 
@@ -431,29 +492,32 @@ export function YourModuleProvider({ children }) {
 ## Best Practices
 
 1. **Use the Standard**: Never import backends directly, always go through Standard
-2. **Cancellation Tokens**: Use `let cancelled = false` in all async effects
-3. **Memoization**: Always memoize context values and callbacks
-4. **Error Handling**: Expose error states for UI error handling
-5. **Background Operations**: Don't block UX waiting for sync operations
-6. **Loading States**: Show appropriate loading UI during initialization
-7. **Offline Support**: Local storage backend always works offline
-8. **Security**: Never commit API keys or credentials to version control
+2. **Separation of Concerns**: Use AccountService for auth, BackendService for data
+3. **Let Standard Sync**: Don't manually sync user ID - Standard handles it automatically
+4. **Cancellation Tokens**: Use `let cancelled = false` in all async effects
+5. **Memoization**: Always memoize context values and callbacks
+6. **Error Handling**: Expose error states for UI error handling
+7. **Background Operations**: Don't block UX waiting for sync operations
+8. **Loading States**: Show appropriate loading UI during initialization
+9. **Offline Support**: Local storage backend always works offline
+10. **Security**: Never commit API keys or credentials to version control
+11. **No Auth in Backend**: Never add login/register/logout methods to BackendService
 
 ## Troubleshooting
 
-### "Not authenticated" errors
-- Ensure you call `login()` before accessing remote backends
-- Check that your credentials are correct
-- Verify backend configuration
-
-### Data not syncing
+### Data not syncing to Firebase
 - Check network connectivity
-- Verify authentication status with `isAuthenticated()`
+- Verify user is authenticated via AccountService
+- Check that user ID is being set correctly (Standard handles this automatically)
 - Call `syncFromRemote()` to manually trigger sync
 
 ### Local storage quota exceeded
 - Implement data cleanup for old outcomes
 - Consider moving to a cloud backend for larger datasets
+
+### Authentication issues
+- See @spezivibe/account package documentation
+- Authentication is completely separate from BackendService
 
 ## Examples
 
