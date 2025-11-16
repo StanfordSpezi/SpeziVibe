@@ -2,6 +2,19 @@
 
 Account management module for React Native applications.
 
+## Table of Contents
+
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Key Concepts](#key-concepts)
+- [Common Tasks](#common-tasks)
+- [Core Features](#core-features)
+- [API Reference](#api-reference)
+- [Troubleshooting](#troubleshooting)
+- [Testing](#testing)
+- [Architecture](#architecture)
+
 ## Features
 
 - Storage-agnostic architecture - delegates storage to consuming applications
@@ -97,6 +110,417 @@ function LoginScreen() {
       onError={(error) => alert(error.message)}
       buttonStyle={{ backgroundColor: '#007AFF' }}
     />
+  );
+}
+```
+
+## Key Concepts
+
+### Architecture Overview
+
+The `@spezivibe/account` package follows a **provider-service architecture**:
+
+1. **AccountService** (Interface): Defines how authentication works
+   - You can swap implementations (Firebase, local, custom)
+   - Handles: login, register, logout, profile updates, password reset
+
+2. **AccountProvider** (React Component): Manages authentication state
+   - Wraps your app to provide auth context
+   - Connects to an AccountService
+   - Exposes auth state and methods via useAccount hook
+
+3. **Pre-built UI Components**: Optional ready-to-use forms
+   - SignInForm, RegisterForm, PasswordResetForm, AccountOverview
+   - Automatically connected to AccountProvider
+   - Fully customizable styles
+
+### Data Flow
+
+```
+User Action (e.g., login button)
+  ↓
+UI Component (SignInForm) or Custom Code using useAccount hook
+  ↓
+AccountProvider (manages state)
+  ↓
+AccountService (Firebase/Local implementation)
+  ↓
+Backend (Firebase Auth, etc.)
+```
+
+### When to Use What
+
+**Use Firebase Account Service when:**
+- You want production-ready authentication
+- You need profile storage in Firestore
+- You want password reset emails
+- You're building a real app
+
+**Use Local Account Service when:**
+- Local development without Firebase setup
+- Testing UI flows
+- Demos or prototypes
+- Offline-first apps
+
+**Use pre-built forms when:**
+- You want quick integration
+- Standard auth UI is acceptable
+- You want built-in validation
+
+**Use useAccount hook directly when:**
+- Building custom UI
+- Need fine-grained control
+- Integrating with existing forms
+
+## Common Tasks
+
+### Complete Example: Firebase Authentication Setup
+
+```tsx
+// App.tsx - Complete setup example
+import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import {
+  AccountProvider,
+  FirebaseAccountService,
+  AccountConfiguration
+} from '@spezivibe/account';
+
+// Step 1: Create Firebase service instance (do this once, outside component)
+const firebaseConfig = {
+  apiKey: 'AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  authDomain: 'your-app.firebaseapp.com',
+  projectId: 'your-app',
+  storageBucket: 'your-app.appspot.com',
+  messagingSenderId: '123456789',
+  appId: '1:123456789:web:xxxxx',
+};
+
+const accountService = new FirebaseAccountService(firebaseConfig);
+
+// Step 2: Define account configuration
+const accountConfig: AccountConfiguration = {
+  collects: ['name', 'dateOfBirth', 'sex'],
+  required: ['name'],
+  allowsEditing: true,
+};
+
+// Step 3: Initialize service and wrap app
+export default function App() {
+  const [initialized, setInitialized] = useState(false);
+
+  useEffect(() => {
+    accountService.initialize().then(() => setInitialized(true));
+  }, []);
+
+  if (!initialized) {
+    return <ActivityIndicator />;
+  }
+
+  return (
+    <AccountProvider
+      accountService={accountService}
+      configuration={accountConfig}
+      onLogin={(user) => console.log('User logged in:', user.email)}
+      onLogout={() => console.log('User logged out')}
+    >
+      <YourAppNavigator />
+    </AccountProvider>
+  );
+}
+```
+
+### Task: Check If User Is Logged In
+
+```tsx
+import { useAccount } from '@spezivibe/account';
+
+function HomeScreen() {
+  const { signedIn, user, isLoading } = useAccount();
+
+  // Always check isLoading first
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  // Then check signedIn status
+  if (!signedIn) {
+    return <Text>Please log in to continue</Text>;
+  }
+
+  // User is logged in, safe to access user object
+  return <Text>Welcome {user.name || user.email}</Text>;
+}
+```
+
+### Task: Implement Login Screen
+
+```tsx
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { SignInForm } from '@spezivibe/account';
+import { useNavigation } from '@react-navigation/native';
+
+function LoginScreen() {
+  const navigation = useNavigation();
+
+  return (
+    <View style={styles.container}>
+      <SignInForm
+        onSuccess={() => {
+          // User successfully logged in
+          navigation.navigate('Home');
+        }}
+        onError={(error) => {
+          // Handle error (already displayed in form)
+          console.error('Login error:', error);
+        }}
+        onRegisterPress={() => {
+          // Navigate to registration
+          navigation.navigate('Register');
+        }}
+        // Customize appearance
+        containerStyle={styles.form}
+        buttonStyle={styles.button}
+        buttonTextStyle={styles.buttonText}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20, justifyContent: 'center' },
+  form: { width: '100%' },
+  button: { backgroundColor: '#007AFF', borderRadius: 8 },
+  buttonText: { color: 'white', fontWeight: 'bold' },
+});
+```
+
+### Task: Create Custom Login Form
+
+```tsx
+import React, { useState } from 'react';
+import { View, TextInput, Button, Text } from 'react-native';
+import { useAccount } from '@spezivibe/account';
+
+function CustomLoginForm() {
+  const { login, isLoading, error } = useAccount();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      await login(email, password);
+      // Success - user is now logged in
+      // AccountProvider will update signedIn state automatically
+    } catch (err) {
+      // Error is also available in `error` from useAccount
+      console.error(err);
+    }
+  };
+
+  return (
+    <View>
+      <TextInput
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
+      />
+      <TextInput
+        placeholder="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+      />
+      {error && <Text style={{ color: 'red' }}>{error}</Text>}
+      <Button
+        title={isLoading ? 'Logging in...' : 'Login'}
+        onPress={handleLogin}
+        disabled={isLoading}
+      />
+    </View>
+  );
+}
+```
+
+### Task: Register New User with Profile
+
+```tsx
+import React, { useState } from 'react';
+import { useAccount, Sex } from '@spezivibe/account';
+
+function RegistrationForm() {
+  const { register, isLoading } = useAccount();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState(new Date('2000-01-01'));
+  const [sex, setSex] = useState<Sex>(Sex.PreferNotToState);
+
+  const handleRegister = async () => {
+    try {
+      await register(email, password, {
+        name,
+        dateOfBirth,
+        sex,
+      });
+      // Success - user is registered and logged in
+    } catch (error) {
+      console.error('Registration failed:', error);
+    }
+  };
+
+  return (
+    <View>
+      {/* Email and password inputs */}
+      <TextInput value={email} onChangeText={setEmail} />
+      <TextInput value={password} onChangeText={setPassword} secureTextEntry />
+
+      {/* Profile fields */}
+      <TextInput placeholder="Full Name" value={name} onChangeText={setName} />
+
+      {/* Date picker component would go here */}
+
+      <Button title="Register" onPress={handleRegister} disabled={isLoading} />
+    </View>
+  );
+}
+```
+
+### Task: Update User Profile
+
+```tsx
+import React, { useState, useEffect } from 'react';
+import { useAccount } from '@spezivibe/account';
+
+function EditProfileScreen() {
+  const { user, updateProfile, isLoading } = useAccount();
+  const [name, setName] = useState('');
+  const [biography, setBiography] = useState('');
+
+  // Load current values
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setBiography(user.biography || '');
+    }
+  }, [user]);
+
+  const handleSave = async () => {
+    try {
+      await updateProfile({
+        name,
+        biography,
+      });
+      alert('Profile updated successfully!');
+    } catch (error) {
+      alert('Failed to update profile');
+    }
+  };
+
+  return (
+    <View>
+      <TextInput value={name} onChangeText={setName} />
+      <TextInput value={biography} onChangeText={setBiography} multiline />
+      <Button title="Save" onPress={handleSave} disabled={isLoading} />
+    </View>
+  );
+}
+```
+
+### Task: Implement Password Reset Flow
+
+```tsx
+// ForgotPasswordScreen.tsx
+import React from 'react';
+import { View, Alert } from 'react-native';
+import { PasswordResetForm } from '@spezivibe/account';
+import { useNavigation } from '@react-navigation/native';
+
+function ForgotPasswordScreen() {
+  const navigation = useNavigation();
+
+  return (
+    <View style={{ padding: 20 }}>
+      <PasswordResetForm
+        onSuccess={() => {
+          Alert.alert(
+            'Email Sent',
+            'Check your email for password reset instructions',
+            [{ text: 'OK', onPress: () => navigation.goBack() }]
+          );
+        }}
+        onBackToLogin={() => navigation.goBack()}
+      />
+    </View>
+  );
+}
+```
+
+### Task: Protect Routes/Screens (Require Authentication)
+
+```tsx
+import { useAccount } from '@spezivibe/account';
+import { useEffect } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
+function ProtectedScreen() {
+  const { signedIn, isLoading } = useAccount();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    // Redirect to login if not authenticated
+    if (!isLoading && !signedIn) {
+      navigation.navigate('Login');
+    }
+  }, [signedIn, isLoading, navigation]);
+
+  if (isLoading) {
+    return <ActivityIndicator />;
+  }
+
+  if (!signedIn) {
+    return null; // Will redirect
+  }
+
+  return <YourProtectedContent />;
+}
+```
+
+### Task: Listen to Authentication Events
+
+```tsx
+import { AccountProvider, AccountEvent } from '@spezivibe/account';
+
+function App() {
+  const handleAccountEvent = (event: AccountEvent) => {
+    switch (event.type) {
+      case 'login':
+        console.log('User logged in:', event.user.email);
+        // Track analytics, etc.
+        break;
+      case 'logout':
+        console.log('User logged out');
+        // Clear app state, etc.
+        break;
+      case 'update':
+        console.log('User profile updated:', event.user);
+        break;
+      case 'delete':
+        console.log('User account deleted');
+        break;
+    }
+  };
+
+  return (
+    <AccountProvider
+      accountService={accountService}
+      onAccountEvent={handleAccountEvent}
+    >
+      <YourApp />
+    </AccountProvider>
   );
 }
 ```
@@ -417,9 +841,379 @@ interface AccountContextValue {
 | `onBackToLogin` | `() => void` | Callback for back to login link |
 | `emailInputProps` | `Partial<TextInputProps>` | Additional props for email input |
 
+## Troubleshooting
+
+### Common Issues and Solutions
+
+#### Error: "Cannot find module '@spezivibe/account'"
+
+**Solution:** Ensure the package is installed:
+```bash
+npm install @spezivibe/account
+```
+
+If using TypeScript, ensure you have type definitions and restart your TypeScript server.
+
+#### Error: "useAccount must be used within AccountProvider"
+
+**Problem:** You're trying to use `useAccount()` hook outside of `<AccountProvider>`.
+
+**Solution:** Wrap your app with AccountProvider:
+```tsx
+// App.tsx
+<AccountProvider accountService={accountService}>
+  <YourApp />  {/* All components inside can use useAccount */}
+</AccountProvider>
+```
+
+#### Error: "accountService.initialize is not a function"
+
+**Problem:** You forgot to call `.initialize()` on your account service.
+
+**Solution:**
+```tsx
+const accountService = new FirebaseAccountService(config);
+await accountService.initialize();  // Don't forget this!
+```
+
+#### User stays logged in after logout
+
+**Problem:** AccountService not properly clearing state.
+
+**Solution:**
+1. Check that you're calling the `logout` function from useAccount
+2. For Firebase, ensure your Firebase project is properly configured
+3. Clear app state/cache if testing locally
+
+```tsx
+const { logout } = useAccount();
+await logout(); // This should work
+```
+
+#### Firebase: "Firebase App already initialized"
+
+**Problem:** Creating multiple Firebase app instances.
+
+**Solution:** Create the service instance outside your component:
+
+```tsx
+// ❌ Wrong - creates new instance on every render
+function App() {
+  const accountService = new FirebaseAccountService(config);
+  // ...
+}
+
+// ✅ Correct - single instance
+const accountService = new FirebaseAccountService(config);
+
+function App() {
+  // ...
+}
+```
+
+#### TypeScript: Type errors with User object
+
+**Problem:** `user` might be `null` when not authenticated.
+
+**Solution:** Always check `signedIn` or use optional chaining:
+
+```tsx
+const { user, signedIn } = useAccount();
+
+// Option 1: Check signedIn first
+if (signedIn && user) {
+  console.log(user.email); // Safe
+}
+
+// Option 2: Optional chaining
+console.log(user?.email); // Safe
+```
+
+#### Form validation not working
+
+**Problem:** Email or password not meeting requirements.
+
+**Solution:** Check validation rules:
+- **Email:** Must be valid RFC 5322 format (e.g., `user@example.com`)
+- **Password:** Minimum 8 characters, must contain uppercase, lowercase, and number
+
+```tsx
+import { validateEmail, validatePasswordStrength } from '@spezivibe/account';
+
+// Check if email is valid
+const emailResult = validateEmail('test@example.com');
+console.log(emailResult.valid); // true or false
+console.log(emailResult.error); // error message if invalid
+
+// Check password strength
+const passwordResult = validatePasswordStrength('MyPass123');
+console.log(passwordResult.valid); // true or false
+```
+
+#### Profile fields not saving
+
+**Problem:** Field names don't match UserProfile interface.
+
+**Solution:** Use exact field names from `UserProfile` type:
+
+```tsx
+// ✅ Correct field names
+await updateProfile({
+  name: 'John',
+  dateOfBirth: new Date(),
+  sex: Sex.Male,
+  phoneNumber: '+1234567890',
+  biography: 'My bio',
+  profileImageUrl: 'https://...',
+});
+
+// ❌ Wrong - these don't exist
+await updateProfile({
+  firstName: 'John',  // Should be 'name'
+  age: 30,            // Should be 'dateOfBirth'
+});
+```
+
+#### Firebase: Profile not persisting across sessions
+
+**Problem:** Firestore not properly initialized or rules not configured.
+
+**Solution:**
+1. Ensure Firestore is enabled in Firebase Console
+2. Set up Firestore security rules:
+
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+```
+
+3. Check that accountService is initialized before use
+
+#### "Invalid email" error for valid emails
+
+**Problem:** Email validation is strict (RFC 5322).
+
+**Solution:** Ensure email format is correct:
+- ✅ Valid: `user@example.com`, `name+tag@domain.co.uk`
+- ❌ Invalid: `user@`, `@example.com`, `user @example.com` (space)
+
+The package automatically trims whitespace, so accidental spaces should be handled.
+
+## Testing
+
+### Testing Components That Use useAccount
+
+When testing components that use the `useAccount` hook, you need to provide a mock AccountProvider.
+
+#### Option 1: Mock AccountProvider
+
+```tsx
+// test-utils.tsx - Create reusable test utilities
+import React from 'react';
+import { AccountProvider, InMemoryAccountService } from '@spezivibe/account';
+
+export function renderWithAccount(component: React.ReactElement) {
+  const accountService = new InMemoryAccountService();
+
+  return (
+    <AccountProvider accountService={accountService}>
+      {component}
+    </AccountProvider>
+  );
+}
+```
+
+```tsx
+// MyComponent.test.tsx
+import { render } from '@testing-library/react-native';
+import { renderWithAccount } from './test-utils';
+import MyComponent from './MyComponent';
+
+test('displays user email when logged in', () => {
+  const { getByText } = render(
+    renderWithAccount(<MyComponent />)
+  );
+
+  // InMemoryAccountService is always logged in by default
+  expect(getByText('local@example.com')).toBeTruthy();
+});
+```
+
+#### Option 2: Mock useAccount Hook
+
+```tsx
+// MyComponent.test.tsx
+import { render } from '@testing-library/react-native';
+import * as AccountModule from '@spezivibe/account';
+
+// Mock the useAccount hook
+jest.mock('@spezivibe/account', () => ({
+  ...jest.requireActual('@spezivibe/account'),
+  useAccount: jest.fn(),
+}));
+
+const mockUseAccount = AccountModule.useAccount as jest.MockedFunction<typeof AccountModule.useAccount>;
+
+test('shows login prompt when not authenticated', () => {
+  // Set up mock return value
+  mockUseAccount.mockReturnValue({
+    signedIn: false,
+    isLoading: false,
+    user: null,
+    error: null,
+    login: jest.fn(),
+    register: jest.fn(),
+    logout: jest.fn(),
+    resetPassword: jest.fn(),
+    updateProfile: jest.fn(),
+    clearError: jest.fn(),
+  });
+
+  const { getByText } = render(<MyComponent />);
+  expect(getByText('Please log in')).toBeTruthy();
+});
+
+test('shows user profile when authenticated', () => {
+  mockUseAccount.mockReturnValue({
+    signedIn: true,
+    isLoading: false,
+    user: {
+      uid: '123',
+      email: 'test@example.com',
+      name: 'Test User',
+    },
+    error: null,
+    login: jest.fn(),
+    register: jest.fn(),
+    logout: jest.fn(),
+    resetPassword: jest.fn(),
+    updateProfile: jest.fn(),
+    clearError: jest.fn(),
+  });
+
+  const { getByText } = render(<MyComponent />);
+  expect(getByText('Test User')).toBeTruthy();
+});
+```
+
+#### Option 3: Testing with Real Firebase (Integration Tests)
+
+```tsx
+import { FirebaseAccountService } from '@spezivibe/account';
+
+// Use Firebase Emulator for testing
+const testConfig = {
+  apiKey: 'test-api-key',
+  authDomain: 'localhost',
+  projectId: 'test-project',
+  storageBucket: 'test-bucket',
+  messagingSenderId: '123',
+  appId: 'test-app',
+};
+
+describe('Authentication flow', () => {
+  let accountService: FirebaseAccountService;
+
+  beforeAll(async () => {
+    accountService = new FirebaseAccountService(testConfig);
+    await accountService.initialize();
+  });
+
+  test('can register and login', async () => {
+    const email = `test-${Date.now()}@example.com`;
+    const password = 'TestPass123';
+
+    await accountService.register({ email, password });
+    const user = await accountService.getCurrentUser();
+
+    expect(user?.email).toBe(email);
+  });
+});
+```
+
+### Example Test Suite
+
+```tsx
+// LoginScreen.test.tsx
+import React from 'react';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { renderWithAccount } from './test-utils';
+import LoginScreen from './LoginScreen';
+import * as AccountModule from '@spezivibe/account';
+
+jest.mock('@spezivibe/account', () => ({
+  ...jest.requireActual('@spezivibe/account'),
+  useAccount: jest.fn(),
+}));
+
+const mockUseAccount = AccountModule.useAccount as jest.MockedFunction<typeof AccountModule.useAccount>;
+
+describe('LoginScreen', () => {
+  const mockLogin = jest.fn();
+  const mockNavigate = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    mockUseAccount.mockReturnValue({
+      signedIn: false,
+      isLoading: false,
+      user: null,
+      error: null,
+      login: mockLogin,
+      register: jest.fn(),
+      logout: jest.fn(),
+      resetPassword: jest.fn(),
+      updateProfile: jest.fn(),
+      clearError: jest.fn(),
+    });
+  });
+
+  test('renders login form', () => {
+    const { getByPlaceholderText, getByText } = render(<LoginScreen />);
+
+    expect(getByPlaceholderText('Email')).toBeTruthy();
+    expect(getByPlaceholderText('Password')).toBeTruthy();
+    expect(getByText('Sign In')).toBeTruthy();
+  });
+
+  test('calls login with email and password', async () => {
+    const { getByPlaceholderText, getByText } = render(<LoginScreen />);
+
+    fireEvent.changeText(getByPlaceholderText('Email'), 'test@example.com');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'password123');
+    fireEvent.press(getByText('Sign In'));
+
+    await waitFor(() => {
+      expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123');
+    });
+  });
+
+  test('shows error message on login failure', async () => {
+    mockLogin.mockRejectedValueOnce(new Error('Invalid credentials'));
+
+    const { getByPlaceholderText, getByText } = render(<LoginScreen />);
+
+    fireEvent.changeText(getByPlaceholderText('Email'), 'test@example.com');
+    fireEvent.changeText(getByPlaceholderText('Password'), 'wrong');
+    fireEvent.press(getByText('Sign In'));
+
+    await waitFor(() => {
+      expect(getByText('Invalid credentials')).toBeTruthy();
+    });
+  });
+});
+```
+
 ## Architecture
 
-This module follows the Spezi Standard pattern:
+This module follows a **provider-service architecture**:
 
 1. **Storage-Agnostic** - Account module only manages authentication
 2. **Dependency Injection** - Services injected via props
@@ -434,6 +1228,13 @@ App
          └─ LocalAccountService
 ```
 
+### Key Design Principles
+
+1. **Separation of Concerns**: Authentication logic is separate from UI and storage
+2. **Testability**: Easy to mock services and test components in isolation
+3. **Flexibility**: Swap account services without changing application code
+4. **Type Safety**: Full TypeScript support with comprehensive type definitions
+
 ## Development
 
 ### Building
@@ -443,7 +1244,7 @@ npm run build
 npm run typecheck
 ```
 
-### Testing
+### Running Package Tests
 
 ```bash
 npm test
