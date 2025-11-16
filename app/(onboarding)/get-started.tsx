@@ -1,12 +1,9 @@
 import { View, StyleSheet, Pressable } from 'react-native';
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-
-const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
 
 export default function GetStartedScreen() {
   const colorScheme = useColorScheme();
