@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react-native';
 import { AccountProvider } from '../providers/AccountProvider';
 import { AccountProviderProps } from '../types';
-import { LocalAccountService } from '../services/local-account-service';
+import { InMemoryAccountService } from '../services/local-account-service';
 
 /**
  * Test utilities for @spezivibe/account tests
@@ -12,7 +12,7 @@ import { LocalAccountService } from '../services/local-account-service';
  * Create a mock account service for testing
  */
 export function createMockAccountService() {
-  const service = new LocalAccountService();
+  const service = new InMemoryAccountService();
   return service;
 }
 

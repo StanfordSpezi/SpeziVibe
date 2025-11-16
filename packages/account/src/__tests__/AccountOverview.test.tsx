@@ -2,12 +2,12 @@ import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react-native';
 import { AccountOverview } from '../components/AccountOverview';
 import { renderWithAccountProvider, mockUser } from './test-utils';
-import { LocalAccountService } from '../services/local-account-service';
+import { InMemoryAccountService } from '../services/local-account-service';
 
 describe('AccountOverview', () => {
   it('should show empty state when no user', async () => {
     // Create a service with no user
-    const service = new LocalAccountService();
+    const service = new InMemoryAccountService();
     await service.initialize();
     await service.logout();
 
@@ -47,7 +47,7 @@ describe('AccountOverview', () => {
   });
 
   it('should display member since date when createdAt exists', async () => {
-    const service = new LocalAccountService();
+    const service = new InMemoryAccountService();
     await service.initialize();
     // Update profile with a specific created date
     const user = await service.getCurrentUser();
@@ -65,7 +65,7 @@ describe('AccountOverview', () => {
   });
 
   it('should display profile information when available', async () => {
-    const service = new LocalAccountService();
+    const service = new InMemoryAccountService();
     await service.initialize();
     await service.updateProfile({
       name: 'Test User',
@@ -97,7 +97,7 @@ describe('AccountOverview', () => {
     const { queryByText } = renderWithAccountProvider(<AccountOverview />);
 
     await waitFor(() => {
-      // LocalAccountService has a default name, so we check for optional fields
+      // InMemoryAccountService has a default name, so we check for optional fields
       expect(queryByText('Biography')).toBeNull();
     });
   });
@@ -209,7 +209,7 @@ describe('AccountOverview', () => {
   });
 
   it('should call logout from context when no onLogout callback provided', async () => {
-    const service = new LocalAccountService();
+    const service = new InMemoryAccountService();
     await service.initialize();
     const logoutSpy = jest.spyOn(service, 'logout');
 
@@ -263,7 +263,7 @@ describe('AccountOverview', () => {
   });
 
   it('should show "Not set" for missing email', async () => {
-    const service = new LocalAccountService();
+    const service = new InMemoryAccountService();
     await service.initialize();
     const user = await service.getCurrentUser();
     if (user) {
@@ -280,7 +280,7 @@ describe('AccountOverview', () => {
   });
 
   it('should format dates correctly', async () => {
-    const service = new LocalAccountService();
+    const service = new InMemoryAccountService();
     await service.initialize();
     await service.updateProfile({
       dateOfBirth: new Date('1990-06-15'),

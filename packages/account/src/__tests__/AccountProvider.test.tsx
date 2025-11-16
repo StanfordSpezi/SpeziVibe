@@ -1,14 +1,14 @@
 import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { AccountProvider, useAccount } from '../providers/AccountProvider';
-import { LocalAccountService } from '../services/local-account-service';
+import { InMemoryAccountService } from '../services/local-account-service';
 import { AccountService, User } from '../types';
 
 describe('AccountProvider', () => {
   let accountService: AccountService;
 
   beforeEach(() => {
-    accountService = new LocalAccountService();
+    accountService = new InMemoryAccountService();
   });
 
   describe('initialization', () => {
@@ -121,7 +121,7 @@ describe('AccountProvider', () => {
 
     it('should handle login error', async () => {
       // Create a new service and spy on login method
-      const errorService = new LocalAccountService();
+      const errorService = new InMemoryAccountService();
       await errorService.initialize();
       jest.spyOn(errorService, 'login').mockRejectedValue(new Error('Login failed'));
 
@@ -265,7 +265,7 @@ describe('AccountProvider', () => {
 
   describe('error handling', () => {
     it('should clear error', async () => {
-      const errorService = new LocalAccountService();
+      const errorService = new InMemoryAccountService();
       await errorService.initialize();
       jest.spyOn(errorService, 'login').mockRejectedValue(new Error('Login failed'));
 

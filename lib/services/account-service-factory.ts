@@ -1,4 +1,4 @@
-import { AccountService, FirebaseAccountService, LocalAccountService } from '@spezivibe/account';
+import { AccountService, FirebaseAccountService, InMemoryAccountService } from '@spezivibe/account';
 import { BackendConfig } from './types';
 
 /**
@@ -18,7 +18,7 @@ export class AccountServiceFactory {
         return new FirebaseAccountService(config.firebase);
 
       case 'local':
-        return new LocalAccountService();
+        return new InMemoryAccountService();
 
       default:
         throw new Error(`Unsupported backend type: ${config.type}`);

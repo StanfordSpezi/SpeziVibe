@@ -104,7 +104,7 @@ Reusable npm package for FHIR-compatible questionnaires:
 ### Account Module (`packages/account/`)
 Reusable npm package for authentication and account management:
 - **Components**: `SignInForm`, `RegisterForm`, `PasswordResetForm`, `AccountOverview`, `EditProfileForm`, `ChangePasswordForm`
-- **Services**: `FirebaseAccountService`, `LocalAccountService`, `InMemoryAccountService`
+- **Services**: `FirebaseAccountService`, `InMemoryAccountService`
 - **Hooks**: `useAccount()` - Access auth state and methods
 - **Utilities**: `validateEmail`, `validatePassword`, `AccountError`, `AccountErrorCode`
 - **Configuration**: `AccountConfiguration` for required/collected fields

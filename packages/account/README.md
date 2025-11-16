@@ -156,7 +156,7 @@ Backend (Firebase Auth, etc.)
 - You want password reset emails
 - You're building a real app
 
-**Use Local Account Service when:**
+**Use InMemory Account Service when:**
 - Local development without Firebase setup
 - Testing UI flows
 - Demos or prototypes
@@ -745,14 +745,14 @@ const accountService = new FirebaseAccountService({
 await accountService.initialize();
 ```
 
-### Local Account Service
+### InMemory Account Service
 
 For local development and testing without a backend.
 
 ```tsx
-import { LocalAccountService } from '@spezivibe/account';
+import { InMemoryAccountService } from '@spezivibe/account';
 
-const accountService = new LocalAccountService();
+const accountService = new InMemoryAccountService();
 await accountService.initialize();
 ```
 
@@ -1225,7 +1225,7 @@ App
  └─ AccountProvider (manages auth state)
      └─ AccountService (interface)
          ├─ FirebaseAccountService
-         └─ LocalAccountService
+         └─ InMemoryAccountService
 ```
 
 ### Key Design Principles

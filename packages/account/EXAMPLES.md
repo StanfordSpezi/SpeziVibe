@@ -23,11 +23,11 @@ import React from 'react';
 import { View, Text, Button } from 'react-native';
 import {
   AccountProvider,
-  LocalAccountService,
+  InMemoryAccountService,
   useAccount,
 } from '@spezivibe/account';
 
-const accountService = new LocalAccountService();
+const accountService = new InMemoryAccountService();
 accountService.initialize();
 
 function App() {
@@ -135,7 +135,7 @@ export default App;
 import {
   AccountService,
   FirebaseAccountService,
-  LocalAccountService,
+  InMemoryAccountService,
 } from '@spezivibe/account';
 
 const BACKEND_TYPE = process.env.EXPO_PUBLIC_BACKEND_TYPE || 'local';
@@ -154,9 +154,9 @@ async function createAccountService(): Promise<AccountService> {
     return firebaseService;
   }
 
-  const localService = new LocalAccountService();
-  await localService.initialize();
-  return localService;
+  const inMemoryService = new InMemoryAccountService();
+  await inMemoryService.initialize();
+  return inMemoryService;
 }
 
 function App() {

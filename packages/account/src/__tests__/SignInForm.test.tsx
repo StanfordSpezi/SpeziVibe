@@ -118,7 +118,7 @@ describe('SignInForm', () => {
     fireEvent.changeText(getByPlaceholderText('Enter your password'), 'password123');
     fireEvent.press(getByText('Sign In'));
 
-    // Wait for login to complete (LocalAccountService always succeeds)
+    // Wait for login to complete (InMemoryAccountService always succeeds)
     await waitFor(() => {
       expect(getByText('Sign In')).toBeTruthy();
     });
