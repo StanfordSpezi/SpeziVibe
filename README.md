@@ -23,9 +23,10 @@ SpeziVibe is a React Native + Expo template for building cross-platform digital 
 
 - **🏗️ Standard Architecture** - Inspired by Stanford Spezi's Standard pattern for centralized data orchestration
 - **🔌 Pluggable Backends** - Switch between local storage and Firebase without changing app code
+- **👤 Account Module** - Reusable authentication package with Firebase and local implementations
 - **📋 Onboarding Flow** - Multi-step onboarding with feature highlights and informed consent
 - **📅 Task Scheduler** - Flexible scheduling with daily, weekly, monthly recurrence patterns and completion policies
-- **📝 Questionnaires** - Dynamic forms with validation
+- **📝 Questionnaires** - Dynamic forms with validation (FHIR-compatible)
 - **👥 Contact Management** - Built-in support team and emergency contact templates
 - **🎨 Theme Support** - Full light and dark theme support
 - **🤖 AI-Friendly** - Clean, well-structured codebase designed for AI-assisted development
@@ -58,74 +59,10 @@ npx expo start
 - Press `w` for Web
 - Scan QR code with Expo Go on your device
 
-## 🎯 Key Modules
+## 📦 Reusable Modules
 
-### Standard Module
-
-The **Standard** is the central orchestrator of the application. 
-It:
-- Initializes and provides the backend service to all modules
-- Manages data flow throughout the application
-- Ensures proper initialization order and error handling
-- Accessible via `useStandard()` hook from any component
-
-```typescript
-const { backend, backendType, isLoading, error, retry } = useStandard();
-```
-
-### Backend Module
-
-Pluggable backend architecture supporting multiple storage solutions:
-
-**Local Storage (Default)**
-- Uses React Native AsyncStorage
-- No authentication required
-- Perfect for offline-first apps and development
-- Zero configuration needed
-
-**Firebase Backend**
-- Real-time cloud sync via Firestore
-- Email/password authentication
-- Multi-device support
-- Easy to set up with environment variables
-
-To configure Firebase, create a `.env` file:
-```bash
-EXPO_PUBLIC_BACKEND_TYPE=firebase
-EXPO_PUBLIC_FIREBASE_API_KEY=your-api-key
-EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your-app.firebaseapp.com
-# ... other Firebase config
-```
-
-See `lib/services/README.md` for detailed backend documentation.
-
-### Scheduler Module
-
-- Task categories: questionnaires, measurements, reminders, custom tasks
-- Recurrence patterns with time windows
-- Completion tracking with outcomes and timestamps
-- Date-based event querying
-- Uses Standard for data persistence
-
-### Questionnaire Module
-
-- Multiple question types: text, scale (1-10), multiple choice, boolean
-- Real-time validation with Yup schemas
-- Integration with task scheduler
-- Response storage via backend system
-
-### Authentication Module
-
-- Email/password authentication
-- Smart loading states during initialization
-- Persistent session management
-
-### Onboarding Module
-
-- Welcome screen with app features
-- Interactive feature showcase with pagination
-- Informed consent with digital signature
-- Completion confirmation
+- **[@spezivibe/account](./packages/account/README.md)** - Authentication and account management with Firebase and local implementations
+- **[@spezivibe/questionnaire](./packages/questionnaire/README.md)** - FHIR-compatible questionnaire system with dynamic forms
 
 ## 🛠️ Built With
 
