@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { StyleSheet, ScrollView, View, Pressable, Linking, Alert } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { AccountButton } from '@/components/account-button';
+import { AccountSheet } from '@/components/account-sheet';
+import { useAccount } from '@spezivibe/account';
 
 interface ContactOption {
   type: 'call' | 'text' | 'email' | 'website';
@@ -63,6 +67,8 @@ const CONTACTS: Contact[] = [
 export default function ContactsScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { signedIn } = useAccount();
+  const [showAccountSheet, setShowAccountSheet] = useState(false);
 
   const handleContactAction = (option: ContactOption) => {
     switch (option.type) {
@@ -84,12 +90,17 @@ export default function ContactsScreen() {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.header}>
-        <ThemedText type="title" style={styles.title}>
-          Contacts
-        </ThemedText>
-        <ThemedText style={styles.subtitle}>
-          Get in touch with your support team
-        </ThemedText>
+        <View style={styles.headerContent}>
+          <ThemedText type="title" style={styles.title}>
+            Contacts
+          </ThemedText>
+          <ThemedText style={styles.subtitle}>
+            Get in touch with your support team
+          </ThemedText>
+        </View>
+        {signedIn && (
+          <AccountButton onPress={() => setShowAccountSheet(true)} />
+        )}
       </View>
 
       <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
@@ -170,6 +181,11 @@ export default function ContactsScreen() {
           </ThemedText>
         </View>
       </ScrollView>
+
+      <AccountSheet
+        visible={showAccountSheet}
+        onClose={() => setShowAccountSheet(false)}
+      />
     </ThemedView>
   );
 }
@@ -179,9 +195,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 16,
+  },
+  headerContent: {
+    flex: 1,
   },
   title: {
     fontSize: 34,

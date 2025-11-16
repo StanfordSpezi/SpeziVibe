@@ -8,11 +8,15 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useScheduler, Event, formatTime } from '@/lib/scheduler';
 import { CalendarStrip } from '@/components/calendar-strip';
+import { AccountButton } from '@/components/account-button';
+import { AccountSheet } from '@/components/account-sheet';
+import { useAccount } from '@spezivibe/account';
 
 export default function ScheduleScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const { scheduler, tasks } = useScheduler();
+  const { signedIn } = useAccount();
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -20,6 +24,7 @@ export default function ScheduleScreen() {
   });
   const [events, setEvents] = useState<Event[]>([]);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [showAccountSheet, setShowAccountSheet] = useState(false);
 
   useEffect(() => {
     loadEvents();
@@ -144,6 +149,9 @@ export default function ScheduleScreen() {
         <ThemedText type="title" style={styles.title}>
           Schedule
         </ThemedText>
+        {signedIn && (
+          <AccountButton onPress={() => setShowAccountSheet(true)} />
+        )}
       </View>
 
       <CalendarStrip selectedDate={selectedDate} onSelectDate={setSelectedDate} />
@@ -248,6 +256,11 @@ export default function ScheduleScreen() {
           ))
         )}
       </ScrollView>
+
+      <AccountSheet
+        visible={showAccountSheet}
+        onClose={() => setShowAccountSheet(false)}
+      />
     </ThemedView>
   );
 }
@@ -257,6 +270,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 24,
     paddingTop: 60,
     paddingBottom: 12,

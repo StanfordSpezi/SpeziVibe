@@ -21,7 +21,7 @@ export function SchedulerProvider({ children }: SchedulerProviderProps) {
   const [scheduler, setScheduler] = useState<Scheduler | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { backend, isLoading: backendLoading } = useStandard();
+  const { backend, backendType, isLoading: backendLoading } = useStandard();
 
   useEffect(() => {
     // Wait for backend to be ready
@@ -34,6 +34,9 @@ export function SchedulerProvider({ children }: SchedulerProviderProps) {
 
     async function initializeScheduler() {
       try {
+        // Backend is guaranteed to be non-null due to check above
+        if (!backend) return;
+
         // Create scheduler with backend from context
         const schedulerInstance = new Scheduler(backend);
         await schedulerInstance.initialize();
@@ -43,8 +46,9 @@ export function SchedulerProvider({ children }: SchedulerProviderProps) {
         // Check if tasks are already initialized
         const existingTasks = schedulerInstance.getTasks();
 
-        if (existingTasks.length === 0) {
-          // Initialize predefined tasks on first launch
+        // Only create sample tasks for local backend (development)
+        // For Firebase, wait until user is authenticated to load/create tasks
+        if (existingTasks.length === 0 && backendType === 'local') {
           const predefinedTasks = createSampleTasks();
           for (const task of predefinedTasks) {
             if (cancelled) return;

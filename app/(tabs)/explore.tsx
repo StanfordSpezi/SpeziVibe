@@ -14,8 +14,11 @@ import { Fonts } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useScheduler, createSampleTasks } from '@/lib/scheduler';
 import { SAMPLE_QUESTIONNAIRES } from '@/lib/questionnaires';
+import { AccountButton } from '@/components/account-button';
+import { AccountSheet } from '@/components/account-sheet';
+import { useAccount } from '@spezivibe/account';
+import { ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
 
-const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
 const CONSENT_KEY = '@consent_data';
 
 export default function TabTwoScreen() {
@@ -23,7 +26,9 @@ export default function TabTwoScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const { scheduler, refreshTasks } = useScheduler();
+  const { signedIn } = useAccount();
   const [consentData, setConsentData] = useState<any>(null);
+  const [showAccountSheet, setShowAccountSheet] = useState(false);
 
   useEffect(() => {
     loadConsentData();
@@ -94,9 +99,16 @@ export default function TabTwoScreen() {
     );
   };
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
+    <>
+      {signedIn && (
+        <View style={styles.accountButtonContainer}>
+          <AccountButton onPress={() => setShowAccountSheet(true)} />
+        </View>
+      )}
+
+      <ParallaxScrollView
+        headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
+        headerImage={
         <IconSymbol
           size={310}
           color="#808080"
@@ -279,10 +291,22 @@ export default function TabTwoScreen() {
         </View>
       </Collapsible>
     </ParallaxScrollView>
+
+      <AccountSheet
+        visible={showAccountSheet}
+        onClose={() => setShowAccountSheet(false)}
+      />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  accountButtonContainer: {
+    position: 'absolute',
+    top: 50,
+    right: 16,
+    zIndex: 10,
+  },
   headerImage: {
     color: '#808080',
     bottom: -90,
