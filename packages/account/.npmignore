@@ -1,0 +1,44 @@
+# Source files (we publish dist instead)
+src/
+
+# Tests
+__tests__/
+*.test.ts
+*.test.tsx
+jest.setup.js
+jest.config.js
+
+# Build configs
+tsconfig.json
+babel.config.js
+.eslintrc*
+
+# Development
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Misc
+.env
+.env.*
+*.tsbuildinfo

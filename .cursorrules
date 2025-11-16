@@ -51,23 +51,37 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
 
 **Provider Hierarchy**:
 ```
-<StandardProvider>       // Initializes backend
-  <SchedulerProvider>    // Uses backend from Standard
-    <AuthProvider>       // Uses backend from Standard
-      <App />
-    </AuthProvider>
+<StandardProvider>         // Step 1: Initialize backend & accountService
+  <SchedulerProvider>      // Step 2: Initialize scheduler using backend
+    <AccountProvider>      // Step 3: Provide auth UI components & state
+      <App />              // Step 4: Render app when all ready
+    </AccountProvider>
   </SchedulerProvider>
 </StandardProvider>
 ```
 
+**Key Points**:
+- Standard initializes BOTH backend and accountService
+- Standard automatically syncs user ID from accountService to backend
+- AccountProvider wraps accountService for React hooks/components
+- Children render during loading for smooth UX
+
 ### Backend Services (`lib/services/`)
-- `backend-factory.ts` - Creates backend instances
+- `backend-factory.ts` - Creates backend instances (data storage)
+- `account-service-factory.ts` - Creates account service instances (authentication)
 - `config.ts` - Backend configuration (reads from .env)
 - `backends/local-storage.ts` - Local AsyncStorage backend (default)
 - `backends/firebase.ts` - Firebase backend (optional)
-- `auth-context.tsx` - Authentication module using Standard
+- `utils/task-serialization.ts` - Shared task serialization helpers
+- `utils/object-utils.ts` - Shared utilities (removeUndefined)
 
 **Supported Backends**: `local` (default), `firebase`
+
+**Separation of Concerns**:
+- BackendService handles ONLY data storage (tasks, outcomes, questionnaire data)
+- AccountService handles ONLY authentication (login, register, logout, profile)
+- Standard coordinates by syncing user ID from AccountService to BackendService
+- Never add auth methods to BackendService or data methods to AccountService
 
 ### Scheduler (`lib/scheduler/`)
 - `types.ts` - Core types (Task, Event, Outcome, Schedule)
@@ -80,17 +94,63 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
 **Recurrence**: `daily`, `weekly`, `monthly`, `once`
 **Completion Policies**: `anytime`, `window` (with time constraints)
 
-### Questionnaires (`lib/questionnaires/`)
+### Questionnaires (`packages/questionnaire/`)
+Reusable npm package for FHIR-compatible questionnaires:
 - `types.ts` - Question and questionnaire types
 - `sample-questionnaires.ts` - Predefined questionnaires
 - Built with Formik + Yup for validation
 - Question types: `text`, `scale`, `multipleChoice`, `boolean`
+
+### Account Module (`packages/account/`)
+Reusable npm package for authentication and account management:
+- **Components**: `SignInForm`, `RegisterForm`, `PasswordResetForm`, `AccountOverview`, `EditProfileForm`, `ChangePasswordForm`
+- **Services**: `FirebaseAccountService`, `InMemoryAccountService`
+- **Hooks**: `useAccount()` - Access auth state and methods
+- **Utilities**: `validateEmail`, `validatePassword`, `AccountError`, `AccountErrorCode`
+- **Configuration**: `AccountConfiguration` for required/collected fields
+
+**Usage**:
+```typescript
+import { useAccount, SignInForm } from '@spezivibe/account';
+
+const { signedIn, user, login, logout } = useAccount();
+```
 
 ### Navigation
 - File-based routing with Expo Router
 - Route groups: `(tabs)`, `(onboarding)`, `questionnaire`
 - Modals: Use `presentation: 'modal'` in Stack.Screen
 - Deep linking: Use `router.push()` with params
+
+**Authentication Guards** (IMPORTANT):
+- Use **declarative** `<Redirect />` components in layouts for auth flows
+- Return `<Redirect href="..." />` based on state (NOT `router.replace()`)
+- Follow the pattern: LOADING → GUARD 1 → GUARD 2 → GUARD 3 → RENDER
+- Redirect component handles timing and prevents redirect loops automatically
+
+**Example** (app/_layout.tsx):
+```typescript
+function RootLayoutNav() {
+  const { signedIn, isLoading } = useAccount();
+  const onboardingComplete = useOnboardingStatus();
+
+  // LOADING: Wait for state
+  if (onboardingComplete === null || isLoading) return null;
+
+  // GUARD 1: Redirect to onboarding if not completed
+  if (!onboardingComplete && !inAuthFlow) {
+    return <Redirect href="/(onboarding)/welcome" />;
+  }
+
+  // GUARD 2: Redirect to sign-in if not authenticated
+  if (onboardingComplete && !signedIn && !inAuthFlow) {
+    return <Redirect href="/(onboarding)/sign-in" />;
+  }
+
+  // RENDER: All guards passed
+  return <Stack>...</Stack>;
+}
+```
 
 ## Common Tasks
 
@@ -149,13 +209,15 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
    }, []);
    ```
 
-4. **Navigation Guards**: Use refs to prevent navigation loops
+4. **Navigation Guards**: Use declarative `<Redirect />` in layouts (NOT imperative navigation)
    ```typescript
-   const hasRedirected = useRef(false);
-   if (!hasRedirected.current) {
-     hasRedirected.current = true;
-     router.replace(...);
-   }
+   // ✅ DO: Declarative in layout
+   if (!signedIn) return <Redirect href="/sign-in" />;
+
+   // ❌ DON'T: Imperative with useEffect
+   useEffect(() => {
+     if (!signedIn) router.replace('/sign-in');
+   }, [signedIn]);
    ```
 
 5. **No Early Returns**: Providers should NOT return null during loading
@@ -170,10 +232,12 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
 
 ### Code Organization
 - Keep components small and focused
-- Extract reusable logic into hooks
+- Extract reusable logic into hooks (see `hooks/` directory)
 - Use proper TypeScript types for all props
 - Never import `AsyncStorage` or Firebase directly - use Standard
 - Business logic in `lib/`, UI in `components/` and `app/`
+- **Shared constants** go in `lib/constants.ts` (e.g., ONBOARDING_COMPLETED_KEY, ACCOUNT_CONFIGURATION)
+- **Shared hooks** go in `hooks/` (e.g., `use-onboarding-status.ts`, `use-auto-skip-if-authenticated.ts`)
 - Test dark mode for all UI changes
 - Write clean, readable code for AI agents
 
@@ -186,6 +250,10 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
 - ❌ Returning null from providers during loading
 - ❌ Importing backends directly instead of using Standard
 - ❌ Blocking UX with sync operations (run in background)
+- ❌ Using imperative navigation (`router.replace()`) for auth guards - use `<Redirect />`
+- ❌ Duplicating constants - always import from `lib/constants.ts`
+- ❌ Adding auth methods to BackendService - use AccountService
+- ❌ Manual user ID sync - let Standard handle it automatically
 
 ## Debugging
 - Use Expo Go for quick testing

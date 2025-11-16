@@ -3,17 +3,14 @@ import { QuestionnaireResponse } from '../questionnaires/types';
 
 /**
  * Common backend interface for data persistence
- * Firebase will implement this interface
+ * Authentication is handled separately by AccountService
  */
 export interface BackendService {
   // Initialization
   initialize(): Promise<void>;
 
-  // Authentication (for remote backends)
-  isAuthenticated(): Promise<boolean>;
-  login(credentials: any): Promise<void>;
-  register?(credentials: any): Promise<void>;
-  logout(): Promise<void>;
+  // User ID management (for remote backends that need to know the current user)
+  setUserId(userId: string | null): void;
 
   // Scheduler data operations
   loadSchedulerState(): Promise<SchedulerState | null>;
