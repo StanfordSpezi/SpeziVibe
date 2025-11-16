@@ -17,7 +17,7 @@
 
 ## 📱 About
 
-SpeziVibe is a React Native + Expo template for building cross-platform digital health applications. Inspired by the [Stanford Spezi](https://github.com/StanfordSpezi) framework, it provides essential patterns for onboarding, task scheduling, questionnaires, and user engagement—optimized for rapid prototyping and AI-assisted development.
+SpeziVibe is a [React Native](https://reactnative.dev/) and [Expo](https://expo.dev/) based template for building digital health applications on iOS, Android, and Web. Inspired by the native [Stanford Spezi](https://github.com/StanfordSpezi) framework on iOS, it provides essential patterns for rapid prototyping in digital health, optimized for AI-assisted development.
 
 ## ✨ Features
 
@@ -59,21 +59,10 @@ npx expo start
 - Press `w` for Web
 - Scan QR code with Expo Go on your device
 
-## 📦 Reusable Modules
+## 📦 Modules
 
 - **[@spezivibe/account](./packages/account/README.md)** - Authentication and account management with Firebase and local implementations
 - **[@spezivibe/questionnaire](./packages/questionnaire/README.md)** - FHIR-compatible questionnaire system with dynamic forms
-
-## 🛠️ Built With
-
-- **[Expo](https://expo.dev)** - React Native development platform
-- **[React Native](https://reactnative.dev)** - Cross-platform mobile framework
-- **[TypeScript](https://www.typescriptlang.org)** - Type-safe JavaScript
-- **[Expo Router](https://docs.expo.dev/router/introduction/)** - File-based navigation
-- **[Formik](https://formik.org/)** - Form state management
-- **[Yup](https://github.com/jquense/yup)** - Schema validation
-- **[AsyncStorage](https://react-native-async-storage.github.io/async-storage/)** - Local data persistence
-- **[Firebase](https://firebase.google.com/)** (Optional) - Cloud backend and authentication
 
 ## Contributing
 

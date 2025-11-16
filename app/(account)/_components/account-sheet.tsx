@@ -5,8 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { AccountOverview, useAccount } from '@spezivibe/account';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { ThemedView } from './themed-view';
-import { ThemedText } from './themed-text';
+import { ThemedView } from '@/components/themed-view';
+import { ThemedText } from '@/components/themed-text';
 
 interface AccountSheetProps {
   visible: boolean;
@@ -16,11 +16,6 @@ interface AccountSheetProps {
 /**
  * AccountSheet - A modal sheet for account management
  *
- * Following the SpeziTemplateApplication pattern, this modal displays
- * the user's account information and provides actions for account management.
- *
- * Uses the AccountOverview component from @spezivibe/account for consistent
- * account display across the app.
  */
 export function AccountSheet({ visible, onClose }: AccountSheetProps) {
   const router = useRouter();

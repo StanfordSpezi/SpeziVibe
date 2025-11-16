@@ -47,22 +47,9 @@ function RootLayoutNav() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(onboarding)" />
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="(account)" />
       <Stack.Screen name="questionnaire" options={{ presentation: 'modal' }} />
       <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal', headerShown: true }} />
-      <Stack.Screen
-        name="edit-profile"
-        options={{
-          presentation: 'modal',
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="change-password"
-        options={{
-          presentation: 'modal',
-          headerShown: false,
-        }}
-      />
     </Stack>
   );
 }

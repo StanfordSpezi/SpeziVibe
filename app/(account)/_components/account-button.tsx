@@ -9,9 +9,6 @@ interface AccountButtonProps {
 
 /**
  * AccountButton - A toolbar button that opens the account modal
- *
- * Following the SpeziTemplateApplication pattern, this button appears
- * in the toolbar of main screens and opens the AccountSheet modal.
  */
 export function AccountButton({ onPress }: AccountButtonProps) {
   const colorScheme = useColorScheme();

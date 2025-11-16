@@ -4,8 +4,8 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { AccountButton } from '@/components/account-button';
-import { AccountSheet } from '@/components/account-sheet';
+import { AccountButton } from '@/app/(account)/_components/account-button';
+import { AccountSheet } from '@/app/(account)/_components/account-sheet';
 import { useAccount } from '@spezivibe/account';
 
 interface ContactOption {

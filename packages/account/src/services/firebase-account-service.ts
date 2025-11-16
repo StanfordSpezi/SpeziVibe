@@ -15,8 +15,9 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   deleteUser,
-  Persistence,
 } from 'firebase/auth';
+// @ts-expect-error - getReactNativePersistence exists in RN but not in TS web definitions (Firebase SDK issue)
+import { getReactNativePersistence } from 'firebase/auth';
 import {
   getFirestore,
   doc,
@@ -25,26 +26,6 @@ import {
   Firestore,
 } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Get React Native persistence
-// This function dynamically loads the React Native persistence
-function getReactNativePersistenceCompat(storage: any): Persistence {
-  // Create a custom persistence object compatible with Firebase Auth
-  return {
-    type: 'LOCAL',
-    _isAvailable: async () => true,
-    _set: async (key: string, value: string) => {
-      await storage.setItem(key, value);
-    },
-    _get: async (key: string) => {
-      const value = await storage.getItem(key);
-      return value;
-    },
-    _remove: async (key: string) => {
-      await storage.removeItem(key);
-    },
-  } as Persistence;
-}
 import {
   AccountService,
   LoginCredentials,
@@ -114,7 +95,7 @@ export class FirebaseAccountService implements AccountService {
       // Initialize Auth with React Native persistence using AsyncStorage
       try {
         this.auth = initializeAuth(this.app, {
-          persistence: getReactNativePersistenceCompat(AsyncStorage),
+          persistence: getReactNativePersistence(AsyncStorage),
         });
         this.logger.info('Auth initialized with AsyncStorage persistence');
       } catch (error) {

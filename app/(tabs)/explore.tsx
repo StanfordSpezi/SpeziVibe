@@ -14,8 +14,8 @@ import { Fonts } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useScheduler, createSampleTasks } from '@/lib/scheduler';
 import { SAMPLE_QUESTIONNAIRES } from '@/lib/questionnaires';
-import { AccountButton } from '@/components/account-button';
-import { AccountSheet } from '@/components/account-sheet';
+import { AccountButton } from '@/app/(account)/_components/account-button';
+import { AccountSheet } from '@/app/(account)/_components/account-sheet';
 import { useAccount } from '@spezivibe/account';
 import { ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
 

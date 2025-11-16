@@ -11,8 +11,8 @@ import { ThemedView } from '@/components/themed-view';
 import { Link } from 'expo-router';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAccount } from '@spezivibe/account';
-import { AccountButton } from '@/components/account-button';
-import { AccountSheet } from '@/components/account-sheet';
+import { AccountButton } from '@/app/(account)/_components/account-button';
+import { AccountSheet } from '@/app/(account)/_components/account-sheet';
 import { ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
 
 export default function HomeScreen() {

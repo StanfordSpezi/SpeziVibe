@@ -1,6 +1,7 @@
 import {
   StyleSheet,
   ScrollView,
+  View,
   Pressable,
   Alert,
 } from 'react-native';
@@ -9,36 +10,28 @@ import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { EditProfileForm } from '@spezivibe/account';
+import { ChangePasswordForm } from '@spezivibe/account';
 import { Ionicons } from '@expo/vector-icons';
 
-export default function EditProfileScreen() {
+export default function ChangePasswordScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const handleSuccess = () => {
-    Alert.alert('Success', 'Profile updated successfully', [
-      {
-        text: 'OK',
-        onPress: () => router.back(),
-      },
-    ]);
-  };
+  const handleClose = () => router.navigate('/(tabs)');
 
   const handleError = (error: Error) => {
-    console.error('Error updating profile:', error);
-    Alert.alert('Error', error.message || 'Failed to update profile. Please try again.');
+    Alert.alert('Error', error.message || 'Failed to change password. Please try again.');
   };
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: isDark ? '#000' : '#f2f2f7' }]}>
       <ThemedView style={styles.header}>
         <ThemedText type="title" style={styles.headerTitle}>
-          Edit Profile
+          Change Password
         </ThemedText>
         <Pressable
-          onPress={() => router.back()}
+          onPress={handleClose}
           style={({ pressed }) => [
             styles.closeButton,
             { opacity: pressed ? 0.5 : 1 },
@@ -60,8 +53,29 @@ export default function EditProfileScreen() {
         keyboardShouldPersistTaps="handled"
       >
         <ThemedView style={styles.container}>
-          <EditProfileForm
-            onSuccess={handleSuccess}
+          {/* Information Card */}
+          <View
+            style={[
+              styles.infoCard,
+              {
+                backgroundColor: isDark ? 'rgba(184, 58, 75, 0.15)' : 'rgba(140, 21, 21, 0.1)',
+                borderColor: isDark ? 'rgba(184, 58, 75, 0.3)' : 'rgba(140, 21, 21, 0.2)',
+              },
+            ]}
+          >
+            <Ionicons
+              name="information-circle"
+              size={24}
+              color={isDark ? '#B83A4B' : '#8C1515'}
+              style={styles.infoIcon}
+            />
+            <ThemedText style={styles.infoText}>
+              For your security, please enter your current password to make changes.
+            </ThemedText>
+          </View>
+
+          <ChangePasswordForm
+            onSuccess={handleClose}
             onError={handleError}
             containerStyle={styles.form}
             inputStyle={[
@@ -81,7 +95,8 @@ export default function EditProfileScreen() {
               styles.saveButtonText,
               { color: isDark ? '#000' : '#fff' },
             ]}
-            buttonText="Save Changes"
+            buttonText="Change Password"
+            showRequirements={true}
           />
         </ThemedView>
       </ScrollView>
@@ -118,6 +133,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+  infoCard: {
+    flexDirection: 'row',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+  },
+  infoIcon: {
+    marginRight: 12,
+    marginTop: 2,
+  },
+  infoText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.9,
   },
   form: {
     width: '100%',
