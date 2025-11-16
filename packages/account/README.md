@@ -249,7 +249,8 @@ function HomeScreen() {
   }
 
   // User is logged in, safe to access user object
-  return <Text>Welcome {user.name || user.email}</Text>;
+  // Use formatPersonName utility to display the name
+  return <Text>Welcome {user?.name?.givenName || user.email}</Text>;
 }
 ```
 
@@ -355,14 +356,18 @@ function RegistrationForm() {
   const { register, isLoading } = useAccount();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState(new Date('2000-01-01'));
   const [sex, setSex] = useState<Sex>(Sex.PreferNotToState);
 
   const handleRegister = async () => {
     try {
       await register(email, password, {
-        name,
+        name: {
+          givenName: firstName,
+          familyName: lastName,
+        },
         dateOfBirth,
         sex,
       });
@@ -378,8 +383,9 @@ function RegistrationForm() {
       <TextInput value={email} onChangeText={setEmail} />
       <TextInput value={password} onChangeText={setPassword} secureTextEntry />
 
-      {/* Profile fields */}
-      <TextInput placeholder="Full Name" value={name} onChangeText={setName} />
+      {/* Profile fields - PersonName components */}
+      <TextInput placeholder="First Name" value={firstName} onChangeText={setFirstName} />
+      <TextInput placeholder="Last Name" value={lastName} onChangeText={setLastName} />
 
       {/* Date picker component would go here */}
 
@@ -397,13 +403,15 @@ import { useAccount } from '@spezivibe/account';
 
 function EditProfileScreen() {
   const { user, updateProfile, isLoading } = useAccount();
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [biography, setBiography] = useState('');
 
-  // Load current values
+  // Load current values from PersonName
   useEffect(() => {
     if (user) {
-      setName(user.name || '');
+      setFirstName(user.name?.givenName || '');
+      setLastName(user.name?.familyName || '');
       setBiography(user.biography || '');
     }
   }, [user]);
@@ -411,7 +419,10 @@ function EditProfileScreen() {
   const handleSave = async () => {
     try {
       await updateProfile({
-        name,
+        name: {
+          givenName: firstName,
+          familyName: lastName,
+        },
         biography,
       });
       alert('Profile updated successfully!');
@@ -422,7 +433,8 @@ function EditProfileScreen() {
 
   return (
     <View>
-      <TextInput value={name} onChangeText={setName} />
+      <TextInput placeholder="First Name" value={firstName} onChangeText={setFirstName} />
+      <TextInput placeholder="Last Name" value={lastName} onChangeText={setLastName} />
       <TextInput value={biography} onChangeText={setBiography} multiline />
       <Button title="Save" onPress={handleSave} disabled={isLoading} />
     </View>
@@ -562,7 +574,10 @@ function EditProfileScreen() {
 
   const handleUpdate = async () => {
     await updateProfile({
-      name: 'John Doe',
+      name: {
+        givenName: 'John',
+        familyName: 'Doe',
+      },
       dateOfBirth: new Date('1990-01-01'),
       sex: Sex.Male,
       phoneNumber: '+1234567890',
@@ -571,6 +586,61 @@ function EditProfileScreen() {
   };
 }
 ```
+
+### PersonName Structure
+
+User names are represented using a structured `PersonName` type that supports international name formatting:
+
+```tsx
+import { PersonName, formatPersonName, PersonNameStyle } from '@spezivibe/account';
+
+// PersonName interface
+interface PersonName {
+  givenName?: string;        // First name
+  familyName?: string;       // Last name
+  middleName?: string;       // Middle name
+  namePrefix?: string;       // Title (Dr., Prof., etc.)
+  nameSuffix?: string;       // Suffix (Jr., Sr., III, etc.)
+  nickname?: string;         // Preferred name
+}
+
+// Creating a PersonName
+const name: PersonName = {
+  givenName: 'John',
+  familyName: 'Doe',
+};
+
+// Formatting PersonName for display
+const displayName = formatPersonName(name, PersonNameStyle.Long);
+// Result: "John Doe"
+
+const shortName = formatPersonName(name, PersonNameStyle.Short);
+// Result: "John"
+
+const initials = getPersonNameInitials(name);
+// Result: "JD"
+```
+
+**PersonName Utilities:**
+
+- `formatPersonName(name, style)` - Format PersonName for display
+  - `PersonNameStyle.Long` - Full name (e.g., "Dr. John Michael Doe Jr.")
+  - `PersonNameStyle.Medium` - Given and family names (e.g., "John Doe")
+  - `PersonNameStyle.Short` - Given name only (e.g., "John")
+  - `PersonNameStyle.Abbreviated` - Initials (e.g., "JMD")
+
+- `parsePersonName(string)` - Parse a string into PersonName components
+- `normalizePersonName(input)` - Accept either PersonName or string, return PersonName
+- `isPersonNameEmpty(name)` - Check if PersonName has any components
+- `getPersonNameInitials(name)` - Get initials from PersonName
+
+**Why PersonName?**
+
+Using structured names instead of strings provides:
+- Better support for international name formats
+- Separate storage of name components
+- Flexible formatting for different contexts
+- Proper handling of titles, suffixes, and middle names
 
 ### Account Configuration
 
@@ -605,7 +675,7 @@ function App() {
 **Configuration Options:**
 
 - **`collects`**: Array of profile fields to collect. Available fields:
-  - `'name'` - User's full name
+  - `'name'` - User's name (PersonName structure with first/last name)
   - `'dateOfBirth'` - Date of birth (Date picker)
   - `'sex'` - Sex assigned at birth (dropdown)
   - `'phoneNumber'` - Phone number
@@ -959,7 +1029,10 @@ console.log(passwordResult.valid); // true or false
 ```tsx
 // ✅ Correct field names
 await updateProfile({
-  name: 'John',
+  name: {
+    givenName: 'John',
+    familyName: 'Doe',
+  },
   dateOfBirth: new Date(),
   sex: Sex.Male,
   phoneNumber: '+1234567890',
@@ -969,7 +1042,9 @@ await updateProfile({
 
 // ❌ Wrong - these don't exist
 await updateProfile({
-  firstName: 'John',  // Should be 'name'
+  firstName: 'John',  // Should be 'name.givenName'
+  lastName: 'Doe',    // Should be 'name.familyName'
+  fullName: 'John Doe', // Should be PersonName object
   age: 30,            // Should be 'dateOfBirth'
 });
 ```
@@ -1086,7 +1161,10 @@ test('shows user profile when authenticated', () => {
     user: {
       uid: '123',
       email: 'test@example.com',
-      name: 'Test User',
+      name: {
+        givenName: 'Test',
+        familyName: 'User',
+      },
     },
     error: null,
     login: jest.fn(),
@@ -1098,7 +1176,7 @@ test('shows user profile when authenticated', () => {
   });
 
   const { getByText } = render(<MyComponent />);
-  expect(getByText('Test User')).toBeTruthy();
+  expect(getByText(/Test/)).toBeTruthy();
 });
 ```
 
