@@ -59,17 +59,13 @@ import { createLogger, mapFirebaseError as mapFirebaseErrorUtil } from '../utils
  * Firebase implementation of the AccountService interface
  *
  * This service handles user authentication using Firebase Authentication
- * and profile storage using Firestore, following the SpeziAccount pattern.
+ * and profile storage using Firestore.
  *
- * Similar to SpeziAccount's FirebaseAccountService + FirestoreAccountStorage,
- * this service automatically:
+ * Features:
  * - Stores user profile data in Firestore at users/{userId}/profile
  * - Loads profile data on authentication
  * - Persists profile updates automatically
- *
- * Enhanced to match SpeziAccount capabilities including:
  * - Password reset
- * - Profile updates
  * - Email/password changes
  * - Account deletion
  *
@@ -223,7 +219,7 @@ export class FirebaseAccountService implements AccountService {
         this.currentUser.sex = credentials.sex;
       }
 
-      // Save profile to Firestore (following SpeziAccount pattern)
+      // Save profile to Firestore
       await this.saveUserProfile(userCredential.user.uid, this.currentUser);
 
       this.logger.info('Registration successful');
@@ -303,7 +299,7 @@ export class FirebaseAccountService implements AccountService {
           updatedAt: new Date(),
         };
 
-        // Save to Firestore (following SpeziAccount pattern)
+        // Save to Firestore
         await this.saveUserProfile(this.auth.currentUser.uid, this.currentUser);
 
         // Notify listeners of the update
@@ -456,7 +452,6 @@ export class FirebaseAccountService implements AccountService {
 
   /**
    * Load user profile from Firestore and merge with Firebase Auth data
-   * Similar to SpeziAccount's FirestoreAccountStorage
    */
   private async loadUserProfile(firebaseUser: FirebaseUser): Promise<User> {
     const baseUser = this.mapFirebaseUser(firebaseUser);
@@ -490,7 +485,6 @@ export class FirebaseAccountService implements AccountService {
 
   /**
    * Save user profile to Firestore
-   * Similar to SpeziAccount's FirestoreAccountStorage
    */
   private async saveUserProfile(userId: string, profile: Partial<User>): Promise<void> {
     if (!this.db) {

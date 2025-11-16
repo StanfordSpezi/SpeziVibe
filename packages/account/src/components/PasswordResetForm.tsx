@@ -57,8 +57,7 @@ export interface PasswordResetFormProps {
 /**
  * PasswordResetForm - A password reset form component
  *
- * Similar to SpeziAccount's password reset functionality, this component
- * provides a ready-to-use form for requesting password reset emails.
+ * Provides a ready-to-use form for requesting password reset emails.
  *
  * @example
  * ```tsx

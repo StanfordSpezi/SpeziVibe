@@ -7,15 +7,10 @@ import { createLogger } from '../utils';
  * This service simulates authentication without requiring a backend.
  * It always returns an authenticated state with a mock user.
  *
- * Enhanced to match SpeziAccount capabilities including password reset
- * and profile management (simulated).
- *
  * Use this service for:
  * - Local development without Firebase
  * - Testing UI flows without auth dependencies
  * - Offline-first applications
- *
- * Naming matches SpeziAccount's InMemoryAccountService pattern.
  */
 export class InMemoryAccountService implements AccountService {
   private mockUser: User = {

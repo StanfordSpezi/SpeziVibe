@@ -1,7 +1,6 @@
 /**
  * Account field keys
  * Provides type-safe references to user account fields
- * Inspired by SpeziAccount's AccountKeys (simplified for JavaScript)
  */
 export enum AccountKey {
   // Core identifiers
@@ -29,7 +28,6 @@ export enum AccountKey {
 /**
  * Account events
  * Notification system for account state changes
- * Inspired by SpeziAccount's AccountNotifications
  */
 export type AccountEvent =
   | { type: 'login'; user: User }
@@ -69,7 +67,6 @@ export enum Sex {
 /**
  * User profile information
  * Represents the editable profile fields for a user account
- * Renamed from AccountDetails for clarity (AccountDetails = user data in SpeziAccount)
  */
 export interface UserProfile {
   /** User's full name */
@@ -93,21 +90,18 @@ export interface UserProfile {
 
 /**
  * @deprecated Use UserProfile instead. Kept for backward compatibility.
- * In SpeziAccount, AccountDetails refers to the full user object.
- * We use UserProfile for the editable fields.
  */
 export type AccountDetails = UserProfile;
 
 /**
  * User account information
- * Extended with UserProfile following SpeziAccount pattern
- * In SpeziAccount terminology, this is similar to Account.details
+ * Combines authentication data with user profile information
  */
 export interface User extends UserProfile {
-  /** Unique user identifier (accountId in SpeziAccount) */
+  /** Unique user identifier */
   uid: string;
 
-  /** Email address (userId in SpeziAccount) */
+  /** Email address */
   email: string | null;
 
   /** Display name (legacy - use name instead) */
@@ -121,20 +115,17 @@ export interface User extends UserProfile {
 }
 
 /**
- * Account configuration following SpeziAccount's pattern
+ * Account configuration
  * Defines which fields are required vs optional to collect
- * Maps to SpeziAccount's AccountValueConfiguration
  */
 export interface AccountConfiguration {
   /**
    * Fields that are required during account creation
-   * Similar to SpeziAccount's .requires() modifier
    */
   required?: Array<keyof UserProfile>;
 
   /**
    * Fields that should be collected (but are optional)
-   * Similar to SpeziAccount's .collects() modifier
    */
   collects?: Array<keyof UserProfile>;
 
@@ -155,11 +146,8 @@ export interface UserProfileUpdate extends Partial<UserProfile> {
  * Account service interface
  *
  * This interface defines the contract for account management services.
- * Following the Spezi standard, this is storage-agnostic - implementations
- * are responsible for managing authentication state and tokens.
- *
- * Enhanced to match SpeziAccount capabilities including password reset
- * and profile management.
+ * Storage-agnostic - implementations are responsible for managing
+ * authentication state and tokens.
  */
 export interface AccountService {
   /**
@@ -251,10 +239,9 @@ export interface FirebaseConfig {
 
 /**
  * Context value provided by AccountProvider
- * Enhanced to match SpeziAccount capabilities
  */
 export interface AccountContextValue {
-  /** Whether the user is currently authenticated (matches SpeziAccount's signedIn) */
+  /** Whether the user is currently authenticated */
   signedIn: boolean;
 
   /** Whether account state is being checked/updated */
@@ -318,7 +305,6 @@ export interface AccountProviderProps {
 
   /**
    * Optional event handler for all account events
-   * Inspired by SpeziAccount's AccountNotifications
    * This is called for all account events (login, logout, update, delete)
    */
   onAccountEvent?: (event: AccountEvent) => void | Promise<void>;

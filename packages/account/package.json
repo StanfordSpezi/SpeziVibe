@@ -1,7 +1,7 @@
 {
   "name": "@spezivibe/account",
   "version": "1.0.0",
-  "description": "Spezi-compliant account management module for React Native applications (storage-agnostic, following Spezi standard)",
+  "description": "Account management module for React Native applications (storage-agnostic)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

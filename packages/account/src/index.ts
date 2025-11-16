@@ -1,9 +1,9 @@
 /**
  * @spezivibe/account
  *
- * Spezi-compliant account management module for React Native applications.
- * Following the Spezi standard, this module is storage-agnostic and provides
- * a clean interface for authentication and account management.
+ * Account management module for React Native applications.
+ * This module is storage-agnostic and provides a clean interface
+ * for authentication and account management.
  *
  * @example
  * ```tsx
@@ -63,6 +63,6 @@ export {
 } from './utils';
 
 // Note: Storage and backend integration is NOT provided by this module.
-// Following the Spezi standard, consuming applications should handle
-// data persistence and backend integration separately. This module only
-// manages authentication state and user accounts.
+// Consuming applications should handle data persistence and backend
+// integration separately. This module only manages authentication
+// state and user accounts.

@@ -43,9 +43,8 @@ export interface AccountOverviewProps {
 /**
  * AccountOverview - Display and manage user account information
  *
- * Similar to SpeziAccount's AccountOverview, this component displays
- * the current user's profile information and provides actions for
- * account management.
+ * This component displays the current user's profile information 
+ * and provides actions for account management.
  *
  * @example
  * ```tsx

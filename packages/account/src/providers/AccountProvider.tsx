@@ -10,8 +10,8 @@ const AccountContext = createContext<AccountContextValue | null>(null);
  * functionality to child components. It wraps an AccountService implementation
  * and exposes a clean React API via the useAccount hook.
  *
- * Following the Spezi standard, this provider is storage-agnostic - it delegates
- * all authentication logic to the injected AccountService.
+ * This provider is storage-agnostic - it delegates all authentication
+ * logic to the injected AccountService.
  *
  * @example
  * ```tsx

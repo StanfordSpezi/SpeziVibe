@@ -1,6 +1,6 @@
 # @spezivibe/account
 
-Account management module for React Native applications, based on Stanford Spezi's SpeziAccount architecture.
+Account management module for React Native applications.
 
 ## Features
 
@@ -452,7 +452,7 @@ npm run test:coverage
 
 ## About
 
-Part of the [Stanford Spezi](https://github.com/StanfordSpezi) ecosystem. This package follows the same architecture and design patterns as [SpeziAccount](https://github.com/StanfordSpezi/SpeziAccount), adapted for React Native and TypeScript.
+Part of the [Stanford Spezi](https://github.com/StanfordSpezi) ecosystem for React Native and TypeScript.
 
 **Core features:**
 - Storage-agnostic architecture pattern
@@ -465,7 +465,6 @@ Part of the [Stanford Spezi](https://github.com/StanfordSpezi) ecosystem. This p
 - `InMemoryAccountService` for development/testing
 
 For more on the Spezi framework:
-- [SpeziAccount on GitHub](https://github.com/StanfordSpezi/SpeziAccount)
 - [Stanford Spezi Documentation](https://swiftpackageindex.com/StanfordSpezi/Spezi/documentation/spezi)
 
 ## License
