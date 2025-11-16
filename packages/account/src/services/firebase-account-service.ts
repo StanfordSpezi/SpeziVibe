@@ -52,8 +52,10 @@ import {
   User,
   FirebaseConfig,
   UserProfileUpdate,
+  PersonName,
 } from '../types';
 import { createLogger, mapFirebaseError as mapFirebaseErrorUtil } from '../utils';
+import { formatPersonName, parsePersonName, normalizePersonName, PersonNameStyle } from '../utils/person-name';
 
 /**
  * Firebase implementation of the AccountService interface
@@ -199,18 +201,25 @@ export class FirebaseAccountService implements AccountService {
         credentials.password
       );
 
-      // Update profile with name if provided
-      if (credentials.name && userCredential.user) {
+      // Normalize name: accept PersonName or string
+      const name = credentials.name
+        ? normalizePersonName(credentials.name)
+        : undefined;
+
+      // Update Firebase Auth profile with formatted name
+      if (name && userCredential.user) {
+        const displayName = formatPersonName(name, PersonNameStyle.Long);
         await firebaseUpdateProfile(userCredential.user, {
-          displayName: credentials.name,
+          displayName,
         });
       }
 
       this.currentUser = this.mapFirebaseUser(userCredential.user);
 
       // Merge additional details from credentials
-      if (credentials.name) {
-        this.currentUser.name = credentials.name;
+      // Use the structured PersonName instead of the parsed displayName
+      if (name) {
+        this.currentUser.name = name;
       }
       if (credentials.dateOfBirth) {
         this.currentUser.dateOfBirth = credentials.dateOfBirth;
@@ -219,7 +228,7 @@ export class FirebaseAccountService implements AccountService {
         this.currentUser.sex = credentials.sex;
       }
 
-      // Save profile to Firestore
+      // Save profile to Firestore (stores structured PersonName)
       await this.saveUserProfile(userCredential.user.uid, this.currentUser);
 
       this.logger.info('Registration successful');
@@ -278,8 +287,9 @@ export class FirebaseAccountService implements AccountService {
 
       // Update Firebase profile with displayName if name is provided
       if (updates.name !== undefined) {
+        const displayName = formatPersonName(updates.name, PersonNameStyle.Long);
         await firebaseUpdateProfile(this.auth.currentUser, {
-          displayName: updates.name,
+          displayName,
         });
       }
 
@@ -295,7 +305,6 @@ export class FirebaseAccountService implements AccountService {
         this.currentUser = {
           ...this.currentUser,
           ...updates,
-          displayName: updates.name || this.currentUser.displayName,
           updatedAt: new Date(),
         };
 
@@ -469,9 +478,25 @@ export class FirebaseAccountService implements AccountService {
       }
 
       const profileData = profileDoc.data();
+
+      // Handle name: Firestore stores PersonName as object
+      // For backward compatibility, also handle string names
+      let name: PersonName | undefined;
+      if (profileData.name) {
+        if (typeof profileData.name === 'string') {
+          // Legacy string name - parse it
+          name = parsePersonName(profileData.name);
+        } else {
+          // PersonName object from Firestore
+          name = profileData.name as PersonName;
+        }
+      } else {
+        name = baseUser.name;
+      }
+
       return {
         ...baseUser,
-        name: profileData.name || baseUser.name,
+        name,
         dateOfBirth: profileData.dateOfBirth ? new Date(profileData.dateOfBirth) : undefined,
         sex: profileData.sex,
         phoneNumber: profileData.phoneNumber,
@@ -520,11 +545,17 @@ export class FirebaseAccountService implements AccountService {
    * Map Firebase user to our User interface
    */
   private mapFirebaseUser(firebaseUser: FirebaseUser): User {
+    // Parse displayName into PersonName components
+    // Firebase Auth only stores a single displayName string,
+    // so we parse it back into PersonName components
+    const name = firebaseUser.displayName
+      ? parsePersonName(firebaseUser.displayName)
+      : undefined;
+
     return {
       uid: firebaseUser.uid,
       email: firebaseUser.email,
-      displayName: firebaseUser.displayName,
-      name: firebaseUser.displayName || undefined,
+      name,
       profileImageUrl: firebaseUser.photoURL || undefined,
       createdAt: firebaseUser.metadata.creationTime
         ? new Date(firebaseUser.metadata.creationTime)

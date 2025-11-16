@@ -1,5 +1,6 @@
-import { AccountService, LoginCredentials, RegisterCredentials, User, UserProfileUpdate } from '../types';
+import { AccountService, LoginCredentials, RegisterCredentials, User, UserProfileUpdate, PersonName } from '../types';
 import { createLogger } from '../utils';
+import { parsePersonName, normalizePersonName } from '../utils/person-name';
 
 /**
  * In-memory implementation of AccountService for development/testing
@@ -16,8 +17,10 @@ export class InMemoryAccountService implements AccountService {
   private mockUser: User = {
     uid: 'local-user',
     email: 'local@example.com',
-    displayName: 'Local User',
-    name: 'Local User',
+    name: {
+      givenName: 'Local',
+      familyName: 'User',
+    },
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -47,11 +50,12 @@ export class InMemoryAccountService implements AccountService {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Update mock user with provided email
+    // Parse email username as given name
+    const emailUsername = credentials.email.split('@')[0];
     this.mockUser = {
       ...this.mockUser,
       email: credentials.email,
-      name: credentials.email.split('@')[0],
-      displayName: credentials.email.split('@')[0],
+      name: parsePersonName(emailUsername),
       updatedAt: new Date(),
     };
 
@@ -65,12 +69,16 @@ export class InMemoryAccountService implements AccountService {
     // Simulate slight delay
     await new Promise((resolve) => setTimeout(resolve, 100));
 
+    // Normalize name: accept PersonName or string
+    const name = credentials.name
+      ? normalizePersonName(credentials.name)
+      : parsePersonName(credentials.email.split('@')[0]);
+
     // Update mock user with provided credentials
     this.mockUser = {
       uid: 'local-user',
       email: credentials.email,
-      name: credentials.name || credentials.email.split('@')[0],
-      displayName: credentials.name || credentials.email.split('@')[0],
+      name,
       dateOfBirth: credentials.dateOfBirth,
       sex: credentials.sex,
       createdAt: new Date(),

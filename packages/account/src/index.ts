@@ -62,6 +62,16 @@ export {
   type ValidationResult,
 } from './utils';
 
+// PersonName utilities
+export {
+  formatPersonName,
+  parsePersonName,
+  normalizePersonName,
+  isPersonNameEmpty,
+  getPersonNameInitials,
+  PersonNameStyle,
+} from './utils/person-name';
+
 // Note: Storage and backend integration is NOT provided by this module.
 // Consuming applications should handle data persistence and backend
 // integration separately. This module only manages authentication

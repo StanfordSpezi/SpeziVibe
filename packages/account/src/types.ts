@@ -49,7 +49,8 @@ export interface LoginCredentials {
 export interface RegisterCredentials {
   email: string;
   password: string;
-  name?: string;
+  /** User's structured name (preferred) or simple string for backward compatibility */
+  name?: PersonName | string;
   dateOfBirth?: Date;
   sex?: string;
 }
@@ -65,12 +66,39 @@ export enum Sex {
 }
 
 /**
+ * Structured representation of a person's name
+ *
+ * Aligned with SpeziAccount's PersonNameComponents pattern.
+ * Stores name components separately for better internationalization
+ * and formatting flexibility.
+ */
+export interface PersonName {
+  /** Given name (first name in Western naming conventions) */
+  givenName?: string;
+
+  /** Family name (last name in Western naming conventions) */
+  familyName?: string;
+
+  /** Middle name */
+  middleName?: string;
+
+  /** Name prefix (e.g., "Dr.", "Prof.") */
+  namePrefix?: string;
+
+  /** Name suffix (e.g., "Jr.", "III") */
+  nameSuffix?: string;
+
+  /** Nickname or preferred name */
+  nickname?: string;
+}
+
+/**
  * User profile information
  * Represents the editable profile fields for a user account
  */
 export interface UserProfile {
-  /** User's full name */
-  name?: string;
+  /** User's structured name */
+  name?: PersonName;
 
   /** Date of birth */
   dateOfBirth?: Date;
@@ -103,9 +131,6 @@ export interface User extends UserProfile {
 
   /** Email address */
   email: string | null;
-
-  /** Display name (legacy - use name instead) */
-  displayName?: string | null;
 
   /** When the account was created */
   createdAt?: Date;
