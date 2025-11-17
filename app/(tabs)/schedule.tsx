@@ -8,8 +8,8 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useScheduler, Event, formatTime } from '@/lib/scheduler';
 import { CalendarStrip } from '@/components/calendar-strip';
-import { AccountButton } from '@/app/(account)/_components/account-button';
-import { AccountSheet } from '@/app/(account)/_components/account-sheet';
+import { AccountButton } from '@/components/account/account-button';
+import { AccountSheet } from '@/components/account/account-sheet';
 import { useAccount } from '@spezivibe/account';
 
 export default function ScheduleScreen() {
