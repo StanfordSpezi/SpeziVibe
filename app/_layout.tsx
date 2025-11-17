@@ -1,7 +1,6 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Redirect, Stack, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
 
@@ -20,42 +19,22 @@ function RootLayoutNav() {
   const { signedIn, isLoading: authLoading } = useAccount();
   const onboardingComplete = useOnboardingStatus();
   const segments = useSegments();
-  const hasCheckedAutoComplete = useRef(false);
 
-  // AUTO-COMPLETE: One-time check to mark onboarding complete for already-signed-in users
-  // This handles cached credentials where onLogin doesn't fire
-  useEffect(() => {
-    if (!authLoading && !hasCheckedAutoComplete.current) {
-      hasCheckedAutoComplete.current = true;
-      if (signedIn && onboardingComplete === false) {
-        AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true').catch((error) => {
-          console.error('Failed to auto-complete onboarding:', error);
-        });
-      }
-    }
-  }, [signedIn, authLoading, onboardingComplete]);
-
-  // LOADING: Wait for auth and onboarding status to load
+  // Wait for auth and onboarding status to load
   if (onboardingComplete === null || authLoading) {
-    return null; // Show nothing while loading (splash screen visible)
+    return null;
   }
 
-  // Determine current location
   const inAuthFlow = segments[0] === '(onboarding)';
 
-  // GUARD 1: Authenticated users should be at tabs, not auth screens
+  // Authenticated users stay in main app
   if (signedIn && inAuthFlow) {
     return <Redirect href="/(tabs)" />;
   }
 
-  // GUARD 2: Unauthenticated users should be in auth flow
+  // Unauthenticated users need to complete auth flow
   if (!signedIn && !inAuthFlow) {
-    // If onboarding not complete, start from welcome
-    if (!onboardingComplete) {
-      return <Redirect href="/(onboarding)/welcome" />;
-    }
-    // If onboarding complete, go to sign-in
-    return <Redirect href="/(onboarding)/sign-in" />;
+    return <Redirect href={onboardingComplete ? '/(onboarding)/sign-in' : '/(onboarding)/welcome'} />;
   }
 
   // RENDER: All guards passed, render the navigation stack
@@ -82,15 +61,10 @@ function AppProviders({ children }: { children: React.ReactNode }) {
       accountService={accountService}
       configuration={ACCOUNT_CONFIGURATION}
       onLogin={async () => {
-        // Mark onboarding as complete when user logs in
-        // This prevents auth loops when onboarding flag is reset but user is still authenticated
-        try {
-          await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
-        } catch (error) {
-          console.error('Failed to auto-complete onboarding:', error);
-        }
+        // Mark onboarding complete after successful login
+        await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
 
-        // Sync scheduler data from backend after login
+        // Sync scheduler data from backend
         try {
           await backend.syncFromRemote();
         } catch (error) {
