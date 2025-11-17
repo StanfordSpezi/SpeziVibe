@@ -1,7 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Redirect, Stack, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
 
@@ -20,14 +20,18 @@ function RootLayoutNav() {
   const { signedIn, isLoading: authLoading } = useAccount();
   const onboardingComplete = useOnboardingStatus();
   const segments = useSegments();
+  const hasCheckedAutoComplete = useRef(false);
 
-  // AUTO-COMPLETE: If user is signed in, ensure onboarding is marked as complete
-  // This prevents auth loops when onboarding flag is reset but user is still authenticated
+  // AUTO-COMPLETE: One-time check to mark onboarding complete for already-signed-in users
+  // This handles cached credentials where onLogin doesn't fire
   useEffect(() => {
-    if (!authLoading && signedIn && onboardingComplete === false) {
-      AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true').catch((error) => {
-        console.error('Failed to auto-complete onboarding:', error);
-      });
+    if (!authLoading && !hasCheckedAutoComplete.current) {
+      hasCheckedAutoComplete.current = true;
+      if (signedIn && onboardingComplete === false) {
+        AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true').catch((error) => {
+          console.error('Failed to auto-complete onboarding:', error);
+        });
+      }
     }
   }, [signedIn, authLoading, onboardingComplete]);
 
@@ -78,6 +82,14 @@ function AppProviders({ children }: { children: React.ReactNode }) {
       accountService={accountService}
       configuration={ACCOUNT_CONFIGURATION}
       onLogin={async () => {
+        // Mark onboarding as complete when user logs in
+        // This prevents auth loops when onboarding flag is reset but user is still authenticated
+        try {
+          await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
+        } catch (error) {
+          console.error('Failed to auto-complete onboarding:', error);
+        }
+
         // Sync scheduler data from backend after login
         try {
           await backend.syncFromRemote();
