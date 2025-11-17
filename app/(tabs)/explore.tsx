@@ -14,8 +14,8 @@ import { Fonts } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useScheduler, createSampleTasks } from '@/lib/scheduler';
 import { SAMPLE_QUESTIONNAIRES } from '@/lib/questionnaires';
-import { AccountButton } from '@/app/(account)/_components/account-button';
-import { AccountSheet } from '@/app/(account)/_components/account-sheet';
+import { AccountButton } from '@/components/account/account-button';
+import { AccountSheet } from '@/components/account/account-sheet';
 import { useAccount } from '@spezivibe/account';
 import { ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
 
@@ -214,24 +214,6 @@ export default function TabTwoScreen() {
             No consent information found. Complete the onboarding flow to provide consent.
           </ThemedText>
         )}
-      </Collapsible>
-      <Collapsible title="Onboarding Flow">
-        <ThemedText>
-          This app includes a beautiful onboarding flow inspired by the SpeziOnboarding Swift
-          package. The onboarding screens introduce new users to the app's features.
-        </ThemedText>
-        <ThemedView style={styles.resetButton}>
-          <Pressable
-            style={({ pressed }) => [
-              styles.button,
-              { backgroundColor: isDark ? '#B83A4B' : '#8C1515', opacity: pressed ? 0.8 : 1 },
-            ]}
-            onPress={handleResetOnboarding}>
-            <ThemedText style={[styles.buttonText, { color: isDark ? '#000' : '#fff' }]}>
-              Reset Onboarding
-            </ThemedText>
-          </Pressable>
-        </ThemedView>
       </Collapsible>
       <Collapsible title="Schedule Tasks">
         <ThemedText>
