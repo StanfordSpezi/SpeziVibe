@@ -1,6 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Redirect, Stack, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -8,7 +9,7 @@ import { useOnboardingStatus } from '@/hooks/use-onboarding-status';
 import { StandardProvider, useStandard } from '@/lib/services/standard-context';
 import { SchedulerProvider } from '@/lib/scheduler';
 import { AccountProvider, useAccount } from '@spezivibe/account';
-import { ACCOUNT_CONFIGURATION } from '@/lib/constants';
+import { ACCOUNT_CONFIGURATION, ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -19,27 +20,21 @@ function RootLayoutNav() {
   const onboardingComplete = useOnboardingStatus();
   const segments = useSegments();
 
-  // LOADING: Wait for auth and onboarding status to load
+  // Wait for auth and onboarding status to load
   if (onboardingComplete === null || authLoading) {
-    return null; // Show nothing while loading (splash screen visible)
+    return null;
   }
 
-  // Determine current location
   const inAuthFlow = segments[0] === '(onboarding)';
 
-  // GUARD 1: Redirect to onboarding if not completed
-  if (!onboardingComplete && !inAuthFlow) {
-    return <Redirect href="/(onboarding)/welcome" />;
-  }
-
-  // GUARD 2: Redirect to sign-in if onboarding done but not authenticated
-  if (onboardingComplete && !signedIn && !inAuthFlow) {
-    return <Redirect href="/(onboarding)/sign-in" />;
-  }
-
-  // GUARD 3: Redirect authenticated users away from auth screens
+  // Authenticated users stay in main app
   if (signedIn && inAuthFlow) {
     return <Redirect href="/(tabs)" />;
+  }
+
+  // Unauthenticated users need to complete auth flow
+  if (!signedIn && !inAuthFlow) {
+    return <Redirect href={onboardingComplete ? '/(onboarding)/sign-in' : '/(onboarding)/welcome'} />;
   }
 
   // RENDER: All guards passed, render the navigation stack
@@ -66,7 +61,10 @@ function AppProviders({ children }: { children: React.ReactNode }) {
       accountService={accountService}
       configuration={ACCOUNT_CONFIGURATION}
       onLogin={async () => {
-        // Sync scheduler data from backend after login
+        // Mark onboarding complete after successful login
+        await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
+
+        // Sync scheduler data from backend
         try {
           await backend.syncFromRemote();
         } catch (error) {
