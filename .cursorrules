@@ -83,12 +83,13 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
 - Standard coordinates by syncing user ID from AccountService to BackendService
 - Never add auth methods to BackendService or data methods to AccountService
 
-### Scheduler (`lib/scheduler/`)
+### Scheduler (`packages/scheduler/` / `@spezivibe/scheduler`)
 - `types.ts` - Core types (Task, Event, Outcome, Schedule)
-- `scheduler.ts` - Main Scheduler class (uses backend from Standard)
-- `utils.ts` - Helper functions for occurrences and validation
-- `context.tsx` - React Context provider (depends on Standard)
+- `services/Scheduler.ts` - Main Scheduler class (uses backend from Standard)
+- `utils/` - Helper functions for occurrences, validation, and formatting
+- `providers/SchedulerProvider.tsx` - React Context provider (depends on Standard)
 - `sample-tasks.ts` - Predefined tasks for the template
+- `ui/` - Reusable UI components (ScheduleView, CalendarStrip, EventCard, etc.)
 
 **Task Types**: `questionnaire`, `task`, `reminder`, `measurement`
 **Recurrence**: `daily`, `weekly`, `monthly`, `once`
@@ -155,7 +156,7 @@ function RootLayoutNav() {
 ## Common Tasks
 
 ### Adding a New Task
-1. Add to `lib/scheduler/sample-tasks.ts`
+1. Add to `packages/scheduler/src/sample-tasks.ts`
 2. Include `questionnaireId` if it's a questionnaire task
 3. Set appropriate `completionPolicy`
 4. Reset schedule via Explore tab

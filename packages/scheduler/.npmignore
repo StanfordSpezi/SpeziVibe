@@ -1,0 +1,9 @@
+src/
+__tests__/
+*.test.ts
+*.test.tsx
+tsconfig.json
+babel.config.js
+jest.setup.js
+coverage/
+.tsbuildinfo

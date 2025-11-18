@@ -92,6 +92,7 @@ export function StandardProvider({ children }: StandardProviderProps) {
     if (!backend || !accountService) return;
 
     const unsubscribe = accountService.onAuthStateChanged((user) => {
+      console.log('[StandardContext] Auth state changed, setting userId:', user?.uid || 'null');
       backend.setUserId(user?.uid || null);
     });
 

@@ -144,7 +144,7 @@ The Standard is configured at the root of your application. All modules access i
 ```typescript
 // In your app root (_layout.tsx)
 import { StandardProvider } from '@/lib/services/standard-context';
-import { SchedulerProvider } from '@/lib/scheduler/context';
+import { SchedulerProvider } from '@spezivibe/scheduler';
 import { AccountProvider } from '@spezivibe/account';
 
 export default function RootLayout() {

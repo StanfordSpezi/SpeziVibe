@@ -1,4 +1,9 @@
-import { Schedule, Occurrence, Task, Event, AllowedCompletionPolicy } from './types';
+/**
+ * Calculation utilities for scheduler
+ * Handles recurrence logic, occurrence generation, and completion policies
+ */
+
+import { Schedule, Occurrence, Event } from '../types';
 
 /**
  * Calculate occurrences for a task within a date range
@@ -16,6 +21,7 @@ export function calculateOccurrences(
 
   let index = 0;
 
+  // Handle one-time events
   if (schedule.recurrence.type === 'once') {
     const scheduledDate = new Date(schedule.recurrence.date);
     if (scheduledDate >= startDate && scheduledDate <= endDate) {
@@ -24,6 +30,7 @@ export function calculateOccurrences(
     return occurrences;
   }
 
+  // Handle recurring events
   while (current <= end) {
     const occurrence = getNextOccurrence(schedule, current, index);
     if (!occurrence || occurrence.scheduledDate > end) {
@@ -37,6 +44,9 @@ export function calculateOccurrences(
   return occurrences;
 }
 
+/**
+ * Get the next occurrence for a recurring schedule
+ */
 function getNextOccurrence(
   schedule: Schedule,
   fromDate: Date,
@@ -103,66 +113,4 @@ export function isAllowedToComplete(event: Event, now: Date = new Date()): boole
   }
 
   return true;
-}
-
-/**
- * Group events by date for display
- */
-export function groupEventsByDate(events: Event[]): Map<string, Event[]> {
-  const grouped = new Map<string, Event[]>();
-
-  for (const event of events) {
-    const dateKey = getDateKey(event.occurrence.scheduledDate);
-    const existing = grouped.get(dateKey) || [];
-    existing.push(event);
-    grouped.set(dateKey, existing);
-  }
-
-  // Sort events within each date group by time
-  for (const [key, eventList] of grouped.entries()) {
-    eventList.sort((a, b) =>
-      a.occurrence.scheduledDate.getTime() - b.occurrence.scheduledDate.getTime()
-    );
-  }
-
-  return grouped;
-}
-
-function getDateKey(date: Date): string {
-  // Use local date string to avoid timezone issues
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-/**
- * Get relative date label (Today, Tomorrow, etc.)
- */
-export function getRelativeDateLabel(date: Date): string {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
-  const diffDays = Math.floor(
-    (targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-  );
-
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Tomorrow';
-  if (diffDays === -1) return 'Yesterday';
-  if (diffDays > 1 && diffDays <= 7) return targetDate.toLocaleDateString('en-US', { weekday: 'long' });
-
-  return targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-/**
- * Format time for display
- */
-export function formatTime(date: Date): string {
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
 }

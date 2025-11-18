@@ -499,9 +499,9 @@ interface Questionnaire {
 ### Adding New Features
 
 **New Task Type**:
-1. Add to `TaskCategory` union in `lib/scheduler/types.ts`
+1. Add to `TaskCategory` union in `packages/scheduler/src/types.ts`
 2. Update icon mapping in `schedule.tsx`
-3. Add to `sample-tasks.ts`
+3. Add to `packages/scheduler/src/sample-tasks.ts`
 
 **New Question Type**:
 1. Add to `QuestionType` union in `lib/questionnaires/types.ts`

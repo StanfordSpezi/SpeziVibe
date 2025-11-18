@@ -1,0 +1,77 @@
+{
+  "name": "@spezivibe/scheduler",
+  "version": "1.0.0",
+  "description": "Scheduler module for React Native applications - local storage only (based on Stanford Spezi SpeziScheduler)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "EXAMPLES.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run clean && npm run build && npm run test"
+  },
+  "keywords": [
+    "react-native",
+    "scheduler",
+    "tasks",
+    "events",
+    "spezi",
+    "recurrence",
+    "schedule",
+    "appointments",
+    "reminders"
+  ],
+  "author": "SpeziVibe",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.70.0",
+    "@react-native-async-storage/async-storage": ">=1.0.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-flow": "^7.27.1",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
+    "@react-native/babel-preset": "^0.81.5",
+    "@react-native/metro-config": "^0.82.1",
+    "@testing-library/react-native": "^12.4.3",
+    "@types/jest": "^29.5.11",
+    "@types/react": "~19.1.0",
+    "@types/react-native": "^0.73.0",
+    "@types/react-test-renderer": "^18.0.7",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "react": "^19.1.0",
+    "react-native": "^0.81.5",
+    "react-test-renderer": "19.1.0",
+    "typescript": "~5.9.2"
+  },
+  "jest": {
+    "preset": "react-native",
+    "setupFiles": [
+      "./jest.setup.js"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-native|@react-native|@react-navigation|@testing-library)/)"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.ts?(x)"
+    ]
+  }
+}

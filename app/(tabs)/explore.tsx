@@ -12,7 +12,7 @@ import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useScheduler, createSampleTasks } from '@/lib/scheduler';
+import { useScheduler, createSampleTasks } from '@spezivibe/scheduler';
 import { SAMPLE_QUESTIONNAIRES } from '@/lib/questionnaires';
 import { AccountButton } from '@/components/account/account-button';
 import { AccountSheet } from '@/components/account/account-sheet';
