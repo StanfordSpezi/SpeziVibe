@@ -11,7 +11,7 @@ import {
   Firestore,
 } from 'firebase/firestore';
 import { BackendService, BackendConfig } from '../types';
-import { Task, Outcome, SchedulerState } from '../../scheduler/types';
+import { Task, Outcome, SchedulerState } from '@spezivibe/scheduler';
 import { QuestionnaireResponse } from '../../questionnaires/types';
 import { serializeTask, deserializeTask } from '../utils/task-serialization';
 import { removeUndefined } from '../utils/object-utils';
@@ -66,7 +66,10 @@ export class FirebaseBackend implements BackendService {
   }
 
   async loadSchedulerState(): Promise<SchedulerState | null> {
-    if (!this.db || !this.userId) return null;
+    if (!this.db || !this.userId) {
+      console.log('[Firebase] Cannot load scheduler state - db:', !!this.db, 'userId:', !!this.userId);
+      return null;
+    }
 
     try {
       // Load tasks

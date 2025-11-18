@@ -1,4 +1,4 @@
-import { Task } from '../../scheduler/types';
+import { Task } from '@spezivibe/scheduler';
 
 /**
  * Serialize a task for storage (converts Dates to ISO strings)

@@ -1,6 +1,6 @@
-import { ScrollView, View, Pressable, StyleSheet } from 'react-native';
-import { ThemedText } from './themed-text';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import React, { useMemo } from 'react';
+import { ScrollView, View, Pressable, StyleSheet, Text } from 'react-native';
+import { SchedulerUITheme, defaultLightTheme } from '../theme';
 
 interface CalendarDay {
   date: Date;
@@ -12,6 +12,11 @@ interface CalendarDay {
 interface CalendarStripProps {
   selectedDate: Date;
   onSelectDate: (date: Date) => void;
+  theme?: SchedulerUITheme;
+  /** Number of days to show (default: 30) */
+  daysCount?: number;
+  /** Starting offset in days from today (default: -1, starts from yesterday) */
+  startOffset?: number;
 }
 
 function generateDays(startDate: Date, count: number): CalendarDay[] {
@@ -34,21 +39,30 @@ function generateDays(startDate: Date, count: number): CalendarDay[] {
   return days;
 }
 
-export function CalendarStrip({ selectedDate, onSelectDate }: CalendarStripProps) {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+export const CalendarStrip = React.memo(function CalendarStrip({
+  selectedDate,
+  onSelectDate,
+  theme = defaultLightTheme,
+  daysCount = 30,
+  startOffset = -1,
+}: CalendarStripProps) {
+  // Generate days starting from the specified offset - memoized for performance
+  const startDate = useMemo(() => {
+    const date = new Date();
+    date.setDate(date.getDate() + startOffset);
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }, [startOffset]);
 
-  // Generate 30 days starting from yesterday
-  const startDate = new Date();
-  startDate.setDate(startDate.getDate() - 1);
-  startDate.setHours(0, 0, 0, 0);
-
-  const days = generateDays(startDate, 30);
+  const days = useMemo(
+    () => generateDays(startDate, daysCount),
+    [startDate, daysCount]
+  );
 
   const selectedDateKey = selectedDate.toDateString();
 
   return (
-    <View style={[styles.container, { backgroundColor: isDark ? '#000' : '#fff' }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -59,71 +73,55 @@ export function CalendarStrip({ selectedDate, onSelectDate }: CalendarStripProps
           return (
             <Pressable
               key={index}
+              accessible
+              accessibilityRole="button"
+              accessibilityLabel={`${day.dayOfWeek} ${day.dayOfMonth}${day.isToday ? ', today' : ''}${isSelected ? ', selected' : ''}`}
+              accessibilityState={{ selected: isSelected }}
               style={({ pressed }) => [
                 styles.dayContainer,
                 {
                   backgroundColor: isSelected
-                    ? isDark
-                      ? '#B83A4B'
-                      : '#8C1515'
+                    ? theme.colors.primary
                     : pressed
-                    ? isDark
-                      ? '#1D1D1D'
-                      : '#F5F5F5'
-                    : isDark
-                    ? '#0D0D0D'
-                    : '#fff',
+                    ? theme.colors.cardPressed
+                    : theme.colors.cardBackground,
                   borderColor: day.isToday
-                    ? isDark
-                      ? '#B83A4B'
-                      : '#8C1515'
-                    : isDark
-                    ? '#2D2D2D'
-                    : '#E5E5E5',
+                    ? theme.colors.primary
+                    : theme.colors.border,
                 },
               ]}
               onPress={() => onSelectDate(day.date)}>
-              <ThemedText
+              <Text
                 style={[
                   styles.dayOfWeek,
                   {
                     color: isSelected
-                      ? isDark
-                        ? '#000'
-                        : '#fff'
-                      : isDark
-                      ? '#999'
-                      : '#666',
+                      ? theme.colors.selectedText
+                      : theme.colors.mutedText,
                   },
                 ]}>
                 {day.dayOfWeek}
-              </ThemedText>
-              <ThemedText
+              </Text>
+              <Text
                 style={[
                   styles.dayOfMonth,
                   {
                     color: isSelected
-                      ? isDark
-                        ? '#000'
-                        : '#fff'
+                      ? theme.colors.selectedText
                       : day.isToday
-                      ? isDark
-                        ? '#B83A4B'
-                        : '#8C1515'
-                      : isDark
-                      ? '#fff'
-                      : '#000',
+                      ? theme.colors.primary
+                      : theme.colors.secondaryText,
                   },
                 ]}>
                 {day.dayOfMonth}
-              </ThemedText>
+              </Text>
             </Pressable>
           );
         })}
       </ScrollView>
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {

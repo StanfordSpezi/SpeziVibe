@@ -8,7 +8,7 @@ import {
   defaultDarkTheme,
 } from '@spezivibe/questionnaire';
 import { getQuestionnaireById } from '@/lib/questionnaires/sample-questionnaires';
-import { useScheduler } from '@/lib/scheduler';
+import { useScheduler } from '@spezivibe/scheduler';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useStandard } from '@/lib/services/standard-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -63,10 +63,11 @@ export default function QuestionnaireScreen() {
           }
 
           // Mark the task as complete if we have the necessary info
+          // Note: Respects completion policy (matches iOS behavior)
           if (taskId && eventId && scheduler) {
             const event = scheduler.getEventById(taskId, parseInt(eventId, 10));
             if (event) {
-              await scheduler.completeEvent(event, response);
+              await scheduler.completeEvent(event, response); // Checks completion policy
             }
           }
 

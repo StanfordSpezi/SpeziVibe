@@ -1,51 +1,92 @@
-import { Task, Event, Outcome, SchedulerState, Schedule, Occurrence } from './types';
-import { calculateOccurrences, isAllowedToComplete } from './utils';
-import { BackendService } from '../services/types';
-
 /**
  * Main Scheduler class for managing tasks and events
  * Based on Stanford Spezi SpeziScheduler
  *
- * Now supports pluggable backends (LocalStorage, Firebase)
+ * This scheduler uses LOCAL STORAGE ONLY (AsyncStorage).
+ * Backend synchronization is handled by the app's orchestrator/Standard.
  */
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Task, Event, Outcome, SchedulerState, CompletionStats } from '../types';
+import { calculateOccurrences, isAllowedToComplete } from '../utils';
+
 export class Scheduler {
   private state: SchedulerState = {
     tasks: [],
     outcomes: [],
   };
 
-  private backend: BackendService;
+  private storageKey: string;
   private listeners: Set<() => void> = new Set();
+  private initialized: boolean = false;
 
-  constructor(backend: BackendService) {
-    this.backend = backend;
+  constructor(storageKey: string = '@scheduler_state') {
+    this.storageKey = storageKey;
   }
 
+  /**
+   * Initialize the scheduler and load saved state
+   */
   async initialize(): Promise<void> {
-    await this.backend.initialize();
+    if (this.initialized) {
+      return;
+    }
+
     await this.loadState();
+    this.initialized = true;
   }
 
+  /**
+   * Load state from AsyncStorage
+   */
   private async loadState(): Promise<void> {
     try {
-      const state = await this.backend.loadSchedulerState();
-      if (state) {
-        this.state = state;
+      const data = await AsyncStorage.getItem(this.storageKey);
+      if (data) {
+        const parsed = JSON.parse(data);
+        // Deserialize dates
+        this.state = {
+          tasks: parsed.tasks.map((t: any) => ({
+            ...t,
+            schedule: {
+              ...t.schedule,
+              startDate: new Date(t.schedule.startDate),
+              endDate: t.schedule.endDate ? new Date(t.schedule.endDate) : undefined,
+              recurrence:
+                t.schedule.recurrence.type === 'once'
+                  ? { ...t.schedule.recurrence, date: new Date(t.schedule.recurrence.date) }
+                  : t.schedule.recurrence,
+            },
+            createdAt: new Date(t.createdAt),
+            effectiveFrom: new Date(t.effectiveFrom),
+          })),
+          outcomes: parsed.outcomes.map((o: any) => ({
+            ...o,
+            completedAt: new Date(o.completedAt),
+          })),
+        };
       }
     } catch (error) {
-      console.error('Failed to load scheduler state:', error);
+      console.error('[Scheduler] Failed to load state:', error);
     }
   }
 
+  /**
+   * Save state to AsyncStorage
+   */
   private async saveState(): Promise<void> {
     try {
-      await this.backend.saveSchedulerState(this.state);
+      await AsyncStorage.setItem(this.storageKey, JSON.stringify(this.state));
       this.notifyListeners();
     } catch (error) {
-      console.error('Failed to save scheduler state:', error);
+      console.error('[Scheduler] Failed to save state:', error);
+      throw error;
     }
   }
 
+  /**
+   * Subscribe to state changes
+   */
   subscribe(listener: () => void): () => void {
     this.listeners.add(listener);
     return () => {
@@ -53,8 +94,27 @@ export class Scheduler {
     };
   }
 
+  /**
+   * Notify all listeners of state changes
+   */
   private notifyListeners(): void {
-    this.listeners.forEach((listener) => listener());
+    this.listeners.forEach((listener) => {
+      try {
+        listener();
+      } catch (error) {
+        console.error('[Scheduler] Error in listener:', error);
+      }
+    });
+  }
+
+  /**
+   * Get the current state (for advanced use cases or backend sync)
+   */
+  getState(): SchedulerState {
+    return {
+      tasks: [...this.state.tasks],
+      outcomes: [...this.state.outcomes],
+    };
   }
 
   /**
@@ -95,7 +155,7 @@ export class Scheduler {
   }
 
   /**
-   * Delete a task
+   * Delete a task and its outcomes
    */
   async deleteTask(id: string): Promise<void> {
     this.state.tasks = this.state.tasks.filter((task) => task.id !== id);
@@ -218,12 +278,7 @@ export class Scheduler {
   /**
    * Get completion statistics for a date range
    */
-  getCompletionStats(startDate: Date, endDate: Date): {
-    total: number;
-    completed: number;
-    pending: number;
-    completionRate: number;
-  } {
+  getCompletionStats(startDate: Date, endDate: Date): CompletionStats {
     const events = this.queryEvents(startDate, endDate);
     const completed = events.filter((e) => e.outcome).length;
     const total = events.length;
@@ -237,7 +292,10 @@ export class Scheduler {
     };
   }
 
-  private getOutcomeId(taskId: string, occurrence: Occurrence): string {
+  /**
+   * Generate a unique outcome ID
+   */
+  private getOutcomeId(taskId: string, occurrence: { scheduledDate: Date; index: number }): string {
     return `${taskId}-${occurrence.index}-${occurrence.scheduledDate.getTime()}`;
   }
 }
