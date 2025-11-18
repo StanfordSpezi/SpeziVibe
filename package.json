@@ -19,6 +19,7 @@
     "@react-navigation/native": "^7.1.8",
     "@spezivibe/account": "*",
     "@spezivibe/questionnaire": "*",
+    "@spezivibe/scheduler": "*",
     "dotenv": "^17.2.3",
     "expo": "~54.0.24",
     "expo-constants": "~18.0.10",

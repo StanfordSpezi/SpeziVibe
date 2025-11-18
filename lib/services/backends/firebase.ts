@@ -11,7 +11,7 @@ import {
   Firestore,
 } from 'firebase/firestore';
 import { BackendService, BackendConfig } from '../types';
-import { Task, Outcome, SchedulerState } from '../../scheduler/types';
+import { Task, Outcome, SchedulerState } from '@spezivibe/scheduler';
 import { QuestionnaireResponse } from '../../questionnaires/types';
 import { serializeTask, deserializeTask } from '../utils/task-serialization';
 import { removeUndefined } from '../utils/object-utils';

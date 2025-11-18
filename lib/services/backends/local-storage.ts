@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BackendService } from '../types';
-import { Task, Outcome, SchedulerState } from '../../scheduler/types';
+import { Task, Outcome, SchedulerState } from '@spezivibe/scheduler';
 import { QuestionnaireResponse } from '../../questionnaires/types';
 import { deserializeTask } from '../utils/task-serialization';
 

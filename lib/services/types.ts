@@ -1,4 +1,4 @@
-import { Task, Outcome, SchedulerState } from '../scheduler/types';
+import { Task, Outcome, SchedulerState } from '@spezivibe/scheduler';
 import { QuestionnaireResponse } from '../questionnaires/types';
 
 /**

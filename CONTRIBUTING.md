@@ -56,9 +56,9 @@ Since this is a template project, testing is primarily manual:
 4. Create sample questionnaire
 
 ### 📅 Scheduler Enhancements
-1. Add new task categories to `lib/scheduler/types.ts`
+1. Add new task categories to `packages/scheduler/src/types.ts`
 2. Update icon mapping in `app/(tabs)/schedule.tsx`
-3. Add sample tasks to `lib/scheduler/sample-tasks.ts`
+3. Add sample tasks to `packages/scheduler/src/sample-tasks.ts`
 4. Document new features
 
 ### 📖 Documentation
