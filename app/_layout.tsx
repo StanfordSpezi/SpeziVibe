@@ -61,16 +61,26 @@ function RootLayoutNav() {
 function SchedulerInitializer({ children }: { children: React.ReactNode }) {
   const { scheduler, isLoading: schedulerLoading } = useScheduler();
   const { backend, backendType, isLoading: backendLoading } = useStandard();
-  const { signedIn } = useAccount();
-  const [initialized, setInitialized] = React.useState(false);
+  const { signedIn, user } = useAccount();
+  const [initializedForUserId, setInitializedForUserId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     async function initializeTasks() {
-      if (!scheduler || schedulerLoading || backendLoading || !backend || initialized) return;
+      const currentUserId = user?.uid || null;
+
+      // Skip if already initialized for this user
+      if (initializedForUserId === currentUserId && currentUserId !== null) {
+        return;
+      }
+
+      if (!scheduler || schedulerLoading || backendLoading || !backend) {
+        return;
+      }
 
       try {
         // For Firebase backend with authenticated user
-        if (backendType === 'firebase' && signedIn) {
+        // IMPORTANT: Wait for user.uid to be available before loading from Firebase
+        if (backendType === 'firebase' && signedIn && user?.uid) {
           // Sync from backend to local scheduler
           const remoteState = await backend.loadSchedulerState();
 
@@ -105,12 +115,12 @@ function SchedulerInitializer({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error('[SchedulerInit] Failed to initialize:', error);
       } finally {
-        setInitialized(true);
+        setInitializedForUserId(user?.uid || null);
       }
     }
 
     initializeTasks();
-  }, [scheduler, schedulerLoading, backend, backendType, backendLoading, signedIn, initialized]);
+  }, [scheduler, schedulerLoading, backend, backendType, backendLoading, signedIn, user, initializedForUserId]);
 
   return <>{children}</>;
 }

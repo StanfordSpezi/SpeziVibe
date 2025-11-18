@@ -66,7 +66,10 @@ export class FirebaseBackend implements BackendService {
   }
 
   async loadSchedulerState(): Promise<SchedulerState | null> {
-    if (!this.db || !this.userId) return null;
+    if (!this.db || !this.userId) {
+      console.log('[Firebase] Cannot load scheduler state - db:', !!this.db, 'userId:', !!this.userId);
+      return null;
+    }
 
     try {
       // Load tasks
