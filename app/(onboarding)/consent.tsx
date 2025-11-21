@@ -72,7 +72,7 @@ export default function ConsentScreen() {
           </ThemedText>
 
           <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
-            What You'll Do
+            What You&apos;ll Do
           </ThemedText>
           <ThemedText style={styles.paragraph}>
             • Complete daily wellness check-ins and mood assessments{'\n'}

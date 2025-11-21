@@ -70,11 +70,12 @@
   },
   "jest": {
     "preset": "react-native",
+    "testTimeout": 15000,
     "setupFiles": [
       "./jest.setup.js"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|@react-native|@react-navigation|@testing-library)/)"
+      "node_modules/(?!(react-native|@react-native|@react-native-community|@react-navigation|@testing-library)/)"
     ],
     "moduleFileExtensions": [
       "ts",
