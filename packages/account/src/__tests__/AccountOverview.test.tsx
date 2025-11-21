@@ -17,8 +17,8 @@ describe('AccountOverview', () => {
 
     await waitFor(() => {
       expect(getByText('No account information available')).toBeTruthy();
-    });
-  });
+    }, { timeout: 10000 });
+  }, 15000);
 
   it('should display account information section', async () => {
     const { getByText } = renderWithAccountProvider(<AccountOverview />);

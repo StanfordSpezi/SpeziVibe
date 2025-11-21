@@ -23,10 +23,10 @@ export default function GetStartedScreen() {
 
         <View style={styles.textContainer}>
           <ThemedText type="title" style={styles.title}>
-            You're All Set!
+            You&apos;re All Set!
           </ThemedText>
           <ThemedText style={styles.description}>
-            Ready to begin your wellness journey? Let's make every day count together.
+            Ready to begin your wellness journey? Let&apos;s make every day count together.
           </ThemedText>
         </View>
 
