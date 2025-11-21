@@ -1,12 +1,38 @@
-// Mock AsyncStorage
-jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
-);
+// Configure testing library defaults for CI environments
+import { configure } from '@testing-library/react-native';
 
-// Mock AppState
-jest.mock('react-native/Libraries/AppState/AppState', () => ({
-  addEventListener: jest.fn(() => ({
-    remove: jest.fn(),
-  })),
-  currentState: 'active',
+configure({
+  asyncUtilTimeout: 10000, // Increase default waitFor timeout for slower CI
+});
+
+// Mock React Native components for testing
+jest.mock('react-native', () => {
+  const RN = jest.requireActual('react-native');
+
+  RN.Platform.OS = 'ios';
+
+  // Mock AppState
+  RN.AppState = {
+    addEventListener: jest.fn(() => ({
+      remove: jest.fn(),
+    })),
+    currentState: 'active',
+  };
+
+  return RN;
+});
+
+// Mock AsyncStorage
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  setItem: jest.fn(() => Promise.resolve()),
+  getItem: jest.fn(() => Promise.resolve(null)),
+  removeItem: jest.fn(() => Promise.resolve()),
+  clear: jest.fn(() => Promise.resolve()),
 }));
+
+// Silence console errors during tests
+global.console = {
+  ...console,
+  error: jest.fn(),
+  warn: jest.fn(),
+};
