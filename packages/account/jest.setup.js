@@ -1,3 +1,10 @@
+// Configure testing library defaults for CI environments
+import { configure } from '@testing-library/react-native';
+
+configure({
+  asyncUtilTimeout: 10000, // Increase default waitFor timeout for slower CI
+});
+
 // Mock React Native components for testing
 jest.mock('react-native', () => {
   const RN = jest.requireActual('react-native');

@@ -222,88 +222,94 @@ export function AccountProvider({
     [accountService, onAccountEvent, operationInProgress]
   );
 
-  const updateEmail = accountService.updateEmail
-    ? useCallback(
-        async (newEmail: string, password: string) => {
-          if (operationInProgress) {
-            throw new Error('An operation is already in progress');
-          }
+  const updateEmail = useCallback(
+    async (newEmail: string, password: string) => {
+      if (!accountService.updateEmail) {
+        throw new Error('Email update is not supported by this account service');
+      }
 
-          setOperationInProgress(true);
-          setIsLoading(true);
-          setError(null);
+      if (operationInProgress) {
+        throw new Error('An operation is already in progress');
+      }
 
-          try {
-            await accountService.updateEmail!(newEmail, password);
-          } catch (err: any) {
-            const errorMessage = err.message || 'Email update failed';
-            setError(errorMessage);
-            throw err;
-          } finally {
-            setIsLoading(false);
-            setOperationInProgress(false);
-          }
-        },
-        [accountService, operationInProgress]
-      )
-    : undefined;
+      setOperationInProgress(true);
+      setIsLoading(true);
+      setError(null);
 
-  const updatePassword = accountService.updatePassword
-    ? useCallback(
-        async (currentPassword: string, newPassword: string) => {
-          if (operationInProgress) {
-            throw new Error('An operation is already in progress');
-          }
+      try {
+        await accountService.updateEmail(newEmail, password);
+      } catch (err: any) {
+        const errorMessage = err.message || 'Email update failed';
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setIsLoading(false);
+        setOperationInProgress(false);
+      }
+    },
+    [accountService, operationInProgress]
+  );
 
-          setOperationInProgress(true);
-          setIsLoading(true);
-          setError(null);
+  const updatePassword = useCallback(
+    async (currentPassword: string, newPassword: string) => {
+      if (!accountService.updatePassword) {
+        throw new Error('Password update is not supported by this account service');
+      }
 
-          try {
-            await accountService.updatePassword!(currentPassword, newPassword);
-          } catch (err: any) {
-            const errorMessage = err.message || 'Password update failed';
-            setError(errorMessage);
-            throw err;
-          } finally {
-            setIsLoading(false);
-            setOperationInProgress(false);
-          }
-        },
-        [accountService, operationInProgress]
-      )
-    : undefined;
+      if (operationInProgress) {
+        throw new Error('An operation is already in progress');
+      }
 
-  const deleteAccount = accountService.deleteAccount
-    ? useCallback(
-        async (password: string) => {
-          if (operationInProgress) {
-            throw new Error('An operation is already in progress');
-          }
+      setOperationInProgress(true);
+      setIsLoading(true);
+      setError(null);
 
-          setOperationInProgress(true);
-          setIsLoading(true);
-          setError(null);
+      try {
+        await accountService.updatePassword(currentPassword, newPassword);
+      } catch (err: any) {
+        const errorMessage = err.message || 'Password update failed';
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setIsLoading(false);
+        setOperationInProgress(false);
+      }
+    },
+    [accountService, operationInProgress]
+  );
 
-          try {
-            await accountService.deleteAccount!(password);
+  const deleteAccount = useCallback(
+    async (password: string) => {
+      if (!accountService.deleteAccount) {
+        throw new Error('Account deletion is not supported by this account service');
+      }
 
-            // Emit delete event
-            if (onAccountEvent) {
-              await onAccountEvent({ type: 'delete' });
-            }
-          } catch (err: any) {
-            const errorMessage = err.message || 'Account deletion failed';
-            setError(errorMessage);
-            throw err;
-          } finally {
-            setIsLoading(false);
-            setOperationInProgress(false);
-          }
-        },
-        [accountService, onAccountEvent, operationInProgress]
-      )
-    : undefined;
+      if (operationInProgress) {
+        throw new Error('An operation is already in progress');
+      }
+
+      setOperationInProgress(true);
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        await accountService.deleteAccount(password);
+
+        // Emit delete event
+        if (onAccountEvent) {
+          await onAccountEvent({ type: 'delete' });
+        }
+      } catch (err: any) {
+        const errorMessage = err.message || 'Account deletion failed';
+        setError(errorMessage);
+        throw err;
+      } finally {
+        setIsLoading(false);
+        setOperationInProgress(false);
+      }
+    },
+    [accountService, onAccountEvent, operationInProgress]
+  );
 
   const clearError = useCallback(() => {
     setError(null);

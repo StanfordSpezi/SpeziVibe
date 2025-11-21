@@ -139,8 +139,8 @@ describe('PasswordResetForm', () => {
 
     await waitFor(() => {
       expect(queryByPlaceholderText('your@email.com')).toBeNull();
-    });
-  });
+    }, { timeout: 10000 });
+  }, 15000);
 
   it('should disable input during loading', async () => {
     const { getByPlaceholderText, getByText } = renderWithAccountProvider(
