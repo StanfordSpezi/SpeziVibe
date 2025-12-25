@@ -32,10 +32,10 @@
   "author": "SpeziVibe",
   "license": "MIT",
   "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-native": ">=0.70.0",
     "@react-native-async-storage/async-storage": ">=1.0.0",
-    "@react-native-community/datetimepicker": ">=7.0.0"
+    "@react-native-community/datetimepicker": ">=7.0.0",
+    "react": ">=18.0.0",
+    "react-native": ">=0.70.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.28.5",
@@ -63,8 +63,11 @@
       "./jest.setup.js"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|@react-native|@react-native-community|@react-navigation|@testing-library)/)"
+      "node_modules/(?!(react-native|@react-native|@react-native-community|@react-navigation|@testing-library|react-native-ui-datepicker)/)"
     ],
+    "moduleNameMapper": {
+      "\\.(png|jpg|jpeg|gif|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
+    },
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -74,5 +77,8 @@
     "testMatch": [
       "**/__tests__/**/*.test.ts?(x)"
     ]
+  },
+  "dependencies": {
+    "react-native-ui-datepicker": "^3.1.2"
   }
 }

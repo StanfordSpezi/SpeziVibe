@@ -29,7 +29,7 @@ describe('TextQuestion', () => {
     required: false,
   };
 
-  const renderWithFormik = (item: QuestionnaireItem, initialValues = {}) => {
+  const renderWithFormik = (item: QuestionnaireItem, initialValues: Record<string, unknown> = {}) => {
     return render(
       <Formik initialValues={initialValues} onSubmit={jest.fn()}>
         {(formik) => <TextQuestion item={item} formik={formik} theme={defaultLightTheme} />}
@@ -128,7 +128,7 @@ describe('TextQuestion', () => {
   describe('error handling', () => {
     it('should display error message when touched and has error', () => {
       const { getByText } = render(
-        <Formik
+        <Formik<Record<string, unknown>>
           initialValues={{ 'test-text': '' }}
           initialErrors={{ 'test-text': 'This field is required' }}
           initialTouched={{ 'test-text': true }}
