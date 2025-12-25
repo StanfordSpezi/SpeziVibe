@@ -30,7 +30,7 @@ export function useOnboardingStatus(storageKey: string = ONBOARDING_COMPLETED_KE
     try {
       const value = await AsyncStorage.getItem(storageKey);
       setIsOnboardingCompleted(value === 'true');
-    } catch (error) {
+    } catch {
       setIsOnboardingCompleted(false);
     }
   }, [storageKey]);

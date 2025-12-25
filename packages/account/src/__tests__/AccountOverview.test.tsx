@@ -1,15 +1,13 @@
 import React from 'react';
 import { fireEvent, waitFor } from '@testing-library/react-native';
 import { AccountOverview } from '../components/AccountOverview';
-import { renderWithAccountProvider, mockUser } from './test-utils';
-import { InMemoryAccountService } from '../services/local-account-service';
+import { renderWithAccountProvider, createMockAccountService } from './test-utils';
+import { InMemoryAccountService } from '../services/in-memory-account-service';
 
 describe('AccountOverview', () => {
   it('should show empty state when no user', async () => {
-    // Create a service with no user
-    const service = new InMemoryAccountService();
-    await service.initialize();
-    await service.logout();
+    // Create a service with no user (unauthenticated)
+    const service = createMockAccountService(false);
 
     const { getByText } = renderWithAccountProvider(<AccountOverview />, {
       providerProps: { accountService: service },
@@ -34,7 +32,7 @@ describe('AccountOverview', () => {
     const { getByText } = renderWithAccountProvider(<AccountOverview />);
 
     await waitFor(() => {
-      expect(getByText('local@example.com')).toBeTruthy();
+      expect(getByText('test@example.com')).toBeTruthy();
     });
   });
 
@@ -42,18 +40,13 @@ describe('AccountOverview', () => {
     const { getByText } = renderWithAccountProvider(<AccountOverview />);
 
     await waitFor(() => {
-      expect(getByText('local-user')).toBeTruthy();
+      expect(getByText('test-user-123')).toBeTruthy();
     });
   });
 
   it('should display member since date when createdAt exists', async () => {
-    const service = new InMemoryAccountService();
-    await service.initialize();
-    // Update profile with a specific created date
-    const user = await service.getCurrentUser();
-    if (user) {
-      (user as any).createdAt = new Date('2024-01-01');
-    }
+    // Use an authenticated service with createdAt already set
+    const service = createMockAccountService();
 
     const { getByText } = renderWithAccountProvider(<AccountOverview />, {
       providerProps: { accountService: service },
@@ -65,17 +58,22 @@ describe('AccountOverview', () => {
   });
 
   it('should display profile information when available', async () => {
-    const service = new InMemoryAccountService();
-    await service.initialize();
-    await service.updateProfile({
-      name: {
-        givenName: 'Test',
-        familyName: 'User',
+    // Create a service with a user that has full profile data
+    const service = new InMemoryAccountService({
+      initialUser: {
+        uid: 'test-user-123',
+        email: 'test@example.com',
+        name: {
+          givenName: 'Test',
+          familyName: 'User',
+        },
+        dateOfBirth: new Date('1990-01-01'),
+        sex: 'male',
+        phoneNumber: '+1234567890',
+        biography: 'Test bio',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
       },
-      dateOfBirth: new Date('1990-01-01'),
-      sex: 'male',
-      phoneNumber: '+1234567890',
-      biography: 'Test bio',
     });
 
     const { getByText } = renderWithAccountProvider(<AccountOverview />, {
@@ -212,8 +210,8 @@ describe('AccountOverview', () => {
   });
 
   it('should call logout from context when no onLogout callback provided', async () => {
-    const service = new InMemoryAccountService();
-    await service.initialize();
+    // Create an authenticated service
+    const service = createMockAccountService();
     const logoutSpy = jest.spyOn(service, 'logout');
 
     const { getByText } = renderWithAccountProvider(<AccountOverview />, {
@@ -266,12 +264,16 @@ describe('AccountOverview', () => {
   });
 
   it('should show "Not set" for missing email', async () => {
-    const service = new InMemoryAccountService();
-    await service.initialize();
-    const user = await service.getCurrentUser();
-    if (user) {
-      (user as any).email = null;
-    }
+    // Create a service with a user that has no email
+    const service = new InMemoryAccountService({
+      initialUser: {
+        uid: 'test-user-123',
+        email: null,
+        name: { givenName: 'Test' },
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+      },
+    });
 
     const { getByText } = renderWithAccountProvider(<AccountOverview />, {
       providerProps: { accountService: service },
@@ -283,10 +285,15 @@ describe('AccountOverview', () => {
   });
 
   it('should format dates correctly', async () => {
-    const service = new InMemoryAccountService();
-    await service.initialize();
-    await service.updateProfile({
-      dateOfBirth: new Date('1990-06-15'),
+    // Create a service with a user that has dateOfBirth
+    const service = new InMemoryAccountService({
+      initialUser: {
+        uid: 'test-user-123',
+        email: 'test@example.com',
+        dateOfBirth: new Date('1990-06-15'),
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+      },
     });
 
     const { getByText } = renderWithAccountProvider(<AccountOverview />, {

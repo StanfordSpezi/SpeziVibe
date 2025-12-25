@@ -17,7 +17,6 @@ import { SAMPLE_QUESTIONNAIRES } from '@/lib/questionnaires';
 import { AccountButton } from '@/components/account/account-button';
 import { AccountSheet } from '@/components/account/account-sheet';
 import { useAccount } from '@spezivibe/account';
-import { ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
 
 const CONSENT_KEY = '@consent_data';
 
@@ -43,28 +42,6 @@ export default function TabTwoScreen() {
     } catch (error) {
       console.error('Error loading consent:', error);
     }
-  };
-
-  const handleResetOnboarding = async () => {
-    Alert.alert(
-      'Reset Onboarding',
-      'This will reset the app and show the onboarding flow again. Continue?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await AsyncStorage.removeItem(ONBOARDING_COMPLETED_KEY);
-              router.replace('/(onboarding)/welcome');
-            } catch (error) {
-              console.error('Error resetting onboarding:', error);
-            }
-          },
-        },
-      ]
-    );
   };
 
   const handleResetSchedule = async () => {

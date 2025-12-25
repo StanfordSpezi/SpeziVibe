@@ -1,0 +1,91 @@
+{
+  "name": "@spezivibe/firebase",
+  "version": "1.0.0",
+  "description": "Firebase integration for SpeziVibe account management and backend services",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest --config jest.integration.config.js",
+    "test:integration:watch": "jest --config jest.integration.config.js --watch",
+    "emulator:start": "firebase emulators:start",
+    "emulator:start:ci": "firebase emulators:start --only auth,firestore",
+    "test:with-emulator": "firebase emulators:exec --only auth,firestore 'npm run test:integration'",
+    "prepublishOnly": "npm run clean && npm run build && npm run test"
+  },
+  "keywords": [
+    "react-native",
+    "firebase",
+    "authentication",
+    "firestore",
+    "spezi",
+    "account",
+    "backend"
+  ],
+  "author": "SpeziVibe",
+  "license": "MIT",
+  "peerDependencies": {
+    "@spezivibe/account": "^1.0.0",
+    "react": ">=18.0.0",
+    "react-native": ">=0.70.0",
+    "@react-native-async-storage/async-storage": ">=1.0.0",
+    "firebase": ">=12.0.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-flow": "^7.27.1",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
+    "@react-native/babel-preset": "^0.81.5",
+    "@react-native/metro-config": "^0.82.1",
+    "@testing-library/react-native": "^12.9.0",
+    "@types/jest": "^29.5.14",
+    "@types/react": "~19.1.17",
+    "@types/react-native": "^0.73.0",
+    "@types/react-test-renderer": "^18.0.7",
+    "babel-jest": "^29.7.0",
+    "firebase-tools": "^14.27.0",
+    "jest": "^29.7.0",
+    "react": "^19.1.0",
+    "react-native": "^0.81.5",
+    "react-test-renderer": "19.1.0",
+    "typescript": "~5.9.2"
+  },
+  "jest": {
+    "preset": "react-native",
+    "testTimeout": 15000,
+    "setupFiles": [
+      "./jest.setup.js"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-native|@react-native|@react-native-community|@react-navigation|@testing-library|firebase|@firebase)/)"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "mjs"
+    ],
+    "testMatch": [
+      "**/__tests__/**/*.test.ts?(x)"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/__tests__/integration/"
+    ],
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx|mjs)$": "babel-jest"
+    }
+  }
+}

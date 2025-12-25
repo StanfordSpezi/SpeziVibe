@@ -151,7 +151,7 @@ export function ScheduleView({
             try {
               await schedulerInstance.completeEvent(event);
               refreshEvents();
-            } catch (error) {
+            } catch {
               Alert.alert('Cannot Complete', 'This task cannot be completed at this time.');
             }
           }
@@ -160,7 +160,7 @@ export function ScheduleView({
           try {
             await schedulerInstance.completeEvent(event);
             refreshEvents();
-          } catch (error) {
+          } catch {
             Alert.alert('Cannot Complete', 'This task cannot be completed at this time.');
           }
         }

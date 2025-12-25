@@ -23,7 +23,8 @@ SpeziVibe is a [React Native](https://reactnative.dev/) and [Expo](https://expo.
 
 - **🏗️ Standard Architecture** - Inspired by Stanford Spezi's Standard pattern for centralized data orchestration
 - **🔌 Pluggable Backends** - Switch between local storage and Firebase without changing app code
-- **👤 Account Module** - Reusable authentication package with Firebase and local implementations
+- **👤 Account Module** - Backend-agnostic authentication with local and in-memory implementations
+- **🔥 Firebase Integration** - Optional Firebase package for authentication and data storage
 - **📋 Onboarding Flow** - Multi-step onboarding with feature highlights and informed consent
 - **📅 Task Scheduler** - Flexible scheduling with daily, weekly, monthly recurrence patterns and completion policies
 - **📝 Questionnaires** - Dynamic forms with validation (FHIR-compatible)
@@ -61,7 +62,8 @@ npx expo start
 
 ## 📦 Modules
 
-- **[@spezivibe/account](./packages/account/README.md)** - Authentication and account management with Firebase and local implementations
+- **[@spezivibe/account](./packages/account/README.md)** - Backend-agnostic authentication and account management with local and in-memory implementations
+- **[@spezivibe/firebase](./packages/firebase/README.md)** - Firebase integration providing Firebase Authentication and Firestore implementations
 - **[@spezivibe/onboarding](./packages/onboarding/README.md)** - Reusable onboarding components with consent management and status tracking
 - **[@spezivibe/questionnaire](./packages/questionnaire/README.md)** - FHIR-compatible questionnaire system with dynamic forms
 - **[@spezivibe/scheduler](./packages/scheduler/README.md)** - Task scheduling with daily, weekly, monthly recurrence patterns and completion policies

@@ -119,7 +119,7 @@ describe('RegisterForm', () => {
   });
 
   it('should clear validation error when typing', async () => {
-    const { getByPlaceholderText, getByText, queryByText } = renderWithAccountProvider(
+    const { getByPlaceholderText, getByText } = renderWithAccountProvider(
       <RegisterForm />
     );
 

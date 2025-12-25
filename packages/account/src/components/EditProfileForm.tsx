@@ -61,7 +61,7 @@ export interface EditProfileFormProps {
 
   /** Render custom dropdown */
   renderDropdown?: (props: {
-    options: Array<{ label: string; value: string }>;
+    options: { label: string; value: string }[];
     selectedValue: string;
     onSelect: (value: string) => void;
   }) => React.ReactNode;

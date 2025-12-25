@@ -186,7 +186,7 @@ export class QuestionnaireBuilder {
     text: string,
     options: {
       required?: boolean;
-      answerOption: Array<{ value: string | number; display: string }>;
+      answerOption: { value: string | number; display: string }[];
       enableWhen?: QuestionnaireItemEnableWhen[];
     }
   ): this {

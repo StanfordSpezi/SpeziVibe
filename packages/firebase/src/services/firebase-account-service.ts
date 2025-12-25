@@ -15,17 +15,26 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   deleteUser,
+  connectAuthEmulator,
+  browserLocalPersistence,
+  indexedDBLocalPersistence,
+  // @ts-expect-error - getReactNativePersistence exists in RN but not in TS web definitions (Firebase SDK issue)
+  getReactNativePersistence,
 } from 'firebase/auth';
-// @ts-expect-error - getReactNativePersistence exists in RN but not in TS web definitions (Firebase SDK issue)
-import { getReactNativePersistence } from 'firebase/auth';
 import {
   getFirestore,
   doc,
   setDoc,
   getDoc,
+  deleteDoc,
+  deleteField,
   Firestore,
+  connectFirestoreEmulator,
 } from 'firebase/firestore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
+
+// Note: AsyncStorage is imported dynamically in initialize() to avoid bundling issues on web
+
 import {
   AccountService,
   LoginCredentials,
@@ -34,9 +43,14 @@ import {
   FirebaseConfig,
   UserProfileUpdate,
   PersonName,
-} from '../types';
-import { createLogger, mapFirebaseError as mapFirebaseErrorUtil } from '../utils';
-import { formatPersonName, parsePersonName, normalizePersonName, PersonNameStyle } from '../utils/person-name';
+  createLogger,
+  formatPersonName,
+  parsePersonName,
+  normalizePersonName,
+  PersonNameStyle,
+  validateEmail,
+} from '@spezivibe/account';
+import { mapFirebaseError as mapFirebaseErrorUtil } from '../utils/errors';
 
 /**
  * Firebase implementation of the AccountService interface
@@ -45,27 +59,52 @@ import { formatPersonName, parsePersonName, normalizePersonName, PersonNameStyle
  * and profile storage using Firestore.
  *
  * Features:
- * - Stores user profile data in Firestore at users/{userId}/profile
+ * - Stores user profile data in Firestore at users/{userId}/profile/data
  * - Loads profile data on authentication
  * - Persists profile updates automatically
  * - Password reset
  * - Email/password changes
  * - Account deletion
+ * - Firebase Emulator support for local development
  *
- * To use this service:
- * 1. Install firebase: npm install firebase
- * 2. Create a Firebase project at https://console.firebase.google.com
- * 3. Enable Authentication with Email/Password provider
- * 4. Enable Firestore database
- * 5. Pass your Firebase config to the constructor
+ * For production:
+ * 1. Create a Firebase project at https://console.firebase.google.com
+ * 2. Enable Authentication with Email/Password provider
+ * 3. Enable Firestore database
+ * 4. Pass your Firebase config to the constructor
+ *
+ * For local development with emulators:
+ * 1. Install Firebase CLI: npm install -g firebase-tools
+ * 2. Initialize Firebase: firebase init (select Auth and Firestore)
+ * 3. Start emulators: firebase emulators:start
+ * 4. Set useEmulator: true in your config
+ *
+ * @example
+ * ```typescript
+ * // Production
+ * const service = new FirebaseAccountService({
+ *   apiKey: 'your-api-key',
+ *   // ... other config
+ * });
+ *
+ * // Local development with emulators
+ * const service = new FirebaseAccountService({
+ *   apiKey: 'demo-key',
+ *   projectId: 'demo-project',
+ *   // ... other config
+ *   useEmulator: true,
+ * });
+ * ```
  */
 export class FirebaseAccountService implements AccountService {
   private app: FirebaseApp | null = null;
   private auth: Auth | null = null;
   private db: Firestore | null = null;
   private currentUser: User | null = null;
-  private authStateListeners: Array<(user: User | null) => void> = [];
+  private authStateListeners: ((user: User | null) => void)[] = [];
   private logger = createLogger('FirebaseAccountService');
+  private firebaseUnsubscribe: (() => void) | null = null;
+  private authStateSequence = 0;
 
   constructor(private config: FirebaseConfig) {
     if (!config) {
@@ -92,24 +131,77 @@ export class FirebaseAccountService implements AccountService {
       // Initialize Firestore for profile storage
       this.db = getFirestore(this.app);
 
-      // Initialize Auth with React Native persistence using AsyncStorage
+      // Initialize Auth with platform-specific persistence
       try {
-        this.auth = initializeAuth(this.app, {
-          persistence: getReactNativePersistence(AsyncStorage),
-        });
-        this.logger.info('Auth initialized with AsyncStorage persistence');
-      } catch (error) {
+        if (Platform.OS === 'web') {
+          // Web: use browser localStorage with IndexedDB fallback
+          this.auth = initializeAuth(this.app, {
+            persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+          });
+          this.logger.info('Auth initialized with browser persistence');
+        } else {
+          // React Native (iOS/Android): use AsyncStorage
+          // Dynamic import to avoid bundling issues on web
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          const AsyncStorage = require('@react-native-async-storage/async-storage').default;
+          this.auth = initializeAuth(this.app, {
+            persistence: getReactNativePersistence(AsyncStorage),
+          });
+          this.logger.info('Auth initialized with AsyncStorage persistence');
+        }
+      } catch {
         // If auth is already initialized, just get the existing instance
         this.auth = getAuth(this.app);
         this.logger.info('Using existing Auth instance');
       }
 
+      // Connect to Firebase emulators if configured
+      if (this.config.useEmulator) {
+        const emulatorConfig = this.config.emulatorConfig || {};
+        const authHost = emulatorConfig.authHost || 'localhost';
+        const authPort = emulatorConfig.authPort || 9099;
+        const firestoreHost = emulatorConfig.firestoreHost || 'localhost';
+        const firestorePort = emulatorConfig.firestorePort || 8080;
+
+        try {
+          connectAuthEmulator(this.auth, `http://${authHost}:${authPort}`, {
+            disableWarnings: true,
+          });
+          this.logger.info(`Connected to Auth emulator at ${authHost}:${authPort}`);
+        } catch {
+          // Emulator may already be connected
+          this.logger.debug('Auth emulator already connected');
+        }
+
+        try {
+          connectFirestoreEmulator(this.db, firestoreHost, firestorePort);
+          this.logger.info(`Connected to Firestore emulator at ${firestoreHost}:${firestorePort}`);
+        } catch {
+          // Emulator may already be connected
+          this.logger.debug('Firestore emulator already connected');
+        }
+      }
+
       // Set up auth state listener with profile loading
+      // Use a flag to ensure we only resolve the initialization promise once
+      let initialized = false;
       return new Promise((resolve) => {
-        onAuthStateChanged(this.auth!, async (firebaseUser) => {
+        this.firebaseUnsubscribe = onAuthStateChanged(this.auth!, async (firebaseUser) => {
+          // Increment sequence to track this auth state change
+          this.authStateSequence++;
+          const currentSequence = this.authStateSequence;
+
           if (firebaseUser) {
             // Load full profile from Firestore
-            this.currentUser = await this.loadUserProfile(firebaseUser);
+            const userProfile = await this.loadUserProfile(firebaseUser);
+
+            // Check if auth state changed while loading profile (race condition prevention)
+            if (currentSequence !== this.authStateSequence) {
+              this.logger.debug('Auth state changed during profile load, discarding stale data');
+              return;
+            }
+
+            this.currentUser = userProfile;
           } else {
             this.currentUser = null;
           }
@@ -128,7 +220,11 @@ export class FirebaseAccountService implements AccountService {
             }
           });
 
-          resolve();
+          // Only resolve once on first auth state callback
+          if (!initialized) {
+            initialized = true;
+            resolve();
+          }
         });
       });
     } catch (error) {
@@ -150,6 +246,12 @@ export class FirebaseAccountService implements AccountService {
       throw new Error('Firebase account service not initialized');
     }
 
+    // Validate email before making Firebase call
+    const emailValidation = validateEmail(credentials.email);
+    if (!emailValidation.valid) {
+      throw new Error(emailValidation.message || 'Invalid email address');
+    }
+
     try {
       this.logger.debug('Attempting login');
       const userCredential = await signInWithEmailAndPassword(
@@ -157,7 +259,8 @@ export class FirebaseAccountService implements AccountService {
         credentials.email,
         credentials.password
       );
-      this.currentUser = this.mapFirebaseUser(userCredential.user);
+      // Load full profile from Firestore (not just Firebase Auth data)
+      this.currentUser = await this.loadUserProfile(userCredential.user);
       this.logger.info('Login successful');
     } catch (error) {
       if (error instanceof FirebaseError) {
@@ -172,6 +275,12 @@ export class FirebaseAccountService implements AccountService {
   async register(credentials: RegisterCredentials): Promise<void> {
     if (!this.auth) {
       throw new Error('Firebase account service not initialized');
+    }
+
+    // Validate email before making Firebase call
+    const emailValidation = validateEmail(credentials.email);
+    if (!emailValidation.valid) {
+      throw new Error(emailValidation.message || 'Invalid email address');
     }
 
     try {
@@ -244,6 +353,12 @@ export class FirebaseAccountService implements AccountService {
       throw new Error('Firebase account service not initialized');
     }
 
+    // Validate email before making Firebase call
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      throw new Error(emailValidation.message || 'Invalid email address');
+    }
+
     try {
       this.logger.debug('Sending password reset email');
       await sendPasswordResetEmail(this.auth, email);
@@ -314,26 +429,37 @@ export class FirebaseAccountService implements AccountService {
       throw new Error('No authenticated user');
     }
 
+    // Validate new email before making Firebase call
+    const emailValidation = validateEmail(newEmail);
+    if (!emailValidation.valid) {
+      throw new Error(emailValidation.message || 'Invalid email address');
+    }
+
+    const currentEmail = this.auth.currentUser.email;
+    if (!currentEmail) {
+      throw new Error('Cannot update email: current user has no email address');
+    }
+
     try {
       this.logger.debug('Updating email');
 
       // Reauthenticate before email change
-      const credential = EmailAuthProvider.credential(
-        this.auth.currentUser.email!,
-        password
-      );
+      const credential = EmailAuthProvider.credential(currentEmail, password);
       await reauthenticateWithCredential(this.auth.currentUser, credential);
 
       // Update email
       await firebaseUpdateEmail(this.auth.currentUser, newEmail);
 
-      // Update local user object
+      // Update local user object and save to Firestore
       if (this.currentUser) {
         this.currentUser = {
           ...this.currentUser,
           email: newEmail,
           updatedAt: new Date(),
         };
+
+        // Save updated email to Firestore
+        await this.saveUserProfile(this.auth.currentUser.uid, this.currentUser);
 
         // Notify listeners
         this.authStateListeners.forEach((listener) => {
@@ -361,14 +487,16 @@ export class FirebaseAccountService implements AccountService {
       throw new Error('No authenticated user');
     }
 
+    const currentEmail = this.auth.currentUser.email;
+    if (!currentEmail) {
+      throw new Error('Cannot update password: current user has no email address');
+    }
+
     try {
       this.logger.debug('Updating password');
 
       // Reauthenticate before password change
-      const credential = EmailAuthProvider.credential(
-        this.auth.currentUser.email!,
-        currentPassword
-      );
+      const credential = EmailAuthProvider.credential(currentEmail, currentPassword);
       await reauthenticateWithCredential(this.auth.currentUser, credential);
 
       // Update password
@@ -390,17 +518,32 @@ export class FirebaseAccountService implements AccountService {
       throw new Error('No authenticated user');
     }
 
+    const currentEmail = this.auth.currentUser.email;
+    if (!currentEmail) {
+      throw new Error('Cannot delete account: current user has no email address');
+    }
+
+    const userId = this.auth.currentUser.uid;
+
     try {
       this.logger.debug('Deleting account');
 
       // Reauthenticate before account deletion
-      const credential = EmailAuthProvider.credential(
-        this.auth.currentUser.email!,
-        password
-      );
+      const credential = EmailAuthProvider.credential(currentEmail, password);
       await reauthenticateWithCredential(this.auth.currentUser, credential);
 
-      // Delete account
+      // Delete user data from Firestore before deleting auth user
+      if (this.db) {
+        try {
+          await deleteDoc(doc(this.db, `users/${userId}/profile/data`));
+          this.logger.debug('Deleted user profile from Firestore');
+        } catch (firestoreError) {
+          // Log but don't fail - auth user deletion is more important
+          this.logger.warn('Failed to delete Firestore profile', firestoreError);
+        }
+      }
+
+      // Delete auth account
       await deleteUser(this.auth.currentUser);
 
       this.currentUser = null;
@@ -441,6 +584,27 @@ export class FirebaseAccountService implements AccountService {
   }
 
   /**
+   * Cleanup resources and unsubscribe from all listeners
+   * Should be called when the service is no longer needed
+   */
+  cleanup(): void {
+    // Unsubscribe from Firebase auth state changes
+    if (this.firebaseUnsubscribe) {
+      this.firebaseUnsubscribe();
+      this.firebaseUnsubscribe = null;
+    }
+
+    // Clear all local listeners
+    this.authStateListeners = [];
+
+    // Reset state
+    this.currentUser = null;
+    this.authStateSequence++;
+
+    this.logger.info('Service cleanup completed');
+  }
+
+  /**
    * Load user profile from Firestore and merge with Firebase Auth data
    */
   private async loadUserProfile(firebaseUser: FirebaseUser): Promise<User> {
@@ -467,9 +631,12 @@ export class FirebaseAccountService implements AccountService {
         if (typeof profileData.name === 'string') {
           // Legacy string name - parse it
           name = parsePersonName(profileData.name);
+        } else if (this.isValidPersonName(profileData.name)) {
+          // Validated PersonName object from Firestore
+          name = profileData.name;
         } else {
-          // PersonName object from Firestore
-          name = profileData.name as PersonName;
+          this.logger.warn('Invalid PersonName structure in Firestore, using base user name');
+          name = baseUser.name;
         }
       } else {
         name = baseUser.name;
@@ -491,6 +658,9 @@ export class FirebaseAccountService implements AccountService {
 
   /**
    * Save user profile to Firestore
+   *
+   * Fields set to null will be deleted from Firestore.
+   * Fields set to undefined will be ignored (no change).
    */
   private async saveUserProfile(userId: string, profile: Partial<User>): Promise<void> {
     if (!this.db) {
@@ -499,22 +669,40 @@ export class FirebaseAccountService implements AccountService {
     }
 
     try {
-      const profileData = {
-        name: profile.name,
-        dateOfBirth: profile.dateOfBirth?.toISOString(),
-        sex: profile.sex,
-        phoneNumber: profile.phoneNumber,
-        biography: profile.biography,
-        email: profile.email,
+      const profileData: Record<string, unknown> = {
         updatedAt: new Date().toISOString(),
       };
 
-      // Remove undefined values
-      const cleanData = Object.fromEntries(
-        Object.entries(profileData).filter(([_, value]) => value !== undefined)
-      );
+      // Helper to add field - use deleteField() for null, skip undefined
+      const addField = (key: string, value: unknown, transform?: (v: unknown) => unknown) => {
+        if (value === null) {
+          // Explicitly clear the field in Firestore
+          profileData[key] = deleteField();
+        } else if (value !== undefined) {
+          // Set the value (optionally transformed)
+          const transformed = transform ? transform(value) : value;
+          // If transform returns undefined, skip the field
+          if (transformed !== undefined) {
+            profileData[key] = transformed;
+          }
+        }
+        // undefined values are skipped - no change to that field
+      };
 
-      await setDoc(doc(this.db, `users/${userId}/profile/data`), cleanData, { merge: true });
+      addField('name', profile.name);
+      addField('dateOfBirth', profile.dateOfBirth, (v) => {
+        if (!this.isValidDate(v)) {
+          this.logger.warn('Invalid date for dateOfBirth, skipping field');
+          return undefined;
+        }
+        return (v as Date).toISOString();
+      });
+      addField('sex', profile.sex);
+      addField('phoneNumber', profile.phoneNumber);
+      addField('biography', profile.biography);
+      addField('email', profile.email);
+
+      await setDoc(doc(this.db, `users/${userId}/profile/data`), profileData, { merge: true });
       this.logger.info('Profile saved to Firestore');
     } catch (error) {
       this.logger.error('Failed to save profile to Firestore', error);
@@ -545,5 +733,36 @@ export class FirebaseAccountService implements AccountService {
         ? new Date(firebaseUser.metadata.lastSignInTime)
         : undefined,
     };
+  }
+
+  /**
+   * Validate that an object has a valid PersonName structure
+   */
+  private isValidPersonName(value: unknown): value is PersonName {
+    if (typeof value !== 'object' || value === null) {
+      return false;
+    }
+
+    const obj = value as Record<string, unknown>;
+    const validKeys = ['givenName', 'familyName', 'middleName', 'namePrefix', 'nameSuffix', 'nickname'];
+
+    // Check that all present keys are valid and string values
+    for (const key of Object.keys(obj)) {
+      if (!validKeys.includes(key)) {
+        return false;
+      }
+      if (obj[key] !== undefined && typeof obj[key] !== 'string') {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Validate that a value is a valid Date
+   */
+  private isValidDate(value: unknown): value is Date {
+    return value instanceof Date && !isNaN(value.getTime());
   }
 }
