@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { StyleSheet, ScrollView, View, Pressable, Linking, Alert } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { IconSymbol, IconSymbolName } from '@/components/ui/icon-symbol';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AccountButton } from '@/components/account/account-button';
 import { AccountSheet } from '@/components/account/account-sheet';
@@ -10,7 +10,7 @@ import { useAccount } from '@spezivibe/account';
 
 interface ContactOption {
   type: 'call' | 'text' | 'email' | 'website';
-  icon: string;
+  icon: IconSymbolName;
   label: string;
   value: string;
 }
@@ -21,7 +21,7 @@ interface Contact {
   title: string;
   organization: string;
   description: string;
-  icon: string;
+  icon: IconSymbolName;
   options: ContactOption[];
 }
 

@@ -1,12 +1,11 @@
 // Fallback for using MaterialIcons on Android and web.
 
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { SymbolWeight, SymbolViewProps } from 'expo-symbols';
+import { SymbolWeight } from 'expo-symbols';
 import { ComponentProps } from 'react';
 import { OpaqueColorValue, type StyleProp, type TextStyle } from 'react-native';
 
-type IconMapping = Record<SymbolViewProps['name'], ComponentProps<typeof MaterialIcons>['name']>;
-type IconSymbolName = keyof typeof MAPPING;
+type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
 
 /**
  * Add your SF Symbols to Material Icons mappings here.
@@ -14,11 +13,41 @@ type IconSymbolName = keyof typeof MAPPING;
  * - see SF Symbols in the [SF Symbols](https://developer.apple.com/sf-symbols/) app.
  */
 const MAPPING = {
+  // Navigation & Tabs
   'house.fill': 'home',
+  'calendar': 'event',
+  'person.2.fill': 'people',
   'paperplane.fill': 'send',
+
+  // UI Elements
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
-} as IconMapping;
+  'checkmark': 'check',
+  'checkmark.circle.fill': 'check-circle',
+  'info.circle.fill': 'info',
+
+  // Features & Welcome
+  'heart.fill': 'favorite',
+  'chart.line.uptrend.xyaxis': 'trending-up',
+  'bell.badge.fill': 'notifications',
+  'sparkles': 'auto-awesome',
+  'lock.shield.fill': 'security',
+  'star.fill': 'star',
+
+  // Contacts & Communication
+  'person.circle.fill': 'account-circle',
+  'phone.fill': 'phone',
+  'message.fill': 'chat',
+  'envelope.fill': 'email',
+  'questionmark.circle.fill': 'help',
+  'safari.fill': 'language',
+  'exclamationmark.triangle.fill': 'warning',
+
+  // Documents
+  'doc.text.fill': 'description',
+} satisfies Record<string, MaterialIconName>;
+
+export type IconSymbolName = keyof typeof MAPPING;
 
 /**
  * An icon component that uses native SF Symbols on iOS, and Material Icons on Android and web.
