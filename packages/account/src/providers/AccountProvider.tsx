@@ -15,9 +15,10 @@ const AccountContext = createContext<AccountContextValue | null>(null);
  *
  * @example
  * ```tsx
- * import { AccountProvider, FirebaseAccountService } from '@spezivibe/account';
+ * import { AccountProvider, InMemoryAccountService } from '@spezivibe/account';
+ * // Or for Firebase: import { FirebaseAccountService } from '@spezivibe/firebase';
  *
- * const accountService = new FirebaseAccountService(firebaseConfig);
+ * const accountService = new InMemoryAccountService();
  *
  * function App() {
  *   return (

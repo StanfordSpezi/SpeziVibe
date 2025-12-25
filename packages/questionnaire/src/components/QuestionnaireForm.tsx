@@ -261,6 +261,8 @@ export function QuestionnaireForm({
   }, [completedResponse, submitQuestionnaire]);
 
   // Update formValues when Formik values change (for enableWhen evaluation)
+  // This effect intentionally runs on every render to sync with Formik's internal state
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (formikRef.current && formikRef.current.values !== formValues) {
       setFormValues(formikRef.current.values);

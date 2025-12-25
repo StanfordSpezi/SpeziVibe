@@ -42,7 +42,7 @@ export const QuestionRenderer = React.memo(function QuestionRenderer({
   const isEnabled = useMemo(() => {
     const evaluator = new EnableWhenEvaluator(questionnaire, questionnaireResponse);
     return evaluator.evaluate(item);
-  }, [item, questionnaire, questionnaireResponse, formik.values]);
+  }, [item, questionnaire, questionnaireResponse]);
 
   if (!isEnabled) {
     return null;

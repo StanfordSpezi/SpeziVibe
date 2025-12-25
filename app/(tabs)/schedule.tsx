@@ -34,7 +34,7 @@ export default function ScheduleScreen() {
             eventId: event.occurrence.index.toString()
           },
         });
-      } catch (error) {
+      } catch {
         Alert.alert('Error', 'Failed to open questionnaire');
       }
     }

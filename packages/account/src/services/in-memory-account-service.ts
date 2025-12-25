@@ -1,12 +1,24 @@
-import { AccountService, LoginCredentials, RegisterCredentials, User, UserProfileUpdate, PersonName } from '../types';
+import { AccountService, LoginCredentials, RegisterCredentials, User, UserProfileUpdate } from '../types';
 import { createLogger } from '../utils';
 import { parsePersonName, normalizePersonName } from '../utils/person-name';
+
+/**
+ * Configuration options for InMemoryAccountService
+ */
+export interface InMemoryAccountServiceOptions {
+  /**
+   * Initial user to pre-populate (for testing)
+   * If provided, the service starts authenticated with this user
+   */
+  initialUser?: User;
+}
 
 /**
  * In-memory implementation of AccountService for development/testing
  *
  * This service simulates authentication without requiring a backend.
- * It always returns an authenticated state with a mock user.
+ * By default, it starts unauthenticated. You can provide an initial user
+ * to start in an authenticated state.
  *
  * Use this service for:
  * - Local development without Firebase
@@ -14,24 +26,25 @@ import { parsePersonName, normalizePersonName } from '../utils/person-name';
  * - Offline-first applications
  */
 export class InMemoryAccountService implements AccountService {
-  private mockUser: User = {
-    uid: 'local-user',
-    email: 'local@example.com',
-    name: {
-      givenName: 'Local',
-      familyName: 'User',
-    },
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
-
-  private isLoggedIn: boolean = true;
-  private authStateListeners: Array<(user: User | null) => void> = [];
+  private mockUser: User | null = null;
+  private isLoggedIn: boolean = false;
+  private authStateListeners: ((user: User | null) => void)[] = [];
   private logger = createLogger('InMemoryAccountService');
 
+  constructor(private options: InMemoryAccountServiceOptions = {}) {
+    if (options.initialUser) {
+      this.mockUser = options.initialUser;
+      this.isLoggedIn = true;
+    }
+  }
+
   async initialize(): Promise<void> {
-    this.logger.info('Initialized - always authenticated');
-    // Immediately notify listeners with mock user
+    if (this.isLoggedIn) {
+      this.logger.info('Initialized - starting with pre-configured user');
+    } else {
+      this.logger.info('Initialized - starting unauthenticated');
+    }
+    // Immediately notify listeners with current state
     this.notifyListeners();
   }
 
@@ -49,13 +62,14 @@ export class InMemoryAccountService implements AccountService {
     // Simulate slight delay
     await new Promise((resolve) => setTimeout(resolve, 100));
 
-    // Update mock user with provided email
+    // Create mock user with provided email
     // Parse email username as given name
     const emailUsername = credentials.email.split('@')[0];
     this.mockUser = {
-      ...this.mockUser,
+      uid: 'local-user',
       email: credentials.email,
       name: parsePersonName(emailUsername),
+      createdAt: new Date(),
       updatedAt: new Date(),
     };
 
@@ -110,6 +124,10 @@ export class InMemoryAccountService implements AccountService {
   }
 
   async updateProfile(updates: UserProfileUpdate): Promise<void> {
+    if (!this.isLoggedIn || !this.mockUser) {
+      throw new Error('No authenticated user');
+    }
+
     this.logger.debug('Mock profile update');
 
     // Simulate slight delay
@@ -126,6 +144,10 @@ export class InMemoryAccountService implements AccountService {
   }
 
   async updateEmail(newEmail: string, password: string): Promise<void> {
+    if (!this.isLoggedIn || !this.mockUser) {
+      throw new Error('No authenticated user');
+    }
+
     this.logger.debug('Mock email update');
 
     // Simulate slight delay
@@ -142,6 +164,10 @@ export class InMemoryAccountService implements AccountService {
   }
 
   async updatePassword(currentPassword: string, newPassword: string): Promise<void> {
+    if (!this.isLoggedIn || !this.mockUser) {
+      throw new Error('No authenticated user');
+    }
+
     this.logger.debug('Mock password update');
 
     // Simulate slight delay
@@ -151,12 +177,17 @@ export class InMemoryAccountService implements AccountService {
   }
 
   async deleteAccount(password: string): Promise<void> {
+    if (!this.isLoggedIn || !this.mockUser) {
+      throw new Error('No authenticated user');
+    }
+
     this.logger.debug('Mock account deletion');
 
     // Simulate slight delay
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     this.isLoggedIn = false;
+    this.mockUser = null;
     this.notifyListeners();
   }
 
@@ -175,6 +206,16 @@ export class InMemoryAccountService implements AccountService {
     };
   }
 
+  /**
+   * Cleanup resources and reset state
+   */
+  cleanup(): void {
+    this.authStateListeners = [];
+    this.mockUser = null;
+    this.isLoggedIn = false;
+    this.logger.info('Service cleanup completed');
+  }
+
   private notifyListeners(): void {
     const user = this.isLoggedIn ? this.mockUser : null;
     this.authStateListeners.forEach((listener) => {
@@ -186,8 +227,3 @@ export class InMemoryAccountService implements AccountService {
     });
   }
 }
-
-/**
- * @deprecated Use InMemoryAccountService instead. Kept for backward compatibility.
- */
-export const LocalAccountService = InMemoryAccountService;

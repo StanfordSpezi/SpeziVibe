@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, TextInput, StyleSheet, Platform } from 'react-native';
 import { FormikProps } from 'formik';
 import type { QuestionnaireItem } from 'fhir/r4';

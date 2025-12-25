@@ -127,7 +127,7 @@ describe('TextQuestion', () => {
 
   describe('error handling', () => {
     it('should display error message when touched and has error', () => {
-      const { getByTestId, getByText } = render(
+      const { getByText } = render(
         <Formik
           initialValues={{ 'test-text': '' }}
           initialErrors={{ 'test-text': 'This field is required' }}

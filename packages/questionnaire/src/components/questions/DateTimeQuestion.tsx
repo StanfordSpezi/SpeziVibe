@@ -6,8 +6,9 @@ import { QuestionnaireTheme } from '../../types';
 
 let DateTimePicker: any = null;
 try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   DateTimePicker = require('react-native-ui-datepicker').DateTimePicker;
-} catch (e) {
+} catch {
   console.warn('react-native-ui-datepicker is not installed. DateTimeQuestion will not work.');
 }
 

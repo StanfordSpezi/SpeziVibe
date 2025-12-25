@@ -1,19 +1,36 @@
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react-native';
 import { AccountProvider } from '../providers/AccountProvider';
-import { AccountProviderProps } from '../types';
-import { InMemoryAccountService } from '../services/local-account-service';
+import { AccountProviderProps, User } from '../types';
+import { InMemoryAccountService } from '../services/in-memory-account-service';
 
 /**
  * Test utilities for @spezivibe/account tests
  */
 
 /**
- * Create a mock account service for testing
+ * Default mock user for tests
  */
-export function createMockAccountService() {
-  const service = new InMemoryAccountService();
-  return service;
+export const defaultMockUser: User = {
+  uid: 'test-user-123',
+  email: 'test@example.com',
+  name: {
+    givenName: 'Test',
+    familyName: 'User',
+  },
+  createdAt: new Date('2024-01-01'),
+  updatedAt: new Date('2024-01-01'),
+};
+
+/**
+ * Create a mock account service for testing
+ * @param authenticated - Whether the service should start authenticated (default: true for backward compatibility)
+ * @param user - Custom user to use (default: defaultMockUser)
+ */
+export function createMockAccountService(authenticated: boolean = true, user: User = defaultMockUser) {
+  return new InMemoryAccountService({
+    initialUser: authenticated ? user : undefined,
+  });
 }
 
 /**
@@ -49,19 +66,13 @@ export function renderWithAccountProvider(
 export const waitFor = (ms: number = 0) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
- * Mock user data for tests
+ * Mock user data for tests (with full profile)
+ * @deprecated Use defaultMockUser instead
  */
 export const mockUser = {
-  uid: 'test-user-123',
-  email: 'test@example.com',
-  name: {
-    givenName: 'Test',
-    familyName: 'User',
-  },
+  ...defaultMockUser,
   dateOfBirth: new Date('1990-01-01'),
   sex: 'male' as const,
-  createdAt: new Date('2024-01-01'),
-  updatedAt: new Date('2024-01-01'),
 };
 
 /**

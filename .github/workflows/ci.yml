@@ -28,11 +28,15 @@ jobs:
           npm run lint
           npm run lint --workspaces
 
+      - name: Build packages (in dependency order)
+        run: |
+          npm run build --workspace=@spezivibe/account
+          npm run build --workspace=@spezivibe/scheduler
+          npm run build --workspace=@spezivibe/questionnaire
+          npm run build --workspace=@spezivibe/firebase
+
       - name: Typecheck
         run: npm run typecheck --workspaces
 
-      - name: Test
+      - name: Run unit tests
         run: npm run test --workspaces
-
-      - name: Build
-        run: npm run build --workspaces

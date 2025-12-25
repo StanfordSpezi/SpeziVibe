@@ -145,13 +145,16 @@ The Standard is configured at the root of your application. All modules access i
 // In your app root (_layout.tsx)
 import { StandardProvider } from '@/lib/services/standard-context';
 import { SchedulerProvider } from '@spezivibe/scheduler';
-import { AccountProvider } from '@spezivibe/account';
+import { AccountProvider, InMemoryAccountService } from '@spezivibe/account';
+import { FirebaseAccountService } from '@spezivibe/firebase';
+
+// Create your account service (choose one)
+const accountService = new InMemoryAccountService(); // For local/dev
+// const accountService = new FirebaseAccountService(firebaseConfig); // For Firebase
 
 export default function RootLayout() {
-  const { accountService } = useStandard();
-
   return (
-    <StandardProvider>
+    <StandardProvider accountService={accountService}>
       <SchedulerProvider>
         <AccountProvider accountService={accountService}>
           {/* Your app content */}
@@ -374,9 +377,8 @@ To add support for a new backend (e.g., Supabase, AWS, custom API):
 The Standard uses production-ready React patterns and automatically syncs user ID:
 
 ```typescript
-export function StandardProvider({ children }) {
+export function StandardProvider({ accountService, children }) {
   const [backend, setBackend] = useState<BackendService | null>(null);
-  const [accountService, setAccountService] = useState<AccountService | null>(null);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -386,17 +388,15 @@ export function StandardProvider({ children }) {
       try {
         const config = await getBackendConfig();
         const backendInstance = BackendFactory.createBackend(config);
-        const accountServiceInstance = AccountServiceFactory.createAccountService(config);
 
         await Promise.all([
           backendInstance.initialize(),
-          accountServiceInstance.initialize(),
+          accountService.initialize(),
         ]);
 
         if (cancelled) return; // Prevent setState after unmount
 
         setBackend(backendInstance);
-        setAccountService(accountServiceInstance);
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof Error ? err : new Error('Init failed'));
@@ -409,7 +409,7 @@ export function StandardProvider({ children }) {
     return () => {
       cancelled = true; // Cleanup
     };
-  }, [retryCount]);
+  }, [retryCount, accountService]);
 
   // Sync user ID from account service to backend
   useEffect(() => {

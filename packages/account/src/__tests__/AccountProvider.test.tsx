@@ -1,14 +1,18 @@
 import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { AccountProvider, useAccount } from '../providers/AccountProvider';
-import { InMemoryAccountService } from '../services/local-account-service';
-import { AccountService, User } from '../types';
+import { InMemoryAccountService } from '../services/in-memory-account-service';
+import { AccountService } from '../types';
+import { defaultMockUser } from './test-utils';
 
 describe('AccountProvider', () => {
   let accountService: AccountService;
 
   beforeEach(() => {
-    accountService = new InMemoryAccountService();
+    // Create an authenticated service by default
+    accountService = new InMemoryAccountService({
+      initialUser: defaultMockUser,
+    });
   });
 
   describe('initialization', () => {
@@ -136,7 +140,7 @@ describe('AccountProvider', () => {
       await act(async () => {
         try {
           await result.current.login('test@example.com', 'wrong-password');
-        } catch (error) {
+        } catch {
           // Expected to throw
         }
       });
@@ -273,8 +277,9 @@ describe('AccountProvider', () => {
 
   describe('error handling', () => {
     it('should clear error', async () => {
-      const errorService = new InMemoryAccountService();
-      await errorService.initialize();
+      const errorService = new InMemoryAccountService({
+        initialUser: defaultMockUser,
+      });
       jest.spyOn(errorService, 'login').mockRejectedValue(new Error('Login failed'));
 
       const { result } = renderHook(() => useAccount(), {
@@ -289,7 +294,7 @@ describe('AccountProvider', () => {
       await act(async () => {
         try {
           await result.current.login('test@example.com', 'wrong');
-        } catch (e) {
+        } catch {
           // Expected
         }
       });
