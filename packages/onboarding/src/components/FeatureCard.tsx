@@ -1,9 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import { FeatureCardProps } from '../types';
 import { DEFAULT_COLORS } from '../constants';
-
-const { width } = Dimensions.get('window');
 
 /**
  * Card component for displaying a feature during onboarding.
@@ -32,6 +30,7 @@ export function FeatureCard({
   titleStyle,
   descriptionStyle,
 }: FeatureCardProps) {
+  const { width } = useWindowDimensions();
   const iconColor = isDark ? '#000' : '#fff';
   const iconBgColor = isDark ? colors.primaryDark : colors.primaryLight;
   const textColor = isDark ? '#fff' : '#000';
@@ -48,7 +47,7 @@ export function FeatureCard({
 
       <View style={styles.textContainer}>
         <Text style={[styles.title, { color: textColor }, titleStyle]}>{title}</Text>
-        <Text style={[styles.description, { color: textColor }, descriptionStyle]}>
+        <Text style={[styles.description, { color: textColor, maxWidth: width - 64 }, descriptionStyle]}>
           {description}
         </Text>
       </View>
@@ -86,6 +85,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.7,
     lineHeight: 24,
-    maxWidth: width - 64,
   },
 });

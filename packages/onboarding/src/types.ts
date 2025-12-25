@@ -15,18 +15,6 @@ export interface ConsentData {
 }
 
 /**
- * Feature item for onboarding walkthrough
- */
-export interface FeatureItem {
-  /** Icon name (SF Symbol or similar) */
-  icon: string;
-  /** Feature title */
-  title: string;
-  /** Feature description */
-  description: string;
-}
-
-/**
  * Theme colors for onboarding components
  */
 export interface OnboardingColors {
