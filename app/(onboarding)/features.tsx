@@ -1,14 +1,19 @@
 import { useState } from 'react';
-import { View, StyleSheet, Pressable, Dimensions } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { router } from 'expo-router';
+import {
+  PaginationDots,
+  FeatureCard,
+  OnboardingButton,
+  FeatureItem,
+} from '@spezivibe/onboarding';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import type { SymbolViewProps } from 'expo-symbols';
 
-const { width } = Dimensions.get('window');
-
-const FEATURES = [
+const FEATURES: FeatureItem[] = [
   {
     icon: 'sparkles',
     title: 'Personalized Experience',
@@ -58,46 +63,29 @@ export default function FeaturesScreen() {
       </View>
 
       <View style={styles.content}>
-        <View style={[styles.iconCircle, { backgroundColor: isDark ? '#B83A4B' : '#8C1515' }]}>
-          <IconSymbol name={feature.icon} size={64} color={isDark ? '#000' : '#fff'} />
-        </View>
+        <FeatureCard
+          icon={feature.icon}
+          title={feature.title}
+          description={feature.description}
+          isDark={isDark}
+          renderIcon={(name, size, color) => (
+            <IconSymbol name={name as SymbolViewProps['name']} size={size} color={color} />
+          )}
+        />
 
-        <View style={styles.textContainer}>
-          <ThemedText type="title" style={styles.title}>
-            {feature.title}
-          </ThemedText>
-          <ThemedText style={styles.description}>{feature.description}</ThemedText>
-        </View>
-
-        <View style={styles.pagination}>
-          {FEATURES.map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.paginationDot,
-                {
-                  backgroundColor: index === currentStep
-                    ? (isDark ? '#B83A4B' : '#8C1515')
-                    : (isDark ? '#333' : '#ddd'),
-                  width: index === currentStep ? 24 : 8,
-                },
-              ]}
-            />
-          ))}
-        </View>
+        <PaginationDots
+          total={FEATURES.length}
+          current={currentStep}
+          isDark={isDark}
+        />
       </View>
 
       <View style={styles.footer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            { backgroundColor: isDark ? '#B83A4B' : '#8C1515', opacity: pressed ? 0.8 : 1 },
-          ]}
-          onPress={handleNext}>
-          <ThemedText style={[styles.buttonText, { color: isDark ? '#000' : '#fff' }]}>
-            {isLastStep ? 'Get Started' : 'Continue'}
-          </ThemedText>
-        </Pressable>
+        <OnboardingButton
+          label={isLastStep ? 'Get Started' : 'Continue'}
+          onPress={handleNext}
+          isDark={isDark}
+        />
       </View>
     </ThemedView>
   );
@@ -122,50 +110,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 32,
   },
-  iconCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 48,
-  },
-  textContainer: {
-    alignItems: 'center',
-    marginBottom: 48,
-  },
-  title: {
-    fontSize: 28,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: 17,
-    textAlign: 'center',
-    opacity: 0.7,
-    lineHeight: 24,
-    maxWidth: width - 64,
-  },
-  pagination: {
-    flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
-  },
-  paginationDot: {
-    height: 8,
-    borderRadius: 4,
-  },
   footer: {
     padding: 24,
     paddingBottom: 48,
-  },
-  button: {
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 17,
-    fontWeight: '600',
   },
 });

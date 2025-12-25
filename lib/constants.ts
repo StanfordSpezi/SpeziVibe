@@ -4,10 +4,8 @@
 
 import type { AccountConfiguration } from '@spezivibe/account';
 
-/**
- * AsyncStorage key for tracking onboarding completion status
- */
-export const ONBOARDING_COMPLETED_KEY = '@onboarding_completed';
+// Re-export onboarding constants from the package
+export { ONBOARDING_COMPLETED_KEY, CONSENT_KEY } from '@spezivibe/onboarding';
 
 /**
  * Account configuration for the application

@@ -1,20 +1,16 @@
 import { useState } from 'react';
-import { View, StyleSheet, Pressable, TextInput, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  NameInputSection,
+  ConsentCheckbox,
+  OnboardingButton,
+  ConsentService,
+} from '@spezivibe/onboarding';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-
-const CONSENT_KEY = '@consent_data';
-
-interface ConsentData {
-  givenName: string;
-  familyName: string;
-  consentedAt: string;
-  accepted: boolean;
-}
 
 export default function ConsentScreen() {
   const colorScheme = useColorScheme();
@@ -35,16 +31,10 @@ export default function ConsentScreen() {
     }
 
     try {
-      const consentData: ConsentData = {
-        givenName: givenName.trim(),
-        familyName: familyName.trim(),
-        consentedAt: new Date().toISOString(),
-        accepted: true,
-      };
-
-      await AsyncStorage.setItem(CONSENT_KEY, JSON.stringify(consentData));
+      const consentData = ConsentService.createConsentData(givenName, familyName, true);
+      await ConsentService.saveConsent(consentData);
       router.push('/(onboarding)/get-started');
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to save consent. Please try again.');
     }
   };
@@ -112,72 +102,23 @@ export default function ConsentScreen() {
             Your Information
           </ThemedText>
 
-          <View style={styles.inputGroup}>
-            <ThemedText style={styles.label}>First Name *</ThemedText>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: isDark ? '#1D1D1D' : '#F5F5F5',
-                  color: isDark ? '#fff' : '#000',
-                  borderColor: isDark ? '#333' : '#E0E0E0',
-                },
-              ]}
-              placeholder="Enter your first name"
-              placeholderTextColor={isDark ? '#666' : '#999'}
-              value={givenName}
-              onChangeText={setGivenName}
-              autoCapitalize="words"
-            />
-          </View>
+          <NameInputSection
+            givenName={givenName}
+            familyName={familyName}
+            onGivenNameChange={setGivenName}
+            onFamilyNameChange={setFamilyName}
+            isDark={isDark}
+          />
 
-          <View style={styles.inputGroup}>
-            <ThemedText style={styles.label}>Last Name *</ThemedText>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  backgroundColor: isDark ? '#1D1D1D' : '#F5F5F5',
-                  color: isDark ? '#fff' : '#000',
-                  borderColor: isDark ? '#333' : '#E0E0E0',
-                },
-              ]}
-              placeholder="Enter your last name"
-              placeholderTextColor={isDark ? '#666' : '#999'}
-              value={familyName}
-              onChangeText={setFamilyName}
-              autoCapitalize="words"
-            />
-          </View>
-
-          <Pressable
-            style={styles.checkboxContainer}
-            onPress={() => setAgreed(!agreed)}>
-            <View
-              style={[
-                styles.checkbox,
-                {
-                  backgroundColor: agreed
-                    ? isDark
-                      ? '#B83A4B'
-                      : '#8C1515'
-                    : 'transparent',
-                  borderColor: isDark ? '#666' : '#999',
-                },
-              ]}>
-              {agreed && (
-                <IconSymbol
-                  name="checkmark"
-                  size={16}
-                  color={isDark ? '#000' : '#fff'}
-                />
-              )}
-            </View>
-            <ThemedText style={styles.checkboxLabel}>
-              I have read and agree to the terms described above. I consent to participate in this
-              wellness study.
-            </ThemedText>
-          </Pressable>
+          <ConsentCheckbox
+            checked={agreed}
+            onToggle={() => setAgreed(!agreed)}
+            label="I have read and agree to the terms described above. I consent to participate in this wellness study."
+            isDark={isDark}
+            renderCheckmark={(color) => (
+              <IconSymbol name="checkmark" size={16} color={color} />
+            )}
+          />
 
           <ThemedText style={styles.dateText}>
             Date: {new Date().toLocaleDateString('en-US', {
@@ -190,19 +131,11 @@ export default function ConsentScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            {
-              backgroundColor: isDark ? '#B83A4B' : '#8C1515',
-              opacity: pressed ? 0.8 : 1,
-            },
-          ]}
-          onPress={handleAgree}>
-          <ThemedText style={[styles.buttonText, { color: isDark ? '#000' : '#fff' }]}>
-            Agree & Continue
-          </ThemedText>
-        </Pressable>
+        <OnboardingButton
+          label="Agree & Continue"
+          onPress={handleAgree}
+          isDark={isDark}
+        />
       </View>
     </ThemedView>
   );
@@ -253,43 +186,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 16,
   },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 14,
-    marginBottom: 6,
-    opacity: 0.8,
-  },
-  input: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    fontSize: 16,
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginTop: 20,
-    marginBottom: 16,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 2,
-    marginRight: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 2,
-  },
-  checkboxLabel: {
-    flex: 1,
-    fontSize: 14,
-    lineHeight: 20,
-    opacity: 0.8,
-  },
   dateText: {
     fontSize: 13,
     opacity: 0.6,
@@ -298,14 +194,5 @@ const styles = StyleSheet.create({
   footer: {
     padding: 24,
     paddingBottom: 48,
-  },
-  button: {
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 17,
-    fontWeight: '600',
   },
 });
