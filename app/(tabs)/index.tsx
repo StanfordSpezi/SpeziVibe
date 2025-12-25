@@ -23,7 +23,7 @@ export default function HomeScreen() {
       )}
 
       <ParallaxScrollView
-        headerBackgroundColor={{ light: '#F5E6D3', dark: '#8C1515' }}
+        headerBackgroundColor={{ light: '#F5E6D3', dark: '#2d2d2d' }}
         headerImage={
           <Image
             source={require('@/assets/images/spezivibe-logo.png')}
@@ -108,9 +108,8 @@ const styles = StyleSheet.create({
     height: 200,
     width: 200,
     position: 'absolute',
-    bottom: 20,
-    left: '50%',
-    transform: [{ translateX: -100 }],
+    bottom: -20,
+    left: -20,
   },
   button: {
     paddingVertical: 12,
