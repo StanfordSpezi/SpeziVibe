@@ -1,5 +1,6 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet, Pressable, Alert, View } from 'react-native';
+import { Platform, StyleSheet, Pressable, View } from 'react-native';
+import Alert from '@blazejkustra/react-native-alert';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
@@ -11,21 +12,25 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Fonts } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { useScheduler, createSampleTasks } from '@spezivibe/scheduler';
 import { SAMPLE_QUESTIONNAIRES } from '@/lib/questionnaires';
 import { AccountButton } from '@/components/account/account-button';
 import { AccountSheet } from '@/components/account/account-sheet';
 import { useAccount } from '@spezivibe/account';
+import { ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
 
 const CONSENT_KEY = '@consent_data';
 
 export default function TabTwoScreen() {
   const router = useRouter();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const buttonBackground = useThemeColor({}, 'buttonBackground');
+  const buttonText = useThemeColor({}, 'buttonText');
+  const iconColor = useThemeColor({}, 'icon');
+  const borderColor = useThemeColor({}, 'border');
+  const cardBackground = useThemeColor({ light: '#F5F5F5', dark: '#1D1D1D' }, 'background');
   const { scheduler, refreshTasks } = useScheduler();
-  const { signedIn } = useAccount();
+  const { signedIn, logout } = useAccount();
   const [consentData, setConsentData] = useState<any>(null);
   const [showAccountSheet, setShowAccountSheet] = useState(false);
 
@@ -55,6 +60,10 @@ export default function TabTwoScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
+              if (!scheduler) {
+                Alert.alert('Error', 'Scheduler not available.');
+                return;
+              }
               // Clear all existing tasks and outcomes
               await scheduler.clearAll();
 
@@ -75,6 +84,38 @@ export default function TabTwoScreen() {
       ]
     );
   };
+
+  const handleResetOnboarding = () => {
+    Alert.alert(
+      'Reset Onboarding',
+      'This will sign you out and clear all onboarding data including consent. You will need to go through the onboarding flow again. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              // Clear onboarding completed flag
+              await AsyncStorage.removeItem(ONBOARDING_COMPLETED_KEY);
+              // Clear consent data
+              await AsyncStorage.removeItem(CONSENT_KEY);
+              // Sign out the user
+              if (signedIn) {
+                await logout();
+              }
+              // Navigate to onboarding
+              router.replace('/(onboarding)/welcome');
+            } catch (error) {
+              console.error('Error resetting onboarding:', error);
+              Alert.alert('Error', 'Failed to reset onboarding.');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <>
       {signedIn && (
@@ -105,9 +146,11 @@ export default function TabTwoScreen() {
       <ThemedText>This app includes example code to help you get started.</ThemedText>
       <Collapsible title="File-based routing">
         <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
+          This app has four tabs:{' '}
+          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> (Home),{' '}
+          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>,{' '}
+          <ThemedText type="defaultSemiBold">app/(tabs)/schedule.tsx</ThemedText>, and{' '}
+          <ThemedText type="defaultSemiBold">app/(tabs)/contacts.tsx</ThemedText>.
         </ThemedText>
         <ThemedText>
           The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
@@ -121,6 +164,17 @@ export default function TabTwoScreen() {
         <ThemedText>
           You can open this project on Android, iOS, and the web. To open the web version, press{' '}
           <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
+        </ThemedText>
+      </Collapsible>
+      <Collapsible title="Modular packages">
+        <ThemedText>
+          SpeziVibe uses modular packages in the <ThemedText type="defaultSemiBold">packages/</ThemedText>{' '}
+          directory:{' '}
+          <ThemedText type="defaultSemiBold">@spezivibe/account</ThemedText>,{' '}
+          <ThemedText type="defaultSemiBold">@spezivibe/firebase</ThemedText>,{' '}
+          <ThemedText type="defaultSemiBold">@spezivibe/onboarding</ThemedText>,{' '}
+          <ThemedText type="defaultSemiBold">@spezivibe/questionnaire</ThemedText>, and{' '}
+          <ThemedText type="defaultSemiBold">@spezivibe/scheduler</ThemedText>.
         </ThemedText>
       </Collapsible>
       <Collapsible title="Images">
@@ -191,6 +245,18 @@ export default function TabTwoScreen() {
             No consent information found. Complete the onboarding flow to provide consent.
           </ThemedText>
         )}
+        <ThemedView style={styles.resetButton}>
+          <Pressable
+            style={({ pressed }) => [
+              styles.button,
+              { backgroundColor: buttonBackground, opacity: pressed ? 0.8 : 1 },
+            ]}
+            onPress={handleResetOnboarding}>
+            <ThemedText style={[styles.buttonText, { color: buttonText }]}>
+              Reset Onboarding
+            </ThemedText>
+          </Pressable>
+        </ThemedView>
       </Collapsible>
       <Collapsible title="Schedule Tasks">
         <ThemedText>
@@ -201,10 +267,10 @@ export default function TabTwoScreen() {
           <Pressable
             style={({ pressed }) => [
               styles.button,
-              { backgroundColor: isDark ? '#B83A4B' : '#8C1515', opacity: pressed ? 0.8 : 1 },
+              { backgroundColor: buttonBackground, opacity: pressed ? 0.8 : 1 },
             ]}
             onPress={handleResetSchedule}>
-            <ThemedText style={[styles.buttonText, { color: isDark ? '#000' : '#fff' }]}>
+            <ThemedText style={[styles.buttonText, { color: buttonText }]}>
               Reset Schedule Tasks
             </ThemedText>
           </Pressable>
@@ -222,9 +288,9 @@ export default function TabTwoScreen() {
               style={({ pressed }) => [
                 styles.questionnaireButton,
                 {
-                  backgroundColor: isDark ? '#1D1D1D' : '#F5F5F5',
+                  backgroundColor: cardBackground,
                   opacity: pressed ? 0.7 : 1,
-                  borderColor: isDark ? '#333' : '#E0E0E0',
+                  borderColor: borderColor,
                 },
               ]}
               onPress={() => {
@@ -234,7 +300,7 @@ export default function TabTwoScreen() {
                 });
               }}>
               <View style={styles.questionnaireButtonContent}>
-                <IconSymbol name="doc.text.fill" size={24} color={isDark ? '#B83A4B' : '#8C1515'} />
+                <IconSymbol name="doc.text.fill" size={24} color={buttonBackground} />
                 <View style={styles.questionnaireButtonText}>
                   <ThemedText type="defaultSemiBold" style={styles.questionnaireTitle}>
                     {questionnaire.title}
@@ -243,7 +309,7 @@ export default function TabTwoScreen() {
                     {questionnaire.description}
                   </ThemedText>
                 </View>
-                <IconSymbol name="chevron.right" size={20} color={isDark ? '#666' : '#999'} />
+                <IconSymbol name="chevron.right" size={20} color={iconColor} />
               </View>
             </Pressable>
           ))}

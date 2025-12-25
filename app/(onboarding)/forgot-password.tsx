@@ -6,8 +6,8 @@ import {
   Platform,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from 'react-native';
+import Alert from '@blazejkustra/react-native-alert';
 import { router } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
@@ -19,7 +19,9 @@ export default function ForgotPasswordScreen() {
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const tintColor = useThemeColor({}, 'tint');
-  const borderColor = useThemeColor({ light: '#ddd', dark: '#444' }, 'border');
+  const borderColor = useThemeColor({}, 'border');
+  const buttonBackground = useThemeColor({}, 'buttonBackground');
+  const buttonText = useThemeColor({}, 'buttonText');
 
   const handleSuccess = () => {
     Alert.alert(
@@ -62,10 +64,7 @@ export default function ForgotPasswordScreen() {
 
           <View style={styles.header}>
             <ThemedText type="title" style={styles.title}>
-              Reset Password
-            </ThemedText>
-            <ThemedText style={styles.subtitle}>
-              Enter your email address and we&apos;ll send you instructions to reset your password.
+              Forgot Password
             </ThemedText>
           </View>
 
@@ -73,7 +72,8 @@ export default function ForgotPasswordScreen() {
             <PasswordResetForm
               onSuccess={handleSuccess}
               onError={handleError}
-              buttonStyle={{ backgroundColor: tintColor }}
+              buttonStyle={{ backgroundColor: buttonBackground }}
+              buttonTextStyle={{ color: buttonText }}
               buttonText="Send Reset Email"
               showBackToLogin={false}
               inputStyle={{
@@ -119,16 +119,12 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 40,
+    alignItems: 'center',
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    opacity: 0.7,
-    lineHeight: 22,
+    textAlign: 'center',
   },
   formContainer: {
     width: '100%',

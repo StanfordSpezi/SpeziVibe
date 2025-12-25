@@ -9,9 +9,8 @@ import {
 } from '@spezivibe/onboarding';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import type { SymbolViewProps } from 'expo-symbols';
+import { IconSymbol, IconSymbolName } from '@/components/ui/icon-symbol';
+import { useThemeColor } from '@/hooks/use-theme-color';
 
 const FEATURES: FeatureItem[] = [
   {
@@ -36,8 +35,8 @@ const FEATURES: FeatureItem[] = [
 
 export default function FeaturesScreen() {
   const [currentStep, setCurrentStep] = useState(0);
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const buttonBackground = useThemeColor({}, 'buttonBackground');
+  const buttonText = useThemeColor({}, 'buttonText');
 
   const isLastStep = currentStep === FEATURES.length - 1;
   const feature = FEATURES[currentStep];
@@ -67,16 +66,16 @@ export default function FeaturesScreen() {
           icon={feature.icon}
           title={feature.title}
           description={feature.description}
-          isDark={isDark}
+          colors={{ primaryLight: buttonBackground, primaryDark: buttonBackground, inactiveLight: '#ccc', inactiveDark: '#666' }}
           renderIcon={(name, size, color) => (
-            <IconSymbol name={name as SymbolViewProps['name']} size={size} color={color} />
+            <IconSymbol name={name as IconSymbolName} size={size} color={color} />
           )}
         />
 
         <PaginationDots
           total={FEATURES.length}
           current={currentStep}
-          isDark={isDark}
+          colors={{ primaryLight: buttonBackground, primaryDark: buttonBackground, inactiveLight: '#ccc', inactiveDark: '#666' }}
         />
       </View>
 
@@ -84,7 +83,8 @@ export default function FeaturesScreen() {
         <OnboardingButton
           label={isLastStep ? 'Get Started' : 'Continue'}
           onPress={handleNext}
-          isDark={isDark}
+          style={{ backgroundColor: buttonBackground }}
+          labelStyle={{ color: buttonText }}
         />
       </View>
     </ThemedView>

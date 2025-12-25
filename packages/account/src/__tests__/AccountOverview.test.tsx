@@ -104,10 +104,12 @@ describe('AccountOverview', () => {
   });
 
   it('should display actions section', async () => {
+    // Actions section contains the Logout button by default (no header text)
     const { getByText } = renderWithAccountProvider(<AccountOverview />);
 
     await waitFor(() => {
-      expect(getByText('Actions')).toBeTruthy();
+      // Logout button is shown by default in the actions section
+      expect(getByText('Logout')).toBeTruthy();
     });
   });
 

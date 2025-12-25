@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import Alert from '@blazejkustra/react-native-alert';
 import { router } from 'expo-router';
 import {
   NameInputSection,
@@ -10,11 +11,11 @@ import {
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 
 export default function ConsentScreen() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const buttonBackground = useThemeColor({}, 'buttonBackground');
+  const buttonText = useThemeColor({}, 'buttonText');
   const [givenName, setGivenName] = useState('');
   const [familyName, setFamilyName] = useState('');
   const [agreed, setAgreed] = useState(false);
@@ -107,14 +108,13 @@ export default function ConsentScreen() {
             familyName={familyName}
             onGivenNameChange={setGivenName}
             onFamilyNameChange={setFamilyName}
-            isDark={isDark}
           />
 
           <ConsentCheckbox
             checked={agreed}
             onToggle={() => setAgreed(!agreed)}
             label="I have read and agree to the terms described above. I consent to participate in this wellness study."
-            isDark={isDark}
+            colors={{ primaryLight: buttonBackground, primaryDark: buttonBackground, inactiveLight: '#ccc', inactiveDark: '#666' }}
             renderCheckmark={(color) => (
               <IconSymbol name="checkmark" size={16} color={color} />
             )}
@@ -134,7 +134,8 @@ export default function ConsentScreen() {
         <OnboardingButton
           label="Agree & Continue"
           onPress={handleAgree}
-          isDark={isDark}
+          style={{ backgroundColor: buttonBackground }}
+          labelStyle={{ color: buttonText }}
         />
       </View>
     </ThemedView>

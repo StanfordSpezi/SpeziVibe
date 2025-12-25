@@ -7,10 +7,9 @@ import {
   StyleSheet,
   ViewStyle,
   TextStyle,
-  Platform,
   Pressable,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateType } from 'react-native-ui-datepicker';
 import { useAccount } from '../hooks/useAccount';
 import { Sex, PersonName } from '../types';
 
@@ -105,6 +104,20 @@ export function EditProfileForm({
   renderDropdown,
 }: EditProfileFormProps) {
   const { user, updateProfile, isLoading, configuration } = useAccount();
+
+  // Extract ViewStyle-compatible properties from inputStyle for use on Pressable
+  // (TextStyle extends ViewStyle, but Pressable only accepts ViewStyle)
+  const pickerButtonInputStyle: ViewStyle | undefined = inputStyle
+    ? {
+        height: inputStyle.height,
+        borderWidth: inputStyle.borderWidth,
+        borderColor: inputStyle.borderColor,
+        borderRadius: inputStyle.borderRadius,
+        backgroundColor: inputStyle.backgroundColor,
+        paddingHorizontal: inputStyle.paddingHorizontal,
+        paddingVertical: inputStyle.paddingVertical,
+      }
+    : undefined;
 
   // Check which fields are required based on configuration
   const isNameRequired = configuration?.required?.includes('name') ?? false;
@@ -229,8 +242,8 @@ export function EditProfileForm({
             Date of Birth{isDateOfBirthRequired && ' *'}
           </Text>
           <Pressable
-            style={[styles.input, styles.pickerButton, inputStyle]}
-            onPress={() => setShowDatePicker(true)}
+            style={[styles.input, styles.pickerButton, pickerButtonInputStyle]}
+            onPress={() => setShowDatePicker(!showDatePicker)}
             accessibilityLabel="Date of Birth"
             accessibilityRole="button"
           >
@@ -241,20 +254,21 @@ export function EditProfileForm({
                 day: 'numeric',
               })}
             </Text>
+            <Text style={styles.chevron}>{showDatePicker ? '▲' : '▼'}</Text>
           </Pressable>
           {showDatePicker && (
-            <DateTimePicker
-              value={dateOfBirth}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, selectedDate) => {
-                setShowDatePicker(Platform.OS === 'ios');
-                if (selectedDate) {
-                  setDateOfBirth(selectedDate);
-                }
-              }}
-              maximumDate={new Date()}
-            />
+            <View style={styles.datePickerContainer}>
+              <DateTimePicker
+                mode="single"
+                date={dateOfBirth}
+                onChange={(params: { date: DateType }) => {
+                  if (params.date) {
+                    setDateOfBirth(params.date as Date);
+                  }
+                }}
+                maxDate={new Date()}
+              />
+            </View>
           )}
         </View>
       )}
@@ -273,7 +287,7 @@ export function EditProfileForm({
             })
           ) : (
             <Pressable
-              style={[styles.input, styles.pickerButton, inputStyle]}
+              style={[styles.input, styles.pickerButton, pickerButtonInputStyle]}
               onPress={() => setShowSexPicker(!showSexPicker)}
               accessibilityLabel="Sex"
               accessibilityRole="button"
@@ -360,6 +374,15 @@ const styles = StyleSheet.create({
   chevron: {
     fontSize: 12,
     color: '#666',
+  },
+  datePickerContainer: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+    padding: 8,
   },
   dropdown: {
     marginTop: 8,

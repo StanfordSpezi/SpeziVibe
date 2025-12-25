@@ -1,5 +1,5 @@
 import { useLocalSearchParams, router } from 'expo-router';
-import { Alert } from 'react-native';
+import Alert from '@blazejkustra/react-native-alert';
 import { ThemedView } from '@/components/themed-view';
 import {
   QuestionnaireForm,

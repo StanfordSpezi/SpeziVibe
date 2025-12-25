@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ViewStyle, TextStyle, ScrollView } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useAccount } from '../hooks/useAccount';
 import { formatPersonName, isPersonNameEmpty, PersonNameStyle } from '../utils/person-name';
 
@@ -211,13 +211,6 @@ export function AccountOverview({
 
       {/* Actions Section */}
       <View style={styles.section}>
-        <Text
-          style={[styles.sectionHeader, sectionHeaderStyle]}
-          accessibilityRole="header"
-        >
-          Actions
-        </Text>
-
         {shouldShowEditProfile && onEditProfile && (
           <TouchableOpacity
             style={[styles.button, styles.primaryButton, buttonStyle]}

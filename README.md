@@ -5,6 +5,7 @@
 
   **Vibe code friendly cross-platform digital health app template**
 
+  [![CI](https://github.com/StanfordSpezi/SpeziVibe/actions/workflows/ci.yml/badge.svg)]
   [![Built with Expo](https://img.shields.io/badge/Built%20with-Expo-000020.svg?style=flat&logo=expo)](https://expo.dev)
   [![React Native](https://img.shields.io/badge/React%20Native-0.76-61DAFB.svg?style=flat&logo=react)](https://reactnative.dev)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6.svg?style=flat&logo=typescript)](https://www.typescriptlang.org)
@@ -17,27 +18,21 @@
 
 ## 📱 About
 
-SpeziVibe is a [React Native](https://reactnative.dev/) and [Expo](https://expo.dev/) based template for building digital health applications on iOS, Android, and Web. Inspired by the native [Stanford Spezi](https://github.com/StanfordSpezi) framework on iOS, it provides essential patterns for rapid prototyping in digital health, optimized for AI-assisted development.
+SpeziVibe is a [React Native](https://reactnative.dev/) and [Expo](https://expo.dev/) template for rapidly prototyping digital health applications on iOS, Android, and Web, inspired by our native [Stanford Spezi](https://github.com/StanfordSpezi) framework and optimized for AI-assisted development.
 
-## ✨ Features
+## 📦 Modules
 
-- **🏗️ Standard Architecture** - Inspired by Stanford Spezi's Standard pattern for centralized data orchestration
-- **🔌 Pluggable Backends** - Switch between local storage and Firebase without changing app code
-- **👤 Account Module** - Backend-agnostic authentication with local and in-memory implementations
-- **🔥 Firebase Integration** - Optional Firebase package for authentication and data storage
-- **📋 Onboarding Flow** - Multi-step onboarding with feature highlights and informed consent
-- **📅 Task Scheduler** - Flexible scheduling with daily, weekly, monthly recurrence patterns and completion policies
-- **📝 Questionnaires** - Dynamic forms with validation (FHIR-compatible)
-- **👥 Contact Management** - Built-in support team and emergency contact templates
-- **🎨 Theme Support** - Full light and dark theme support
-- **🤖 AI-Friendly** - Clean, well-structured codebase designed for AI-assisted development
+- **[@spezivibe/account](./packages/account/README.md)** - Backend-agnostic authentication and account management
+- **[@spezivibe/firebase](./packages/firebase/README.md)** - Firebase integration
+- **[@spezivibe/onboarding](./packages/onboarding/README.md)** - Reusable onboarding components including consent
+- **[@spezivibe/questionnaire](./packages/questionnaire/README.md)** - HL7 FHIR questionnaires
+- **[@spezivibe/scheduler](./packages/scheduler/README.md)** - Task scheduling
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn
+- Node.js 18+ and npm
 - Expo Go app (for mobile testing) or iOS Simulator/Android Emulator
 
 ### Installation
@@ -59,14 +54,6 @@ npx expo start
 - Press `a` for Android Emulator
 - Press `w` for Web
 - Scan QR code with Expo Go on your device
-
-## 📦 Modules
-
-- **[@spezivibe/account](./packages/account/README.md)** - Backend-agnostic authentication and account management with local and in-memory implementations
-- **[@spezivibe/firebase](./packages/firebase/README.md)** - Firebase integration providing Firebase Authentication and Firestore implementations
-- **[@spezivibe/onboarding](./packages/onboarding/README.md)** - Reusable onboarding components with consent management and status tracking
-- **[@spezivibe/questionnaire](./packages/questionnaire/README.md)** - FHIR-compatible questionnaire system with dynamic forms
-- **[@spezivibe/scheduler](./packages/scheduler/README.md)** - Task scheduling with daily, weekly, monthly recurrence patterns and completion policies
 
 ## Contributing
 

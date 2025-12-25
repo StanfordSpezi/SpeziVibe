@@ -1,14 +1,14 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol, IconSymbolName } from '@/components/ui/icon-symbol';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 export default function WelcomeScreen() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const buttonBackground = useThemeColor({}, 'buttonBackground');
+  const buttonText = useThemeColor({}, 'buttonText');
 
   const features: { icon: IconSymbolName; title: string; description: string }[] = [
     {
@@ -51,8 +51,8 @@ export default function WelcomeScreen() {
         <View style={styles.featuresContainer}>
           {features.map((feature, index) => (
             <View key={index} style={styles.featureItem}>
-              <View style={[styles.iconContainer, { backgroundColor: isDark ? '#B83A4B' : '#8C1515' }]}>
-                <IconSymbol name={feature.icon} size={28} color={isDark ? '#000' : '#fff'} />
+              <View style={[styles.iconContainer, { backgroundColor: buttonBackground }]}>
+                <IconSymbol name={feature.icon} size={28} color={buttonText} />
               </View>
               <View style={styles.featureText}>
                 <ThemedText type="defaultSemiBold" style={styles.featureTitle}>
@@ -71,10 +71,10 @@ export default function WelcomeScreen() {
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            { backgroundColor: isDark ? '#B83A4B' : '#8C1515', opacity: pressed ? 0.8 : 1 },
+            { backgroundColor: buttonBackground, opacity: pressed ? 0.8 : 1 },
           ]}
           onPress={() => router.push('/(onboarding)/features')}>
-          <ThemedText style={[styles.buttonText, { color: isDark ? '#000' : '#fff' }]}>
+          <ThemedText style={[styles.buttonText, { color: buttonText }]}>
             Continue
           </ThemedText>
         </Pressable>

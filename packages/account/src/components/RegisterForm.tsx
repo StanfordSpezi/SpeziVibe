@@ -9,10 +9,9 @@ import {
   ViewStyle,
   TextStyle,
   TextInputProps,
-  Platform,
   Pressable,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateType } from 'react-native-ui-datepicker';
 import { useAccount } from '../hooks/useAccount';
 import { validateEmail, validatePasswordStrength, normalizeEmail, sanitizeInput } from '../utils/validation';
 import { Sex, PersonName } from '../types';
@@ -108,6 +107,20 @@ export function RegisterForm({
   confirmPasswordInputProps,
 }: RegisterFormProps) {
   const { register, isLoading, error, clearError, configuration } = useAccount();
+
+  // Extract ViewStyle-compatible properties from inputStyle for use on Pressable
+  // (TextStyle extends ViewStyle, but Pressable only accepts ViewStyle)
+  const pickerButtonInputStyle: ViewStyle | undefined = inputStyle
+    ? {
+        height: inputStyle.height,
+        borderWidth: inputStyle.borderWidth,
+        borderColor: inputStyle.borderColor,
+        borderRadius: inputStyle.borderRadius,
+        backgroundColor: inputStyle.backgroundColor,
+        paddingHorizontal: inputStyle.paddingHorizontal,
+        paddingVertical: inputStyle.paddingVertical,
+      }
+    : undefined;
 
   // Check which fields should be collected and which are required
   const collectsName = configuration?.collects?.includes('name') ?? false;
@@ -378,8 +391,8 @@ export function RegisterForm({
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Date of Birth{isDateOfBirthRequired && ' *'}</Text>
           <Pressable
-            style={[styles.input, styles.pickerButton, inputStyle]}
-            onPress={() => setShowDatePicker(true)}
+            style={[styles.input, styles.pickerButton, pickerButtonInputStyle]}
+            onPress={() => setShowDatePicker(!showDatePicker)}
             accessibilityLabel="Date of Birth"
             accessibilityRole="button"
           >
@@ -390,20 +403,21 @@ export function RegisterForm({
                 day: 'numeric',
               })}
             </Text>
+            <Text style={styles.chevron}>{showDatePicker ? '▲' : '▼'}</Text>
           </Pressable>
           {showDatePicker && (
-            <DateTimePicker
-              value={dateOfBirth}
-              mode="date"
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, selectedDate) => {
-                setShowDatePicker(Platform.OS === 'ios');
-                if (selectedDate) {
-                  setDateOfBirth(selectedDate);
-                }
-              }}
-              maximumDate={new Date()}
-            />
+            <View style={styles.datePickerContainer}>
+              <DateTimePicker
+                mode="single"
+                date={dateOfBirth}
+                onChange={(params: { date: DateType }) => {
+                  if (params.date) {
+                    setDateOfBirth(params.date as Date);
+                  }
+                }}
+                maxDate={new Date()}
+              />
+            </View>
           )}
         </View>
       )}
@@ -412,7 +426,7 @@ export function RegisterForm({
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Sex{isSexRequired && ' *'}</Text>
           <Pressable
-            style={[styles.input, styles.pickerButton, inputStyle]}
+            style={[styles.input, styles.pickerButton, pickerButtonInputStyle]}
             onPress={() => setShowSexPicker(!showSexPicker)}
             accessibilityLabel="Sex"
             accessibilityRole="button"
@@ -611,6 +625,15 @@ const styles = StyleSheet.create({
   chevron: {
     fontSize: 12,
     color: '#666',
+  },
+  datePickerContainer: {
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+    padding: 8,
   },
   dropdown: {
     marginTop: 8,

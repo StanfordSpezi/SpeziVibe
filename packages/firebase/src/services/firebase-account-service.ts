@@ -163,8 +163,26 @@ export class FirebaseAccountService implements AccountService {
         const firestoreHost = emulatorConfig.firestoreHost || 'localhost';
         const firestorePort = emulatorConfig.firestorePort || 8080;
 
+        // Verify emulator is running before connecting (skip on web due to CORS)
+        const authEmulatorUrl = `http://${authHost}:${authPort}`;
+        if (Platform.OS !== 'web') {
+          try {
+            const response = await fetch(authEmulatorUrl, { method: 'GET' });
+            if (!response.ok) {
+              throw new Error(`Auth emulator returned status ${response.status}`);
+            }
+          } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            throw new Error(
+              `Firebase Auth emulator is not running at ${authEmulatorUrl}. ` +
+                `Please start the emulator with 'firebase emulators:start' or disable emulator mode. ` +
+                `Error: ${message}`
+            );
+          }
+        }
+
         try {
-          connectAuthEmulator(this.auth, `http://${authHost}:${authPort}`, {
+          connectAuthEmulator(this.auth, authEmulatorUrl, {
             disableWarnings: true,
           });
           this.logger.info(`Connected to Auth emulator at ${authHost}:${authPort}`);

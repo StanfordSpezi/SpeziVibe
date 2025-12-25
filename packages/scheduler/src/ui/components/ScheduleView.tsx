@@ -6,7 +6,8 @@
  */
 
 import React, { useCallback, useEffect, useMemo, ReactNode } from 'react';
-import { View, StyleSheet, Text, Alert, ViewStyle } from 'react-native';
+import { View, StyleSheet, Text, ViewStyle } from 'react-native';
+import Alert from '@blazejkustra/react-native-alert';
 import { Event } from '../../types';
 import { useScheduler } from '../../hooks/useScheduler';
 import { useScheduleScreen } from '../../hooks/useScheduleScreen';

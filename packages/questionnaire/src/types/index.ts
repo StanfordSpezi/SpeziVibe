@@ -11,20 +11,25 @@ export type {
 } from 'fhir/r4';
 
 /**
+ * Theme colors configuration
+ */
+export interface QuestionnaireThemeColors {
+  background: string;
+  text: string;
+  textSecondary: string;
+  primary: string;
+  primaryLight: string;
+  border: string;
+  error: string;
+  cardBackground: string;
+  selectedBackground: string;
+}
+
+/**
  * Theme configuration for questionnaire components
  */
 export interface QuestionnaireTheme {
-  colors: {
-    background: string;
-    text: string;
-    textSecondary: string;
-    primary: string;
-    primaryLight: string;
-    border: string;
-    error: string;
-    cardBackground: string;
-    selectedBackground: string;
-  };
+  colors: QuestionnaireThemeColors;
   spacing: {
     xs: number;
     sm: number;
@@ -43,6 +48,16 @@ export interface QuestionnaireTheme {
     lg: number;
     xl: number;
   };
+}
+
+/**
+ * Partial theme configuration allowing partial nested objects
+ */
+export interface PartialQuestionnaireTheme {
+  colors?: Partial<QuestionnaireThemeColors>;
+  spacing?: Partial<QuestionnaireTheme['spacing']>;
+  borderRadius?: Partial<QuestionnaireTheme['borderRadius']>;
+  fontSize?: Partial<QuestionnaireTheme['fontSize']>;
 }
 
 /**
@@ -71,7 +86,7 @@ export interface QuestionnaireFormProps {
   onResult: (result: QuestionnaireResult) => Promise<void> | void;
   completionMessage?: string;
   cancelBehavior?: CancelBehavior;
-  theme?: Partial<QuestionnaireTheme>;
+  theme?: PartialQuestionnaireTheme;
   initialResponse?: QuestionnaireResponse;
   submitButtonText?: string;
   cancelButtonText?: string;
