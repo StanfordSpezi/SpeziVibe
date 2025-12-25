@@ -1,6 +1,6 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { IconSymbol, IconSymbolName } from '@/components/ui/icon-symbol';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -10,7 +10,7 @@ export default function WelcomeScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  const features = [
+  const features: { icon: IconSymbolName; title: string; description: string }[] = [
     {
       icon: 'heart.fill',
       title: 'Track Your Vibes',
