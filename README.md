@@ -62,6 +62,7 @@ npx expo start
 ## 📦 Modules
 
 - **[@spezivibe/account](./packages/account/README.md)** - Authentication and account management with Firebase and local implementations
+- **[@spezivibe/onboarding](./packages/onboarding/README.md)** - Reusable onboarding components with consent management and status tracking
 - **[@spezivibe/questionnaire](./packages/questionnaire/README.md)** - FHIR-compatible questionnaire system with dynamic forms
 - **[@spezivibe/scheduler](./packages/scheduler/README.md)** - Task scheduling with daily, weekly, monthly recurrence patterns and completion policies
 
