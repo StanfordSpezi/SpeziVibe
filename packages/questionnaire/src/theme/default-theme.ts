@@ -1,4 +1,4 @@
-import { QuestionnaireTheme } from '../types';
+import { QuestionnaireTheme, PartialQuestionnaireTheme } from '../types';
 
 export const defaultLightTheme: QuestionnaireTheme = {
   colors: {
@@ -68,7 +68,7 @@ export const defaultDarkTheme: QuestionnaireTheme = {
  * Merges user theme with default theme
  */
 export function mergeTheme(
-  userTheme?: Partial<QuestionnaireTheme>,
+  userTheme?: PartialQuestionnaireTheme,
   baseTheme: QuestionnaireTheme = defaultLightTheme
 ): QuestionnaireTheme {
   if (!userTheme) return baseTheme;

@@ -1,13 +1,13 @@
-import React from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
-import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
-import { SignInForm } from '@spezivibe/account';
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { ThemedView } from '@/components/themed-view';
 import { useAutoSkipIfAuthenticated } from '@/hooks/use-auto-skip-if-authenticated';
+import { useThemeColor } from '@/hooks/use-theme-color';
 import { ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SignInForm } from '@spezivibe/account';
+import { router } from 'expo-router';
+import React from 'react';
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function SignInScreen() {
   const isSkipping = useAutoSkipIfAuthenticated();
@@ -15,7 +15,9 @@ export default function SignInScreen() {
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const tintColor = useThemeColor({}, 'tint');
-  const borderColor = useThemeColor({ light: '#ddd', dark: '#444' }, 'border');
+  const borderColor = useThemeColor({}, 'border');
+  const buttonBackground = useThemeColor({}, 'buttonBackground');
+  const buttonText = useThemeColor({}, 'buttonText');
 
   async function handleSuccess() {
     await AsyncStorage.setItem(ONBOARDING_COMPLETED_KEY, 'true');
@@ -39,31 +41,47 @@ export default function SignInScreen() {
       <View style={styles.content}>
         <View style={styles.header}>
           <ThemedText type="title" style={styles.title}>
-            Welcome Back
+            Sign In
           </ThemedText>
-          <ThemedText style={styles.subtitle}>Sign in to continue</ThemedText>
         </View>
 
         <SignInForm
           onSuccess={handleSuccess}
-          onRegisterPress={() => router.push('/(onboarding)/register')}
+          showRegisterLink={false}
           containerStyle={styles.form}
-          inputStyle={[
-            styles.input,
-            { color: textColor, borderColor, backgroundColor },
-          ]}
-          buttonStyle={[styles.button, { backgroundColor: tintColor }]}
-          buttonTextStyle={styles.buttonText}
+          inputStyle={{
+            ...styles.input,
+            color: textColor,
+            borderColor,
+            backgroundColor,
+          }}
+          buttonStyle={{ ...styles.button, backgroundColor: buttonBackground }}
+          buttonTextStyle={{ ...styles.buttonText, color: buttonText }}
           buttonText="Sign In"
         />
 
-        <View style={styles.forgotPasswordContainer}>
-          <ThemedText
-            style={[styles.forgotPasswordLink, { color: tintColor }]}
-            onPress={() => router.push('/(onboarding)/forgot-password')}
+        <View style={styles.secondaryButtons}>
+          <TouchableOpacity
+            style={[styles.secondaryButton, { borderColor }]}
+            onPress={() => router.push('/(onboarding)/register')}
+            accessibilityRole="button"
+            accessibilityLabel="Create Account"
           >
-            Forgot Password?
-          </ThemedText>
+            <ThemedText style={styles.secondaryButtonText}>
+              Create Account
+            </ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.secondaryButton, { borderColor }]}
+            onPress={() => router.push('/(onboarding)/forgot-password')}
+            accessibilityRole="button"
+            accessibilityLabel="Forgot Password"
+          >
+            <ThemedText style={styles.secondaryButtonText}>
+              Forgot Password
+            </ThemedText>
+          </TouchableOpacity>
         </View>
       </View>
     </ThemedView>
@@ -96,11 +114,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    opacity: 0.7,
   },
   form: {
     width: '100%',
@@ -117,16 +130,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   buttonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
-  forgotPasswordContainer: {
-    alignItems: 'center',
+  secondaryButtons: {
     marginTop: 16,
+    gap: 12,
   },
-  forgotPasswordLink: {
-    fontSize: 14,
+  secondaryButton: {
+    height: 50,
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  secondaryButtonText: {
+    fontSize: 16,
     fontWeight: '600',
   },
 });

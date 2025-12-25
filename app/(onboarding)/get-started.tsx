@@ -3,11 +3,11 @@ import { router } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useThemeColor } from '@/hooks/use-theme-color';
 
 export default function GetStartedScreen() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const buttonBackground = useThemeColor({}, 'buttonBackground');
+  const buttonText = useThemeColor({}, 'buttonText');
 
   const handleGetStarted = () => {
     // Don't mark onboarding complete yet - auth is part of onboarding
@@ -17,8 +17,8 @@ export default function GetStartedScreen() {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.content}>
-        <View style={[styles.successCircle, { backgroundColor: isDark ? '#B83A4B' : '#8C1515' }]}>
-          <IconSymbol name="checkmark.circle.fill" size={80} color={isDark ? '#000' : '#fff'} />
+        <View style={[styles.successCircle, { backgroundColor: buttonBackground }]}>
+          <IconSymbol name="checkmark.circle.fill" size={80} color={buttonText} />
         </View>
 
         <View style={styles.textContainer}>
@@ -32,15 +32,15 @@ export default function GetStartedScreen() {
 
         <View style={styles.benefitsContainer}>
           <View style={styles.benefitItem}>
-            <IconSymbol name="checkmark.circle.fill" size={20} color={isDark ? '#B83A4B' : '#8C1515'} />
+            <IconSymbol name="checkmark.circle.fill" size={20} color={buttonBackground} />
             <ThemedText style={styles.benefitText}>Track your daily progress</ThemedText>
           </View>
           <View style={styles.benefitItem}>
-            <IconSymbol name="checkmark.circle.fill" size={20} color={isDark ? '#B83A4B' : '#8C1515'} />
+            <IconSymbol name="checkmark.circle.fill" size={20} color={buttonBackground} />
             <ThemedText style={styles.benefitText}>Get personalized insights</ThemedText>
           </View>
           <View style={styles.benefitItem}>
-            <IconSymbol name="checkmark.circle.fill" size={20} color={isDark ? '#B83A4B' : '#8C1515'} />
+            <IconSymbol name="checkmark.circle.fill" size={20} color={buttonBackground} />
             <ThemedText style={styles.benefitText}>Achieve your wellness goals</ThemedText>
           </View>
         </View>
@@ -50,10 +50,10 @@ export default function GetStartedScreen() {
         <Pressable
           style={({ pressed }) => [
             styles.button,
-            { backgroundColor: isDark ? '#B83A4B' : '#8C1515', opacity: pressed ? 0.8 : 1 },
+            { backgroundColor: buttonBackground, opacity: pressed ? 0.8 : 1 },
           ]}
           onPress={handleGetStarted}>
-          <ThemedText style={[styles.buttonText, { color: isDark ? '#000' : '#fff' }]}>
+          <ThemedText style={[styles.buttonText, { color: buttonText }]}>
             Get Started
           </ThemedText>
         </Pressable>
