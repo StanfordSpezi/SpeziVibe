@@ -5,7 +5,7 @@
 
   **Vibe code friendly cross-platform digital health app template**
 
-  [![CI](https://github.com/StanfordSpezi/SpeziVibe/actions/workflows/ci.yml/badge.svg)]
+  [![Build and Test](https://github.com/StanfordSpezi/SpeziVibe/actions/workflows/ci.yml/badge.svg)](https://github.com/StanfordSpezi/SpeziVibe/actions/workflows/ci.yml)
   [![Built with Expo](https://img.shields.io/badge/Built%20with-Expo-000020.svg?style=flat&logo=expo)](https://expo.dev)
   [![React Native](https://img.shields.io/badge/React%20Native-0.76-61DAFB.svg?style=flat&logo=react)](https://reactnative.dev)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-3178C6.svg?style=flat&logo=typescript)](https://www.typescriptlang.org)
@@ -20,13 +20,26 @@
 
 SpeziVibe is a [React Native](https://reactnative.dev/) and [Expo](https://expo.dev/) template for rapidly prototyping digital health applications on iOS, Android, and Web, inspired by our native [Stanford Spezi](https://github.com/StanfordSpezi) framework and optimized for AI-assisted development.
 
+## ✨ Features
+
+- **Cross-Platform** - Run on iOS, Android, and Web
+- **Authentication** - Backend-agnostic account management with Firebase support
+- **LLM Chat** - AI chat interface supporting OpenAI, Anthropic, and Google
+- **Onboarding** - Customizable onboarding flows with informed consent
+- **Questionnaires** - HL7 FHIR-compliant health questionnaires
+- **Scheduling** - Task scheduling and calendar views
+- **Theming** - Light/dark mode with customizable themes
+- **Modular** - Use only the modules you need
+- **TypeScript** - Full type safety throughout
+
 ## 📦 Modules
 
 - **[@spezivibe/account](./packages/account/README.md)** - Backend-agnostic authentication and account management
-- **[@spezivibe/firebase](./packages/firebase/README.md)** - Firebase integration
+- **[@spezivibe/chat](./packages/chat/README.md)** - User interface for chatting with LLMs via [AI SDK](https://ai-sdk.dev/)
+- **[@spezivibe/firebase](./packages/firebase/README.md)** - Firebase integration for authentication and data storage
 - **[@spezivibe/onboarding](./packages/onboarding/README.md)** - Reusable onboarding components including consent
-- **[@spezivibe/questionnaire](./packages/questionnaire/README.md)** - HL7 FHIR questionnaires
-- **[@spezivibe/scheduler](./packages/scheduler/README.md)** - Task scheduling
+- **[@spezivibe/questionnaire](./packages/questionnaire/README.md)** - HL7 FHIR questionnaires with dynamic forms
+- **[@spezivibe/scheduler](./packages/scheduler/README.md)** - Advanced task scheduling features
 
 ## 🚀 Getting Started
 
