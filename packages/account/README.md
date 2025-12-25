@@ -46,7 +46,8 @@ npm install firebase
 ### 1. Set up the Account Service
 
 ```tsx
-import { FirebaseAccountService, AccountProvider } from '@spezivibe/account';
+import { FirebaseAccountService } from '@spezivibe/firebase';
+import { AccountProvider } from '@spezivibe/account';
 
 const firebaseConfig = {
   apiKey: 'your-api-key',
@@ -180,11 +181,8 @@ Backend (Firebase Auth, etc.)
 // App.tsx - Complete setup example
 import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import {
-  AccountProvider,
-  FirebaseAccountService,
-  AccountConfiguration
-} from '@spezivibe/account';
+import { AccountProvider, AccountConfiguration } from '@spezivibe/account';
+import { FirebaseAccountService } from '@spezivibe/firebase';
 
 // Step 1: Create Firebase service instance (do this once, outside component)
 const firebaseConfig = {
@@ -801,7 +799,7 @@ try {
 ### Firebase Account Service
 
 ```tsx
-import { FirebaseAccountService } from '@spezivibe/account';
+import { FirebaseAccountService } from '@spezivibe/firebase';
 
 const accountService = new FirebaseAccountService({
   apiKey: process.env.FIREBASE_API_KEY,
@@ -817,13 +815,24 @@ await accountService.initialize();
 
 ### InMemory Account Service
 
-For local development and testing without a backend.
+For local development and testing without a backend. By default, it starts unauthenticated. You can provide an initial user for testing scenarios that require an authenticated state.
 
 ```tsx
 import { InMemoryAccountService } from '@spezivibe/account';
 
+// Default: starts unauthenticated
 const accountService = new InMemoryAccountService();
 await accountService.initialize();
+
+// With pre-configured user (for testing)
+const authenticatedService = new InMemoryAccountService({
+  initialUser: {
+    uid: 'test-user',
+    email: 'test@example.com',
+    name: { givenName: 'Test', familyName: 'User' },
+  },
+});
+await authenticatedService.initialize();
 ```
 
 ## API Reference
@@ -1091,10 +1100,22 @@ When testing components that use the `useAccount` hook, you need to provide a mo
 ```tsx
 // test-utils.tsx - Create reusable test utilities
 import React from 'react';
-import { AccountProvider, InMemoryAccountService } from '@spezivibe/account';
+import { AccountProvider, InMemoryAccountService, User } from '@spezivibe/account';
 
-export function renderWithAccount(component: React.ReactElement) {
-  const accountService = new InMemoryAccountService();
+// Default mock user for tests
+const mockUser: User = {
+  uid: 'test-user-123',
+  email: 'test@example.com',
+  name: { givenName: 'Test', familyName: 'User' },
+};
+
+export function renderWithAccount(
+  component: React.ReactElement,
+  authenticated: boolean = true
+) {
+  const accountService = new InMemoryAccountService({
+    initialUser: authenticated ? mockUser : undefined,
+  });
 
   return (
     <AccountProvider accountService={accountService}>
@@ -1112,11 +1133,18 @@ import MyComponent from './MyComponent';
 
 test('displays user email when logged in', () => {
   const { getByText } = render(
-    renderWithAccount(<MyComponent />)
+    renderWithAccount(<MyComponent />) // authenticated by default
   );
 
-  // InMemoryAccountService is always logged in by default
-  expect(getByText('local@example.com')).toBeTruthy();
+  expect(getByText('test@example.com')).toBeTruthy();
+});
+
+test('shows login prompt when not authenticated', () => {
+  const { getByText } = render(
+    renderWithAccount(<MyComponent />, false) // unauthenticated
+  );
+
+  expect(getByText('Please log in')).toBeTruthy();
 });
 ```
 
@@ -1183,7 +1211,7 @@ test('shows user profile when authenticated', () => {
 #### Option 3: Testing with Real Firebase (Integration Tests)
 
 ```tsx
-import { FirebaseAccountService } from '@spezivibe/account';
+import { FirebaseAccountService } from '@spezivibe/firebase';
 
 // Use Firebase Emulator for testing
 const testConfig = {

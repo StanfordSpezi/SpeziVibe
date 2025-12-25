@@ -10,11 +10,11 @@
  * import {
  *   AccountProvider,
  *   useAccount,
- *   FirebaseAccountService,
+ *   InMemoryAccountService,
  *   SignInForm,
  * } from '@spezivibe/account';
  *
- * const accountService = new FirebaseAccountService(firebaseConfig);
+ * const accountService = new InMemoryAccountService();
  *
  * function App() {
  *   return (
@@ -37,8 +37,8 @@ export * from './types';
 export { AccountProvider, useAccount } from './providers/AccountProvider';
 
 // Services
-export { FirebaseAccountService } from './services/firebase-account-service';
-export { InMemoryAccountService, LocalAccountService } from './services/local-account-service';
+export { InMemoryAccountService } from './services/in-memory-account-service';
+export type { InMemoryAccountServiceOptions } from './services/in-memory-account-service';
 
 // Components
 export { SignInForm, RegisterForm, PasswordResetForm, AccountOverview, EditProfileForm, ChangePasswordForm } from './components';
@@ -49,7 +49,6 @@ export {
   // Error handling
   AccountError,
   AccountErrorCode,
-  mapFirebaseError,
   getErrorMessage,
   isAccountError,
   // Validation
@@ -60,6 +59,9 @@ export {
   sanitizeInput,
   normalizeEmail,
   type ValidationResult,
+  // Logging
+  createLogger,
+  LogLevel,
 } from './utils';
 
 // PersonName utilities

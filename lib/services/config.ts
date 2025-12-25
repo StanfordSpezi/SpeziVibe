@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import { BackendConfig, BackendType } from './types';
 
 /**
@@ -15,6 +16,18 @@ import { BackendConfig, BackendType } from './types';
 // Get config from expo-constants (loaded from .env via app.config.js)
 const extra = Constants.expoConfig?.extra || {};
 
+/**
+ * Get the correct host for Firebase Emulator based on platform
+ * - Android Emulator: 10.0.2.2 (special IP to reach host machine)
+ * - iOS Simulator / Web: localhost
+ */
+function getEmulatorHost(): string {
+  if (Platform.OS === 'android') {
+    return '10.0.2.2';
+  }
+  return 'localhost';
+}
+
 // Configure your Firebase credentials from environment
 const FIREBASE_CONFIG = {
   apiKey: extra.firebase?.apiKey || '',
@@ -23,6 +36,15 @@ const FIREBASE_CONFIG = {
   storageBucket: extra.firebase?.storageBucket || '',
   messagingSenderId: extra.firebase?.messagingSenderId || '',
   appId: extra.firebase?.appId || '',
+  // Use Firebase Emulator by default in development
+  useEmulator: __DEV__,
+  // Platform-specific emulator host configuration
+  emulatorConfig: {
+    authHost: getEmulatorHost(),
+    authPort: 9099,
+    firestoreHost: getEmulatorHost(),
+    firestorePort: 8080,
+  },
 };
 
 // Debug: Check if env vars are loaded
@@ -32,7 +54,12 @@ if (__DEV__) {
     hasProjectId: !!FIREBASE_CONFIG.projectId,
     hasAppId: !!FIREBASE_CONFIG.appId,
     backendType: extra.backendType,
+    useEmulator: FIREBASE_CONFIG.useEmulator,
   });
+  if (FIREBASE_CONFIG.useEmulator) {
+    const host = FIREBASE_CONFIG.emulatorConfig.authHost;
+    console.log(`[Config] 🔧 Using Firebase Emulator at ${host} (${Platform.OS})`);
+  }
   if (!FIREBASE_CONFIG.apiKey) {
     console.warn('[Config] ⚠️ Firebase credentials not found! Make sure .env file exists and dev server was restarted.');
   }
@@ -54,9 +81,17 @@ const DEFAULT_CONFIG: BackendConfig = {
 };
 
 /**
- * Get the backend configuration
+ * Get the backend configuration (synchronous)
  */
-export async function getBackendConfig(): Promise<BackendConfig> {
+export function getBackendConfig(): BackendConfig {
+  return DEFAULT_CONFIG;
+}
+
+/**
+ * Get the backend configuration (async version for compatibility)
+ * @deprecated Use getBackendConfig() instead (now synchronous)
+ */
+export async function getBackendConfigAsync(): Promise<BackendConfig> {
   return DEFAULT_CONFIG;
 }
 

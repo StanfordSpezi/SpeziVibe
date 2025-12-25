@@ -1,5 +1,4 @@
-import { InMemoryAccountService } from '../services/local-account-service';
-import { User } from '../types';
+import { InMemoryAccountService } from '../services/in-memory-account-service';
 
 describe('InMemoryAccountService', () => {
   let service: InMemoryAccountService;
@@ -13,18 +12,42 @@ describe('InMemoryAccountService', () => {
       await expect(service.initialize()).resolves.not.toThrow();
     });
 
-    it('should be authenticated by default', async () => {
+    it('should be unauthenticated by default', async () => {
       await service.initialize();
       const isAuth = await service.isAuthenticated();
+      expect(isAuth).toBe(false);
+    });
+
+    it('should have no user by default', async () => {
+      await service.initialize();
+      const user = await service.getCurrentUser();
+      expect(user).toBeNull();
+    });
+
+    it('should be authenticated with initialUser option', async () => {
+      const serviceWithUser = new InMemoryAccountService({
+        initialUser: {
+          uid: 'test-user',
+          email: 'test@example.com',
+        },
+      });
+      await serviceWithUser.initialize();
+      const isAuth = await serviceWithUser.isAuthenticated();
       expect(isAuth).toBe(true);
     });
 
-    it('should have a mock user after initialization', async () => {
-      await service.initialize();
-      const user = await service.getCurrentUser();
+    it('should have the provided user with initialUser option', async () => {
+      const serviceWithUser = new InMemoryAccountService({
+        initialUser: {
+          uid: 'test-user',
+          email: 'test@example.com',
+        },
+      });
+      await serviceWithUser.initialize();
+      const user = await serviceWithUser.getCurrentUser();
       expect(user).not.toBeNull();
-      expect(user?.uid).toBe('local-user');
-      expect(user?.email).toBe('local@example.com');
+      expect(user?.uid).toBe('test-user');
+      expect(user?.email).toBe('test@example.com');
     });
   });
 
@@ -100,6 +123,7 @@ describe('InMemoryAccountService', () => {
   describe('logout', () => {
     it('should set authentication to false', async () => {
       await service.initialize();
+      await service.login({ email: 'test@example.com', password: 'password' });
 
       await service.logout();
 
@@ -109,6 +133,7 @@ describe('InMemoryAccountService', () => {
 
     it('should clear current user', async () => {
       await service.initialize();
+      await service.login({ email: 'test@example.com', password: 'password' });
 
       await service.logout();
 
@@ -118,6 +143,7 @@ describe('InMemoryAccountService', () => {
 
     it('should notify listeners of logout', async () => {
       await service.initialize();
+      await service.login({ email: 'test@example.com', password: 'password' });
       const listener = jest.fn();
       service.onAuthStateChanged(listener);
       listener.mockClear();
@@ -139,6 +165,7 @@ describe('InMemoryAccountService', () => {
   describe('updateProfile', () => {
     it('should update user profile fields', async () => {
       await service.initialize();
+      await service.login({ email: 'test@example.com', password: 'password' });
 
       await service.updateProfile({
         name: {
@@ -156,8 +183,17 @@ describe('InMemoryAccountService', () => {
       expect(user?.biography).toBe('Test bio');
     });
 
+    it('should throw error when not authenticated', async () => {
+      await service.initialize();
+
+      await expect(
+        service.updateProfile({ name: { givenName: 'Test' } })
+      ).rejects.toThrow('No authenticated user');
+    });
+
     it('should update timestamp', async () => {
       await service.initialize();
+      await service.login({ email: 'test@example.com', password: 'password' });
       const originalUser = await service.getCurrentUser();
       const originalUpdatedAt = originalUser?.updatedAt;
 
@@ -177,6 +213,7 @@ describe('InMemoryAccountService', () => {
 
     it('should notify listeners of profile update', async () => {
       await service.initialize();
+      await service.login({ email: 'test@example.com', password: 'password' });
       const listener = jest.fn();
       service.onAuthStateChanged(listener);
       listener.mockClear();
@@ -198,44 +235,83 @@ describe('InMemoryAccountService', () => {
   describe('updateEmail', () => {
     it('should update email address', async () => {
       await service.initialize();
+      await service.login({ email: 'test@example.com', password: 'password' });
 
       await service.updateEmail!('newemail@example.com', 'password');
 
       const user = await service.getCurrentUser();
       expect(user?.email).toBe('newemail@example.com');
     });
+
+    it('should throw error when not authenticated', async () => {
+      await service.initialize();
+
+      await expect(
+        service.updateEmail!('newemail@example.com', 'password')
+      ).rejects.toThrow('No authenticated user');
+    });
   });
 
   describe('updatePassword', () => {
     it('should resolve successfully', async () => {
       await service.initialize();
+      await service.login({ email: 'test@example.com', password: 'password' });
 
       await expect(
         service.updatePassword!('oldPassword', 'newPassword')
       ).resolves.not.toThrow();
+    });
+
+    it('should throw error when not authenticated', async () => {
+      await service.initialize();
+
+      await expect(
+        service.updatePassword!('oldPassword', 'newPassword')
+      ).rejects.toThrow('No authenticated user');
     });
   });
 
   describe('deleteAccount', () => {
     it('should log out user', async () => {
       await service.initialize();
+      await service.login({ email: 'test@example.com', password: 'password' });
 
       await service.deleteAccount!('password');
 
       const isAuth = await service.isAuthenticated();
       expect(isAuth).toBe(false);
     });
+
+    it('should throw error when not authenticated', async () => {
+      await service.initialize();
+
+      await expect(
+        service.deleteAccount!('password')
+      ).rejects.toThrow('No authenticated user');
+    });
   });
 
   describe('onAuthStateChanged', () => {
-    it('should call listener immediately with current state', async () => {
+    it('should call listener immediately with current state (unauthenticated)', async () => {
       await service.initialize();
       const listener = jest.fn();
 
       service.onAuthStateChanged(listener);
 
+      expect(listener).toHaveBeenCalledWith(null);
+    });
+
+    it('should call listener immediately with current state (authenticated)', async () => {
+      const authService = new InMemoryAccountService({
+        initialUser: { uid: 'test', email: 'test@example.com' },
+      });
+      await authService.initialize();
+      const listener = jest.fn();
+
+      authService.onAuthStateChanged(listener);
+
       expect(listener).toHaveBeenCalledWith(
-        expect.objectContaining({ email: 'local@example.com' })
+        expect.objectContaining({ email: 'test@example.com' })
       );
     });
 
@@ -267,6 +343,37 @@ describe('InMemoryAccountService', () => {
 
       expect(listener1).toHaveBeenCalled();
       expect(listener2).toHaveBeenCalled();
+    });
+  });
+
+  describe('cleanup', () => {
+    it('should clear all listeners', async () => {
+      const authService = new InMemoryAccountService({
+        initialUser: { uid: 'test', email: 'test@example.com' },
+      });
+      await authService.initialize();
+      const listener = jest.fn();
+      authService.onAuthStateChanged(listener);
+      listener.mockClear();
+
+      authService.cleanup();
+      await authService.login({ email: 'new@example.com', password: 'password' });
+
+      // Listener should not be called after cleanup
+      expect(listener).not.toHaveBeenCalled();
+    });
+
+    it('should reset authentication state', async () => {
+      const authService = new InMemoryAccountService({
+        initialUser: { uid: 'test', email: 'test@example.com' },
+      });
+      await authService.initialize();
+      expect(await authService.isAuthenticated()).toBe(true);
+
+      authService.cleanup();
+
+      expect(await authService.isAuthenticated()).toBe(false);
+      expect(await authService.getCurrentUser()).toBeNull();
     });
   });
 });

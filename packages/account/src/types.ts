@@ -147,12 +147,12 @@ export interface AccountConfiguration {
   /**
    * Fields that are required during account creation
    */
-  required?: Array<keyof UserProfile>;
+  required?: (keyof UserProfile)[];
 
   /**
    * Fields that should be collected (but are optional)
    */
-  collects?: Array<keyof UserProfile>;
+  collects?: (keyof UserProfile)[];
 
   /**
    * Allow users to edit their profile after creation
@@ -163,9 +163,7 @@ export interface AccountConfiguration {
 /**
  * Update payload for user profile
  */
-export interface UserProfileUpdate extends Partial<UserProfile> {
-  // All fields from UserProfile are optional for updates
-}
+export type UserProfileUpdate = Partial<UserProfile>;
 
 /**
  * Account service interface
@@ -248,6 +246,12 @@ export interface AccountService {
    * @returns Unsubscribe function
    */
   onAuthStateChanged(callback: (user: User | null) => void): () => void;
+
+  /**
+   * Cleanup resources and unsubscribe from all listeners
+   * Should be called when the service is no longer needed
+   */
+  cleanup?(): void;
 }
 
 /**
@@ -260,6 +264,28 @@ export interface FirebaseConfig {
   storageBucket: string;
   messagingSenderId: string;
   appId: string;
+
+  /**
+   * Enable Firebase emulator for local development
+   * When true, connects to Auth emulator at localhost:9099
+   * and Firestore emulator at localhost:8080
+   */
+  useEmulator?: boolean;
+
+  /**
+   * Custom emulator configuration (optional)
+   * Override default emulator hosts and ports
+   */
+  emulatorConfig?: {
+    /** Auth emulator host (default: 'localhost') */
+    authHost?: string;
+    /** Auth emulator port (default: 9099) */
+    authPort?: number;
+    /** Firestore emulator host (default: 'localhost') */
+    firestoreHost?: string;
+    /** Firestore emulator port (default: 8080) */
+    firestorePort?: number;
+  };
 }
 
 /**

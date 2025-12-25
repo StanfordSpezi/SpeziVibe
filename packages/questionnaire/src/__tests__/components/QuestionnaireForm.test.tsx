@@ -4,8 +4,6 @@ import { Alert } from 'react-native';
 import { QuestionnaireForm } from '../../components/QuestionnaireForm';
 import { QuestionnaireResult } from '../../types';
 import type { Questionnaire } from 'fhir/r4';
-import { defaultLightTheme } from '../../theme/default-theme';
-
 // Mock Alert
 jest.spyOn(Alert, 'alert');
 

@@ -8,15 +8,6 @@
  */
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/**
- * Password strength regex - requires:
- * - At least 8 characters
- * - At least one uppercase letter
- * - At least one lowercase letter
- * - At least one number
- */
-const STRONG_PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-
 export interface ValidationResult {
   valid: boolean;
   message?: string;

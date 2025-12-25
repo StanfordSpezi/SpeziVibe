@@ -24,7 +24,6 @@
     "account",
     "authentication",
     "auth",
-    "firebase",
     "spezi",
     "login",
     "register",
@@ -38,17 +37,6 @@
     "@react-native-async-storage/async-storage": ">=1.0.0",
     "@react-native-community/datetimepicker": ">=7.0.0"
   },
-  "peerDependenciesMeta": {
-    "firebase": {
-      "optional": true
-    },
-    "@react-native-async-storage/async-storage": {
-      "optional": false
-    },
-    "@react-native-community/datetimepicker": {
-      "optional": false
-    }
-  },
   "devDependencies": {
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-flow": "^7.27.1",
@@ -56,9 +44,9 @@
     "@babel/preset-typescript": "^7.28.5",
     "@react-native/babel-preset": "^0.81.5",
     "@react-native/metro-config": "^0.82.1",
-    "@testing-library/react-native": "^12.4.3",
-    "@types/jest": "^29.5.11",
-    "@types/react": "~19.1.0",
+    "@testing-library/react-native": "^12.9.0",
+    "@types/jest": "^29.5.14",
+    "@types/react": "~19.1.17",
     "@types/react-native": "^0.73.0",
     "@types/react-test-renderer": "^18.0.7",
     "babel-jest": "^29.7.0",

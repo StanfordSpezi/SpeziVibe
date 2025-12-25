@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState, useMemo, ReactNo
 import { AccountService } from '@spezivibe/account';
 import { BackendService, BackendType } from './types';
 import { BackendFactory } from './backend-factory';
-import { AccountServiceFactory } from './account-service-factory';
 import { getBackendConfig } from './config';
 
 /**
@@ -18,7 +17,7 @@ import { getBackendConfig } from './config';
 
 interface StandardContextValue {
   backend: BackendService | null;
-  accountService: AccountService | null;
+  accountService: AccountService;
   backendType: BackendType | null;
   isLoading: boolean;
   error: Error | null;
@@ -28,12 +27,12 @@ interface StandardContextValue {
 const StandardContext = createContext<StandardContextValue | null>(null);
 
 interface StandardProviderProps {
+  accountService: AccountService;
   children: ReactNode;
 }
 
-export function StandardProvider({ children }: StandardProviderProps) {
+export function StandardProvider({ accountService, children }: StandardProviderProps) {
   const [backend, setBackend] = useState<BackendService | null>(null);
-  const [accountService, setAccountService] = useState<AccountService | null>(null);
   const [backendType, setBackendType] = useState<BackendType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -50,24 +49,20 @@ export function StandardProvider({ children }: StandardProviderProps) {
 
       try {
         // Load backend configuration
-        const config = await getBackendConfig();
+        const config = getBackendConfig();
 
         // Create backend instance for data operations
         const backendInstance = BackendFactory.createBackend(config);
 
-        // Create account service instance for authentication
-        const accountServiceInstance = AccountServiceFactory.createAccountService(config);
-
         // Initialize both services
         await Promise.all([
           backendInstance.initialize(),
-          accountServiceInstance.initialize(),
+          accountService.initialize(),
         ]);
 
         if (cancelled) return;
 
         setBackend(backendInstance);
-        setAccountService(accountServiceInstance);
         setBackendType(config.type);
         setIsLoading(false);
       } catch (err) {
@@ -85,7 +80,7 @@ export function StandardProvider({ children }: StandardProviderProps) {
     return () => {
       cancelled = true;
     };
-  }, [retryCount]);
+  }, [retryCount, accountService]);
 
   // Sync user ID from account service to backend
   useEffect(() => {

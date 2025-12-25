@@ -9,8 +9,10 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useOnboardingStatus } from '@/hooks/use-onboarding-status';
 import { StandardProvider, useStandard } from '@/lib/services/standard-context';
 import { SchedulerProvider, createSampleTasks, useScheduler } from '@spezivibe/scheduler';
-import { AccountProvider, useAccount } from '@spezivibe/account';
+import { AccountProvider, useAccount, InMemoryAccountService } from '@spezivibe/account';
+import { FirebaseAccountService } from '@spezivibe/firebase';
 import { ACCOUNT_CONFIGURATION, ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
+import { getBackendConfig } from '@/lib/services/config';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -128,7 +130,7 @@ function SchedulerInitializer({ children }: { children: React.ReactNode }) {
 function AppProviders({ children }: { children: React.ReactNode }) {
   const { accountService, backend, isLoading } = useStandard();
 
-  if (isLoading || !accountService || !backend) {
+  if (isLoading || !backend) {
     return null; // Or a loading screen
   }
 
@@ -158,9 +160,26 @@ function AppProviders({ children }: { children: React.ReactNode }) {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
+  /**
+   * Create the AccountService based on backend configuration
+   *
+   * This is where you choose your authentication backend:
+   * - FirebaseAccountService for Firebase Authentication
+   * - InMemoryAccountService for local/development
+   */
+  const accountService = React.useMemo(() => {
+    const config = getBackendConfig();
+
+    if (config.type === 'firebase' && config.firebase) {
+      return new FirebaseAccountService(config.firebase);
+    }
+
+    return new InMemoryAccountService();
+  }, []);
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <StandardProvider>
+      <StandardProvider accountService={accountService}>
         <SchedulerProvider>
           <AppProviders>
             <RootLayoutNav />
