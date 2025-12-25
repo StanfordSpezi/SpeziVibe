@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ScrollView, View, Pressable, StyleSheet, Text } from 'react-native';
+import { ScrollView, View, Pressable, StyleSheet, Text, Platform } from 'react-native';
 import { SchedulerUITheme, defaultLightTheme } from '../theme';
 
 interface CalendarDay {
@@ -61,11 +61,12 @@ export const CalendarStrip = React.memo(function CalendarStrip({
 
   const selectedDateKey = selectedDate.toDateString();
 
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView
         horizontal
-        showsHorizontalScrollIndicator={false}
+        showsHorizontalScrollIndicator={Platform.OS === 'web'}
         contentContainerStyle={styles.scrollContent}>
         {days.map((day, index) => {
           const isSelected = day.date.toDateString() === selectedDateKey;

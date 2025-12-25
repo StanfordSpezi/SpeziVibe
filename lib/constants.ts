@@ -12,7 +12,7 @@ export { ONBOARDING_COMPLETED_KEY, CONSENT_KEY } from '@spezivibe/onboarding';
  * Controls which profile fields to collect and which are required
  */
 export const ACCOUNT_CONFIGURATION: AccountConfiguration = {
-  collects: ['name', 'dateOfBirth', 'sex'],
+  collects: ['name'],
   required: ['name'],
   allowsEditing: true,
 };

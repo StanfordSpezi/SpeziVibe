@@ -29,6 +29,7 @@
   "author": "SpeziVibe",
   "license": "MIT",
   "dependencies": {
+    "@blazejkustra/react-native-alert": "^1.0.0",
     "@types/fhir": "^0.0.41",
     "formik": "^2.4.9",
     "react-native-ui-datepicker": "^3.1.2",
@@ -66,8 +67,11 @@
       "./jest.setup.js"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|@react-native|@react-navigation|@testing-library)/)"
+      "node_modules/(?!(react-native|@react-native|@react-navigation|@testing-library|@blazejkustra|react-native-ui-datepicker)/)"
     ],
+    "moduleNameMapper": {
+      "\\.(png|jpg|jpeg|gif|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
+    },
     "moduleFileExtensions": [
       "ts",
       "tsx",

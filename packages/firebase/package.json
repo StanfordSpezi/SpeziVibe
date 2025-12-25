@@ -68,8 +68,11 @@
       "./jest.setup.js"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|@react-native|@react-native-community|@react-navigation|@testing-library|firebase|@firebase)/)"
+      "node_modules/(?!(react-native|@react-native|@react-native-community|@react-navigation|@testing-library|firebase|@firebase|react-native-ui-datepicker)/)"
     ],
+    "moduleNameMapper": {
+      "\\.(png|jpg|jpeg|gif|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
+    },
     "moduleFileExtensions": [
       "ts",
       "tsx",

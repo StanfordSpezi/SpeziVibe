@@ -3,8 +3,8 @@ import {
   ScrollView,
   View,
   Pressable,
-  Alert,
 } from 'react-native';
+import Alert from '@blazejkustra/react-native-alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ThemedText } from '@/components/themed-text';
@@ -78,23 +78,21 @@ export default function ChangePasswordScreen() {
             onSuccess={handleClose}
             onError={handleError}
             containerStyle={styles.form}
-            inputStyle={[
-              styles.input,
-              {
-                backgroundColor: isDark ? '#000' : '#f5f5f5',
-                color: isDark ? '#fff' : '#000',
-                borderColor: isDark ? '#333' : '#e0e0e0',
-              },
-            ]}
+            inputStyle={{
+              ...styles.input,
+              backgroundColor: isDark ? '#000' : '#f5f5f5',
+              color: isDark ? '#fff' : '#000',
+              borderColor: isDark ? '#333' : '#e0e0e0',
+            }}
             labelStyle={styles.label}
-            buttonStyle={[
-              styles.saveButton,
-              { backgroundColor: isDark ? '#B83A4B' : '#8C1515' },
-            ]}
-            buttonTextStyle={[
-              styles.saveButtonText,
-              { color: isDark ? '#000' : '#fff' },
-            ]}
+            buttonStyle={{
+              ...styles.saveButton,
+              backgroundColor: isDark ? '#B83A4B' : '#8C1515',
+            }}
+            buttonTextStyle={{
+              ...styles.saveButtonText,
+              color: isDark ? '#000' : '#fff',
+            }}
             buttonText="Change Password"
             showRequirements={true}
           />

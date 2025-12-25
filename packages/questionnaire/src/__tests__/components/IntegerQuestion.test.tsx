@@ -63,7 +63,7 @@ describe('IntegerQuestion', () => {
     ],
   };
 
-  const renderWithFormik = (item: QuestionnaireItem, initialValues = {}) => {
+  const renderWithFormik = (item: QuestionnaireItem, initialValues: Record<string, unknown> = {}) => {
     return render(
       <Formik initialValues={initialValues} onSubmit={jest.fn()}>
         {(formik) => <IntegerQuestion item={item} formik={formik} theme={defaultLightTheme} />}
@@ -182,7 +182,7 @@ describe('IntegerQuestion', () => {
   describe('error handling', () => {
     it('should display error message when touched and has error', () => {
       const { getByText } = render(
-        <Formik
+        <Formik<Record<string, unknown>>
           initialValues={{ 'test-input': 0 }}
           initialErrors={{ 'test-input': 'Must be at least 1' }}
           initialTouched={{ 'test-input': true }}

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Modal, View, StyleSheet, Pressable, Alert } from 'react-native';
+import { Modal, View, StyleSheet, Pressable } from 'react-native';
+import Alert from '@blazejkustra/react-native-alert';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -92,17 +93,20 @@ export function AccountSheet({ visible, onClose }: AccountSheetProps) {
         <View style={styles.content}>
           <AccountOverview
             containerStyle={styles.accountOverview}
+            sectionHeaderStyle={{ color: isDark ? '#fff' : '#333' }}
+            labelStyle={{ color: isDark ? '#aaa' : '#666' }}
+            valueStyle={{ color: isDark ? '#fff' : '#333' }}
             onEditProfile={handleEditProfile}
             onChangePassword={handleChangePassword}
             onLogout={handleLogout}
-            buttonStyle={[
-              styles.button,
-              { backgroundColor: isDark ? '#B83A4B' : '#8C1515' }
-            ]}
-            buttonTextStyle={[
-              styles.buttonText,
-              { color: isDark ? '#000' : '#fff' }
-            ]}
+            buttonStyle={{
+              ...styles.button,
+              backgroundColor: isDark ? '#B83A4B' : '#8C1515',
+            }}
+            buttonTextStyle={{
+              ...styles.buttonText,
+              color: isDark ? '#000' : '#fff',
+            }}
           />
         </View>
       </SafeAreaView>
