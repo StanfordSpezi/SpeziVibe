@@ -15,6 +15,7 @@ import DateTimePicker, { DateType } from 'react-native-ui-datepicker';
 import { useAccount } from '../hooks/useAccount';
 import { validateEmail, validatePasswordStrength, normalizeEmail, sanitizeInput } from '../utils/validation';
 import { Sex, PersonName } from '../types';
+import { toError } from '../utils/errors';
 
 export interface RegisterFormProps {
   /** Callback when registration is successful */
@@ -284,8 +285,8 @@ export function RegisterForm({
 
       await register(normalizedEmail, password, details);
       onSuccess?.();
-    } catch (err: any) {
-      onError?.(err);
+    } catch (err: unknown) {
+      onError?.(toError(err));
     }
   };
 

@@ -5,6 +5,7 @@ import { useState, useCallback } from 'react';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Spacing } from '@/constants/theme';
 import { ScheduleView, Event } from '@spezivibe/scheduler';
 import { AccountButton } from '@/components/account/account-button';
 import { AccountSheet } from '@/components/account/account-sheet';
@@ -75,9 +76,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 12,
+    paddingHorizontal: Spacing.screenHorizontal,
+    paddingTop: Spacing.screenTop,
+    paddingBottom: Spacing.elementGap,
   },
   title: {
     fontSize: 34,

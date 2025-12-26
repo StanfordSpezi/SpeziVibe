@@ -7,7 +7,16 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Task, Event, Outcome, SchedulerState, CompletionStats } from '../types';
+import {
+  Task,
+  Event,
+  Outcome,
+  SchedulerState,
+  CompletionStats,
+  SerializedSchedulerState,
+  SerializedTask,
+  SerializedOutcome,
+} from '../types';
 import { calculateOccurrences, isAllowedToComplete } from '../utils';
 
 export class Scheduler {
@@ -43,10 +52,10 @@ export class Scheduler {
     try {
       const data = await AsyncStorage.getItem(this.storageKey);
       if (data) {
-        const parsed = JSON.parse(data);
+        const parsed: SerializedSchedulerState = JSON.parse(data);
         // Deserialize dates
         this.state = {
-          tasks: parsed.tasks.map((t: any) => ({
+          tasks: parsed.tasks.map((t: SerializedTask): Task => ({
             ...t,
             schedule: {
               ...t.schedule,
@@ -60,7 +69,7 @@ export class Scheduler {
             createdAt: new Date(t.createdAt),
             effectiveFrom: new Date(t.effectiveFrom),
           })),
-          outcomes: parsed.outcomes.map((o: any) => ({
+          outcomes: parsed.outcomes.map((o: SerializedOutcome): Outcome => ({
             ...o,
             completedAt: new Date(o.completedAt),
           })),

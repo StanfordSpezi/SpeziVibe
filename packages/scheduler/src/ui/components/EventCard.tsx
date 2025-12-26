@@ -33,9 +33,7 @@ export const EventCard = React.memo(function EventCard({
   const isDisabled = !isCompleted && !canComplete;
 
   const handlePress = useCallback(() => {
-    if (onPress) {
-      onPress(event);
-    }
+    onPress?.(event);
   }, [onPress, event]);
 
   return (
@@ -162,10 +160,6 @@ const styles = StyleSheet.create({
   timeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  timeIcon: {
-    fontSize: 16,
-    marginRight: 4,
   },
   time: {
     fontSize: 14,

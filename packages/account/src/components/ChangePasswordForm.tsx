@@ -8,6 +8,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import { getErrorMessage, toError } from '../utils/errors';
 import { useAccount } from '../hooks/useAccount';
 import { validatePasswordStrength } from '../utils/validation';
 
@@ -154,10 +155,10 @@ export function ChangePasswordForm({
       setConfirmPassword('');
 
       onSuccess?.();
-    } catch (err: any) {
-      const errorMessage = err?.message || 'Failed to change password. Please try again.';
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err);
       setValidationError(errorMessage);
-      onError?.(err);
+      onError?.(toError(err));
     }
   };
 

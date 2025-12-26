@@ -12,6 +12,7 @@ import {
 import DateTimePicker, { DateType } from 'react-native-ui-datepicker';
 import { useAccount } from '../hooks/useAccount';
 import { Sex, PersonName } from '../types';
+import { toError } from '../utils/errors';
 
 export interface EditProfileFormProps {
   /** Callback when profile update is successful */
@@ -195,8 +196,8 @@ export function EditProfileForm({
       });
 
       onSuccess?.();
-    } catch (err: any) {
-      onError?.(err);
+    } catch (err: unknown) {
+      onError?.(toError(err));
     }
   };
 

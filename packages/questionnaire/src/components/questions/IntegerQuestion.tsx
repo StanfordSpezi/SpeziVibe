@@ -59,7 +59,7 @@ export function IntegerQuestion({ item, formik, theme }: IntegerQuestionProps) {
   const shouldShowButtons = !shouldRenderSlider && min !== undefined && max !== undefined && max - min <= 20;
 
   return (
-    <View style={[styles.container, { marginBottom: theme.spacing.lg }]}>
+    <View style={{ marginBottom: theme.spacing.lg }}>
       <Text
         style={[
           styles.title,
@@ -153,14 +153,11 @@ export function IntegerQuestion({ item, formik, theme }: IntegerQuestionProps) {
 
       {hasError && (
         <Text
-          style={[
-            styles.error,
-            {
-              color: theme.colors.error,
-              fontSize: theme.fontSize.sm,
-              marginTop: theme.spacing.xs,
-            },
-          ]}
+          style={{
+            color: theme.colors.error,
+            fontSize: theme.fontSize.sm,
+            marginTop: theme.spacing.xs,
+          }}
           accessibilityRole="alert">
           {formik.errors[linkId] as string}
         </Text>
@@ -170,7 +167,6 @@ export function IntegerQuestion({ item, formik, theme }: IntegerQuestionProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   title: {
     fontWeight: '600',
   },
@@ -193,5 +189,4 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     minHeight: 44,
   },
-  error: {},
 });

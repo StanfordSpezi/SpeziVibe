@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useAccount } from '../hooks/useAccount';
 import { validateEmail, normalizeEmail, sanitizeInput } from '../utils/validation';
+import { toError } from '../utils/errors';
 
 export interface PasswordResetFormProps {
   /** Callback when password reset email is sent successfully */
@@ -125,8 +126,8 @@ export function PasswordResetForm({
       await resetPassword(normalizedEmail);
       setSuccess(true);
       onSuccess?.();
-    } catch (err: any) {
-      onError?.(err);
+    } catch (err: unknown) {
+      onError?.(toError(err));
     }
   };
 
