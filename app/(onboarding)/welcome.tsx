@@ -73,7 +73,9 @@ export default function WelcomeScreen() {
             styles.button,
             { backgroundColor: buttonBackground, opacity: pressed ? 0.8 : 1 },
           ]}
-          onPress={() => router.push('/(onboarding)/features')}>
+          onPress={() => router.push('/(onboarding)/features')}
+          accessibilityRole="button"
+          accessibilityLabel="Continue to learn about features">
           <ThemedText style={[styles.buttonText, { color: buttonText }]}>
             Continue
           </ThemedText>
