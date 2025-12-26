@@ -19,7 +19,9 @@ import { AccountButton } from '@/components/account/account-button';
 import { AccountSheet } from '@/components/account/account-sheet';
 import { useAccount } from '@spezivibe/account';
 import { ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
+import { createLogger } from '@/lib/utils/logger';
 
+const logger = createLogger('Explore');
 const CONSENT_KEY = '@consent_data';
 
 export default function TabTwoScreen() {
@@ -45,7 +47,7 @@ export default function TabTwoScreen() {
         setConsentData(JSON.parse(data));
       }
     } catch (error) {
-      console.error('Error loading consent:', error);
+      logger.error('Error loading consent:', error);
     }
   };
 
@@ -76,7 +78,7 @@ export default function TabTwoScreen() {
               refreshTasks();
               Alert.alert('Success', 'Schedule has been reset with updated tasks.');
             } catch (error) {
-              console.error('Error resetting schedule:', error);
+              logger.error('Error resetting schedule:', error);
               Alert.alert('Error', 'Failed to reset schedule.');
             }
           },
@@ -107,7 +109,7 @@ export default function TabTwoScreen() {
               // Navigate to onboarding
               router.replace('/(onboarding)/welcome');
             } catch (error) {
-              console.error('Error resetting onboarding:', error);
+              logger.error('Error resetting onboarding:', error);
               Alert.alert('Error', 'Failed to reset onboarding.');
             }
           },
@@ -251,7 +253,9 @@ export default function TabTwoScreen() {
               styles.button,
               { backgroundColor: buttonBackground, opacity: pressed ? 0.8 : 1 },
             ]}
-            onPress={handleResetOnboarding}>
+            onPress={handleResetOnboarding}
+            accessibilityRole="button"
+            accessibilityLabel="Reset onboarding and sign out">
             <ThemedText style={[styles.buttonText, { color: buttonText }]}>
               Reset Onboarding
             </ThemedText>
@@ -269,7 +273,9 @@ export default function TabTwoScreen() {
               styles.button,
               { backgroundColor: buttonBackground, opacity: pressed ? 0.8 : 1 },
             ]}
-            onPress={handleResetSchedule}>
+            onPress={handleResetSchedule}
+            accessibilityRole="button"
+            accessibilityLabel="Reset all schedule tasks">
             <ThemedText style={[styles.buttonText, { color: buttonText }]}>
               Reset Schedule Tasks
             </ThemedText>
@@ -298,7 +304,9 @@ export default function TabTwoScreen() {
                   pathname: '/questionnaire/[id]',
                   params: { id: questionnaire.id },
                 });
-              }}>
+              }}
+              accessibilityRole="button"
+              accessibilityLabel={`Open ${questionnaire.title} questionnaire`}>
               <View style={styles.questionnaireButtonContent}>
                 <IconSymbol name="doc.text.fill" size={24} color={buttonBackground} />
                 <View style={styles.questionnaireButtonText}>

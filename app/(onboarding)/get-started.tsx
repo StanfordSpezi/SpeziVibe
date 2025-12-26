@@ -52,7 +52,9 @@ export default function GetStartedScreen() {
             styles.button,
             { backgroundColor: buttonBackground, opacity: pressed ? 0.8 : 1 },
           ]}
-          onPress={handleGetStarted}>
+          onPress={handleGetStarted}
+          accessibilityRole="button"
+          accessibilityLabel="Get started with registration">
           <ThemedText style={[styles.buttonText, { color: buttonText }]}>
             Get Started
           </ThemedText>

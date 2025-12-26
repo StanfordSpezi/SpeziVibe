@@ -5,12 +5,18 @@ import {
   PaginationDots,
   FeatureCard,
   OnboardingButton,
-  FeatureItem,
 } from '@spezivibe/onboarding';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol, IconSymbolName } from '@/components/ui/icon-symbol';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { Spacing } from '@/constants/theme';
+
+interface FeatureItem {
+  icon: IconSymbolName;
+  title: string;
+  description: string;
+}
 
 const FEATURES: FeatureItem[] = [
   {
@@ -56,7 +62,11 @@ export default function FeaturesScreen() {
   return (
     <ThemedView style={styles.container}>
       <View style={styles.skipContainer}>
-        <Pressable onPress={handleSkip} style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}>
+        <Pressable
+          onPress={handleSkip}
+          style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}
+          accessibilityRole="button"
+          accessibilityLabel="Skip feature overview">
           <ThemedText style={styles.skipText}>Skip</ThemedText>
         </Pressable>
       </View>
@@ -97,8 +107,8 @@ const styles = StyleSheet.create({
   },
   skipContainer: {
     alignItems: 'flex-end',
-    paddingHorizontal: 24,
-    paddingTop: 60,
+    paddingHorizontal: Spacing.screenHorizontal,
+    paddingTop: Spacing.screenTop,
   },
   skipText: {
     fontSize: 17,

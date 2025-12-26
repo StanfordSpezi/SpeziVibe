@@ -45,6 +45,30 @@ export const StanfordColors = {
   beige: '#F5E6D3',
 };
 
+/**
+ * Layout spacing constants
+ */
+export const Spacing = {
+  /** Horizontal padding for screen content */
+  screenHorizontal: 24,
+  /** Top padding to account for status bar (use SafeAreaView when possible) */
+  screenTop: 60,
+  /** Standard vertical gap between sections */
+  sectionGap: 24,
+  /** Small gap between related elements */
+  elementGap: 12,
+  /** Extra small gap */
+  xs: 4,
+  /** Small gap */
+  sm: 8,
+  /** Medium gap */
+  md: 16,
+  /** Large gap */
+  lg: 24,
+  /** Extra large gap */
+  xl: 32,
+};
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */

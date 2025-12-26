@@ -15,7 +15,7 @@ export function BooleanQuestion({ item, formik, theme }: BooleanQuestionProps) {
   const hasError = formik.touched[linkId] && formik.errors[linkId];
 
   return (
-    <View style={[styles.container, { marginBottom: theme.spacing.lg }]}>
+    <View style={{ marginBottom: theme.spacing.lg }}>
       <Text
         style={[
           styles.title,
@@ -87,14 +87,11 @@ export function BooleanQuestion({ item, formik, theme }: BooleanQuestionProps) {
 
       {hasError && (
         <Text
-          style={[
-            styles.error,
-            {
-              color: theme.colors.error,
-              fontSize: theme.fontSize.sm,
-              marginTop: theme.spacing.xs,
-            },
-          ]}
+          style={{
+            color: theme.colors.error,
+            fontSize: theme.fontSize.sm,
+            marginTop: theme.spacing.xs,
+          }}
           accessibilityRole="alert">
           {formik.errors[linkId] as string}
         </Text>
@@ -104,7 +101,6 @@ export function BooleanQuestion({ item, formik, theme }: BooleanQuestionProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   title: {
     fontWeight: '600',
   },
@@ -122,5 +118,4 @@ const styles = StyleSheet.create({
   booleanText: {
     fontWeight: '600',
   },
-  error: {},
 });

@@ -12,6 +12,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { Spacing } from '@/constants/theme';
 
 export default function ConsentScreen() {
   const buttonBackground = useThemeColor({}, 'buttonBackground');
@@ -150,9 +151,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 24,
+    paddingHorizontal: Spacing.screenHorizontal,
+    paddingTop: Spacing.screenTop,
+    paddingBottom: Spacing.screenHorizontal,
   },
   header: {
     marginBottom: 24,

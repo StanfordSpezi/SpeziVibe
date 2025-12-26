@@ -111,6 +111,57 @@ export interface SchedulerState {
 }
 
 /**
+ * Serialized recurrence rule (dates as ISO strings)
+ */
+export type SerializedRecurrenceRule =
+  | { type: 'daily'; hour: number; minute: number }
+  | { type: 'weekly'; weekday: number; hour: number; minute: number }
+  | { type: 'monthly'; day: number; hour: number; minute: number }
+  | { type: 'once'; date: string };
+
+/**
+ * Serialized schedule (dates as ISO strings)
+ */
+export interface SerializedSchedule {
+  startDate: string;
+  endDate?: string;
+  recurrence: SerializedRecurrenceRule;
+}
+
+/**
+ * Serialized task (dates as ISO strings for JSON storage)
+ */
+export interface SerializedTask {
+  id: string;
+  title: string;
+  instructions: string;
+  category: TaskCategory;
+  schedule: SerializedSchedule;
+  completionPolicy: AllowedCompletionPolicy;
+  tags?: string[];
+  questionnaireId?: string;
+  createdAt: string;
+  effectiveFrom: string;
+}
+
+/**
+ * Serialized outcome (dates as ISO strings)
+ */
+export interface SerializedOutcome {
+  id: string;
+  completedAt: string;
+  data?: Record<string, unknown>;
+}
+
+/**
+ * Serialized scheduler state for JSON storage
+ */
+export interface SerializedSchedulerState {
+  tasks: SerializedTask[];
+  outcomes: SerializedOutcome[];
+}
+
+/**
  * Statistics for task completion
  */
 export interface CompletionStats {
