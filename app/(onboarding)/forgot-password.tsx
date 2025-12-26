@@ -12,6 +12,7 @@ import { router } from 'expo-router';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { Spacing } from '@/constants/theme';
 import { PasswordResetForm } from '@spezivibe/account';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -105,8 +106,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 24,
-    paddingTop: 60,
+    padding: Spacing.screenHorizontal,
+    paddingTop: Spacing.screenTop,
   },
   headerContainer: {
     marginBottom: 20,

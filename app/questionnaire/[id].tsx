@@ -12,7 +12,9 @@ import { useScheduler } from '@spezivibe/scheduler';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useStandard } from '@/lib/services/standard-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLogger } from '@/lib/utils/logger';
 
+const logger = createLogger('Questionnaire');
 const RESPONSES_KEY = '@questionnaire_responses';
 
 export default function QuestionnaireScreen() {
@@ -78,7 +80,7 @@ export default function QuestionnaireScreen() {
             },
           ]);
         } catch (error) {
-          console.error('Failed to save questionnaire response:', error);
+          logger.error('Failed to save questionnaire response:', error);
           Alert.alert('Error', 'Failed to save your responses. Please try again.');
         }
         break;

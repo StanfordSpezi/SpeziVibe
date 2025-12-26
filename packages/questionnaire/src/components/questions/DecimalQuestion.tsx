@@ -18,7 +18,7 @@ export function DecimalQuestion({ item, formik, theme }: DecimalQuestionProps) {
   const hasError = formik.touched[linkId] && formik.errors[linkId];
 
   return (
-    <View style={[styles.container, { marginBottom: theme.spacing.lg }]}>
+    <View style={{ marginBottom: theme.spacing.lg }}>
       <Text
         style={[
           styles.title,
@@ -72,14 +72,11 @@ export function DecimalQuestion({ item, formik, theme }: DecimalQuestionProps) {
 
       {hasError && (
         <Text
-          style={[
-            styles.error,
-            {
-              color: theme.colors.error,
-              fontSize: theme.fontSize.sm,
-              marginTop: theme.spacing.xs,
-            },
-          ]}
+          style={{
+            color: theme.colors.error,
+            fontSize: theme.fontSize.sm,
+            marginTop: theme.spacing.xs,
+          }}
           accessibilityRole="alert">
           {formik.errors[linkId] as string}
         </Text>
@@ -89,7 +86,6 @@ export function DecimalQuestion({ item, formik, theme }: DecimalQuestionProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   title: {
     fontWeight: '600',
   },
@@ -100,5 +96,4 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     minHeight: 44,
   },
-  error: {},
 });

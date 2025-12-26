@@ -23,7 +23,7 @@ export function ChoiceQuestion({ item, formik, theme }: ChoiceQuestionProps) {
   }
 
   return (
-    <View style={[styles.container, { marginBottom: theme.spacing.lg }]}>
+    <View style={{ marginBottom: theme.spacing.lg }}>
       <Text
         style={[
           styles.title,
@@ -51,7 +51,7 @@ export function ChoiceQuestion({ item, formik, theme }: ChoiceQuestionProps) {
         </Text>
       )}
 
-      <View style={[styles.optionsContainer, { gap: theme.spacing.sm }]}>
+      <View style={{ gap: theme.spacing.sm }}>
         {item.answerOption.map((option, index) => {
           // Get the value - can be valueCoding, valueInteger, valueString, etc.
           const coding = option.valueCoding;
@@ -99,14 +99,11 @@ export function ChoiceQuestion({ item, formik, theme }: ChoiceQuestionProps) {
 
       {hasError && (
         <Text
-          style={[
-            styles.error,
-            {
-              color: theme.colors.error,
-              fontSize: theme.fontSize.sm,
-              marginTop: theme.spacing.xs,
-            },
-          ]}
+          style={{
+            color: theme.colors.error,
+            fontSize: theme.fontSize.sm,
+            marginTop: theme.spacing.xs,
+          }}
           accessibilityRole="alert">
           {formik.errors[linkId] as string}
         </Text>
@@ -116,19 +113,16 @@ export function ChoiceQuestion({ item, formik, theme }: ChoiceQuestionProps) {
 }
 
 const styles = StyleSheet.create({
-  container: {},
   title: {
     fontWeight: '600',
   },
   description: {
     opacity: 0.8,
   },
-  optionsContainer: {},
   optionButton: {
     borderWidth: 2,
   },
   optionText: {
     fontWeight: '500',
   },
-  error: {},
 });

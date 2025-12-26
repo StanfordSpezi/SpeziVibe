@@ -1,0 +1,41 @@
+/**
+ * Global CSS styles for web
+ *
+ * This file customizes the react-native-alert library to use Stanford Cardinal colors.
+ */
+
+/* ---- Stanford Cardinal Theme for Alert Library --------------------------- */
+:root {
+  /* Primary colors - Stanford Cardinal Red */
+  --rn-alert-accent: #8C1515;
+  --rn-alert-accent-hover: #6B0F0F;
+  --rn-alert-accent-light: #F5E6D3;
+
+  /* Danger colors - keeping defaults but slightly warmer */
+  --rn-alert-danger: #dc2626;
+  --rn-alert-danger-hover: #b91c1c;
+}
+
+/* Dark mode overrides */
+:root[data-theme="dark"],
+.rn-alert-theme--dark {
+  /* Use lighter Cardinal for dark mode for better visibility */
+  --rn-alert-accent: #B83A4B;
+  --rn-alert-accent-hover: #8C1515;
+  --rn-alert-accent-light: #3D1515;
+
+  --rn-alert-danger: #f87171;
+  --rn-alert-danger-hover: #ef4444;
+}
+
+/* System dark mode auto */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --rn-alert-accent: #B83A4B;
+    --rn-alert-accent-hover: #8C1515;
+    --rn-alert-accent-light: #3D1515;
+
+    --rn-alert-danger: #f87171;
+    --rn-alert-danger-hover: #ef4444;
+  }
+}

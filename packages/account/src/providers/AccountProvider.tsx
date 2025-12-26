@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { AccountContextValue, AccountProviderProps, User } from '../types';
+import { getErrorMessage } from '../utils/errors';
 
 const AccountContext = createContext<AccountContextValue | null>(null);
 
@@ -90,8 +91,8 @@ export function AccountProvider({
             await onAccountEvent({ type: 'login', user: currentUser });
           }
         }
-      } catch (err: any) {
-        const errorMessage = err.message || 'Login failed';
+      } catch (err: unknown) {
+        const errorMessage = getErrorMessage(err);
         setError(errorMessage);
         throw err;
       } finally {
@@ -128,8 +129,8 @@ export function AccountProvider({
             await onAccountEvent({ type: 'login', user: currentUser });
           }
         }
-      } catch (err: any) {
-        const errorMessage = err.message || 'Registration failed';
+      } catch (err: unknown) {
+        const errorMessage = getErrorMessage(err);
         setError(errorMessage);
         throw err;
       } finally {
@@ -159,8 +160,8 @@ export function AccountProvider({
       if (onAccountEvent) {
         await onAccountEvent({ type: 'logout' });
       }
-    } catch (err: any) {
-      const errorMessage = err.message || 'Logout failed';
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err);
       setError(errorMessage);
       throw err;
     } finally {
@@ -181,8 +182,8 @@ export function AccountProvider({
 
       try {
         await accountService.resetPassword(email);
-      } catch (err: any) {
-        const errorMessage = err.message || 'Password reset failed';
+      } catch (err: unknown) {
+        const errorMessage = getErrorMessage(err);
         setError(errorMessage);
         throw err;
       } finally {
@@ -211,8 +212,8 @@ export function AccountProvider({
         if (currentUser && onAccountEvent) {
           await onAccountEvent({ type: 'update', user: currentUser });
         }
-      } catch (err: any) {
-        const errorMessage = err.message || 'Profile update failed';
+      } catch (err: unknown) {
+        const errorMessage = getErrorMessage(err);
         setError(errorMessage);
         throw err;
       } finally {
@@ -239,8 +240,8 @@ export function AccountProvider({
 
       try {
         await accountService.updateEmail(newEmail, password);
-      } catch (err: any) {
-        const errorMessage = err.message || 'Email update failed';
+      } catch (err: unknown) {
+        const errorMessage = getErrorMessage(err);
         setError(errorMessage);
         throw err;
       } finally {
@@ -267,8 +268,8 @@ export function AccountProvider({
 
       try {
         await accountService.updatePassword(currentPassword, newPassword);
-      } catch (err: any) {
-        const errorMessage = err.message || 'Password update failed';
+      } catch (err: unknown) {
+        const errorMessage = getErrorMessage(err);
         setError(errorMessage);
         throw err;
       } finally {
@@ -300,8 +301,8 @@ export function AccountProvider({
         if (onAccountEvent) {
           await onAccountEvent({ type: 'delete' });
         }
-      } catch (err: any) {
-        const errorMessage = err.message || 'Account deletion failed';
+      } catch (err: unknown) {
+        const errorMessage = getErrorMessage(err);
         setError(errorMessage);
         throw err;
       } finally {

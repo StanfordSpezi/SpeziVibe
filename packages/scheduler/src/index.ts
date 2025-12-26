@@ -15,7 +15,7 @@ export * from './types';
 export { Scheduler } from './services';
 
 // Providers and Hooks
-export { SchedulerProvider } from './providers';
+export { SchedulerProvider, SchedulerContext } from './providers';
 export type { SchedulerContextValue, SchedulerProviderProps } from './providers';
 export { useScheduler, useScheduleScreen } from './hooks';
 export type { UseSchedulerReturn, UseScheduleScreenReturn, UseScheduleScreenOptions } from './hooks';

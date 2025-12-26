@@ -7,6 +7,7 @@ import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 import { RegisterForm } from '@spezivibe/account';
 import { useThemeColor } from '@/hooks/use-theme-color';
+import { Spacing } from '@/constants/theme';
 import { useAutoSkipIfAuthenticated } from '@/hooks/use-auto-skip-if-authenticated';
 import { ONBOARDING_COMPLETED_KEY } from '@/lib/constants';
 
@@ -111,9 +112,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flexGrow: 1,
-    padding: 24,
-    paddingTop: 60,
-    paddingBottom: 48,
+    padding: Spacing.screenHorizontal,
+    paddingTop: Spacing.screenTop,
+    paddingBottom: Spacing.xl + Spacing.md,
   },
   backButtonContainer: {
     marginBottom: 20,

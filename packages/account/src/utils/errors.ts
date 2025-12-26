@@ -110,3 +110,28 @@ export function isAccountError(
 ): error is AccountError {
   return error instanceof AccountError && error.code === code;
 }
+
+/**
+ * Convert unknown error to Error type
+ *
+ * @param error - Error of any type
+ * @returns Error instance
+ *
+ * @example
+ * ```typescript
+ * catch (err: unknown) {
+ *   onError?.(toError(err));
+ * }
+ * ```
+ */
+export function toError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error;
+  }
+
+  if (typeof error === 'string') {
+    return new Error(error);
+  }
+
+  return new Error(getErrorMessage(error));
+}

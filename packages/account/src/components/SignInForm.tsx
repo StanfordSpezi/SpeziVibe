@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useAccount } from '../hooks/useAccount';
 import { validateEmail, normalizeEmail, sanitizeInput } from '../utils/validation';
+import { toError } from '../utils/errors';
 
 export interface SignInFormProps {
   /** Callback when sign in is successful */
@@ -135,8 +136,8 @@ export function SignInForm({
       const normalizedEmail = normalizeEmail(email);
       await login(normalizedEmail, password);
       onSuccess?.();
-    } catch (err: any) {
-      onError?.(err);
+    } catch (err: unknown) {
+      onError?.(toError(err));
     }
   };
 

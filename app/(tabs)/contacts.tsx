@@ -4,6 +4,7 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol, IconSymbolName } from '@/components/ui/icon-symbol';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { Spacing } from '@/constants/theme';
 import { AccountButton } from '@/components/account/account-button';
 import { AccountSheet } from '@/components/account/account-sheet';
 import { useAccount } from '@spezivibe/account';
@@ -165,7 +166,9 @@ export default function ContactsScreen() {
                       opacity: pressed ? 0.8 : 1,
                     },
                   ]}
-                  onPress={() => handleContactAction(option)}>
+                  onPress={() => handleContactAction(option)}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${option.label} ${contact.name}`}>
                   <IconSymbol name={option.icon} size={20} color={isDark ? '#000' : '#fff'} />
                   <ThemedText style={[styles.optionLabel, { color: isDark ? '#000' : '#fff' }]}>{option.label}</ThemedText>
                 </Pressable>
@@ -198,9 +201,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 16,
+    paddingHorizontal: Spacing.screenHorizontal,
+    paddingTop: Spacing.screenTop,
+    paddingBottom: Spacing.md,
   },
   headerContent: {
     flex: 1,

@@ -13,7 +13,7 @@ import { MessageInput } from './MessageInput';
 import { streamChatCompletion, LLMMessage } from '../services';
 
 function generateId(): string {
-  return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  return `msg_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 }
 
 /**
