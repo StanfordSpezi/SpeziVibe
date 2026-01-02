@@ -75,17 +75,17 @@ Each feature manifest can declare:
   "description": "Human-readable description",
   "category": "backend",           // "backend" or "feature" (default)
   "autoIncludes": ["onboarding"],  // Features to auto-add when selected
-  "corePackages": ["account"],     // Packages to copy before other features
-  "dependencies": {},              // NPM dependencies to add
+  "dependencies": {},              // NPM dependencies (@spezivibe/* auto-copied)
   "scripts": {},                   // NPM scripts to add
-  "workspaces": [],                // Workspace paths to add
-  "copyDirs": [],                  // Directories to copy
+  "copyDirs": [],                  // App-level directories to copy
   "copyFiles": [],                 // Files to copy (won't overwrite)
   "replaceFiles": [],              // Files to replace (will overwrite)
   "transforms": [],                // Code transforms with markers
   "envVars": {}                    // Environment variables
 }
 ```
+
+**Package Auto-Inference**: Dependencies starting with `@spezivibe/*` are automatically copied from `packages/` and added to workspaces. For example, `"@spezivibe/chat": "*"` will copy `packages/chat` to the generated project.
 
 ### Backend-Specific Files
 
@@ -109,14 +109,16 @@ To add a new backend (e.g., Medplum), just create `features/medplum/`:
   "category": "backend",
   "description": "FHIR-based healthcare backend",
   "autoIncludes": ["onboarding"],
-  "corePackages": ["account"],
-  "dependencies": { "@medplum/core": "^3.0.0" },
-  "copyDirs": ["packages/medplum"],
+  "dependencies": {
+    "@spezivibe/account": "*",
+    "@spezivibe/medplum": "*",
+    "@medplum/core": "^3.0.0"
+  },
   "envVars": { "EXPO_PUBLIC_MEDPLUM_BASE_URL": "" }
 }
 ```
 
-No CLI code changes needed - it's auto-discovered!
+No CLI code changes needed - it's auto-discovered! The `@spezivibe/*` packages are automatically copied from `packages/`.
 
 ## Development
 

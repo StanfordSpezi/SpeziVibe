@@ -41,6 +41,12 @@ export interface CodeTransform {
  * - What packages/files to add
  * - Dependencies to install
  *
+ * Package auto-inference:
+ * Packages are automatically copied from the `packages/` directory based on
+ * `@spezivibe/*` entries in dependencies. For example, if dependencies includes
+ * `"@spezivibe/chat": "*"`, the `packages/chat` directory will be copied and
+ * added to workspaces automatically.
+ *
  * Backend-specific file variants:
  * Features can provide backend-specific versions of files using naming convention:
  *   file.tsx         -> default version
@@ -57,19 +63,18 @@ export interface FeatureManifest {
   category?: 'backend' | 'feature';
   /** Features to automatically include when this feature is selected */
   autoIncludes?: string[];
-  /** Packages to copy before other features (used by backends) */
-  corePackages?: string[];
 
   // Package management
-  /** NPM dependencies to add to package.json */
+  /**
+   * NPM dependencies to add to package.json
+   * @spezivibe/* dependencies are auto-copied from packages/ and added to workspaces
+   */
   dependencies?: Record<string, string>;
   /** NPM scripts to add to package.json */
   scripts?: Record<string, string>;
-  /** Workspace paths to add (e.g., ["packages/chat"]) */
-  workspaces?: string[];
 
   // File operations
-  /** Directories to copy (from feature dir or packages/) */
+  /** Directories to copy from feature dir (app-level dirs only, not packages) */
   copyDirs?: string[];
   /** Individual files to copy (won't overwrite existing) */
   copyFiles?: string[];

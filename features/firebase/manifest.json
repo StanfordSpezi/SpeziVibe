@@ -3,7 +3,6 @@
   "description": "Cloud auth + storage with Firebase",
   "category": "backend",
   "autoIncludes": ["onboarding"],
-  "corePackages": ["account"],
   "dependencies": {
     "@spezivibe/account": "*",
     "@spezivibe/firebase": "*",
@@ -14,9 +13,7 @@
     "emulators:export": "firebase emulators:export ./firebase-data",
     "emulators:import": "firebase emulators:start --import=./firebase-data"
   },
-  "workspaces": ["packages/firebase"],
   "copyDirs": [
-    "packages/firebase",
     "components/account",
     "app/(account)"
   ],

@@ -4,9 +4,7 @@
   "dependencies": {
     "@spezivibe/questionnaire": "*"
   },
-  "workspaces": ["packages/questionnaire"],
   "copyDirs": [
-    "packages/questionnaire",
     "app/questionnaire",
     "lib/questionnaires"
   ],

@@ -86,27 +86,10 @@ export async function generateProject(options: ProjectOptions): Promise<{ durati
     await copyBaseTemplate(ctx);
     spinner.succeed('Base template copied');
 
-    // Step 2: Copy core packages (from backend manifest if applicable)
-    let corePackages: string[] = [];
-    if (options.backend !== 'local') {
-      const manifestPath = path.join(FEATURES_DIR, options.backend, 'manifest.json');
-      if (await fs.pathExists(manifestPath)) {
-        const manifest = await fs.readJson(manifestPath);
-        corePackages = manifest.corePackages || [];
-      }
-    }
-    if (corePackages.length > 0) {
-      for (const pkg of corePackages) {
-        spinner = spin(`Adding ${pkg} package...`);
-        await copyPackage(ctx, pkg);
-        spinner.succeed(`Added ${pkg} package`);
-      }
-    }
-
-    // Step 3: Load all feature manifests
+    // Step 2: Load all feature manifests
     const manifests = await loadFeatureManifests(allFeatures);
 
-    // Step 3b: Validate feature selection (dependencies and conflicts)
+    // Step 3: Validate feature selection (dependencies and conflicts)
     const selectionResult = validateFeatureSelection(allFeatures, manifests);
     if (!selectionResult.valid) {
       for (const err of selectionResult.errors) {
@@ -116,11 +99,13 @@ export async function generateProject(options: ProjectOptions): Promise<{ durati
     }
 
     // Step 4: Apply features in order
+    // Track copied packages to avoid duplicates (e.g., account used by firebase + onboarding)
+    const copiedPackages = new Set<string>();
     for (const featureName of allFeatures) {
       const manifest = manifests.get(featureName);
       if (manifest) {
         spinner = spin(`Adding ${featureName}...`);
-        await applyFeature(ctx, featureName, manifest);
+        await applyFeature(ctx, featureName, manifest, copiedPackages);
         spinner.succeed(`Added ${featureName}`);
       }
     }
@@ -271,12 +256,27 @@ async function copyPackage(ctx: TransformContext, packageName: string): Promise<
 // ============================================================================
 
 /**
+ * Extract package names from @spezivibe/* dependencies
+ * e.g., "@spezivibe/chat": "*" -> "chat"
+ */
+function extractSpezivibePackages(dependencies: Record<string, string>): string[] {
+  const packages: string[] = [];
+  for (const dep of Object.keys(dependencies)) {
+    if (dep.startsWith('@spezivibe/')) {
+      packages.push(dep.replace('@spezivibe/', ''));
+    }
+  }
+  return packages;
+}
+
+/**
  * Apply a single feature based on its manifest
  */
 async function applyFeature(
   ctx: TransformContext,
   featureName: string,
-  manifest: FeatureManifest
+  manifest: FeatureManifest,
+  copiedPackages: Set<string>
 ): Promise<void> {
   const featureDir = path.join(FEATURES_DIR, featureName);
   const copyCtx: FeatureCopyContext = {
@@ -285,15 +285,25 @@ async function applyFeature(
     backend: ctx.options.backend,
   };
 
-  // Copy directories
+  // Auto-copy packages from @spezivibe/* dependencies (deduplicated)
+  if (manifest.dependencies) {
+    const packages = extractSpezivibePackages(manifest.dependencies);
+    for (const pkg of packages) {
+      if (!copiedPackages.has(pkg)) {
+        await copyPackage(ctx, pkg);
+        copiedPackages.add(pkg);
+      }
+    }
+    // Ensure workspaces is set if we copied any packages
+    if (packages.length > 0) {
+      await ensureWorkspaces(ctx);
+    }
+  }
+
+  // Copy directories (app-level dirs only, packages are auto-inferred from dependencies)
   if (manifest.copyDirs) {
     for (const dir of manifest.copyDirs) {
-      if (dir.startsWith('packages/')) {
-        const packageName = dir.replace('packages/', '');
-        await copyPackage(ctx, packageName);
-      } else {
-        await copyFromFeature(copyCtx, dir);
-      }
+      await copyFromFeature(copyCtx, dir);
     }
   }
 
@@ -315,11 +325,6 @@ async function applyFeature(
   // Add scripts
   if (manifest.scripts) {
     await addScripts(ctx, manifest.scripts);
-  }
-
-  // Add workspaces
-  if (manifest.workspaces) {
-    await ensureWorkspaces(ctx);
   }
 }
 

@@ -1,15 +1,11 @@
 {
   "name": "onboarding",
   "description": "User onboarding flow with welcome, features, consent, and auth screens",
-  "corePackages": ["account"],
   "dependencies": {
     "@spezivibe/onboarding": "*",
     "@spezivibe/account": "*"
   },
-  "workspaces": ["packages/onboarding"],
   "copyDirs": [
-    "packages/onboarding",
-    "packages/account",
     "app/(onboarding)"
   ],
   "replaceFiles": [

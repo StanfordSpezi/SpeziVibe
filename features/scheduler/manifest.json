@@ -5,10 +5,6 @@
     "@spezivibe/scheduler": "*",
     "@blazejkustra/react-native-alert": "^1.0.0"
   },
-  "workspaces": ["packages/scheduler"],
-  "copyDirs": [
-    "packages/scheduler"
-  ],
   "copyFiles": [
     "app/(tabs)/schedule.tsx"
   ],
