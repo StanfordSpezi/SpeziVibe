@@ -28,9 +28,15 @@ export const defaultMockUser: User = {
  * @param user - Custom user to use (default: defaultMockUser)
  */
 export function createMockAccountService(authenticated: boolean = true, user: User = defaultMockUser) {
-  return new InMemoryAccountService({
-    initialUser: authenticated ? user : undefined,
-  });
+  if (authenticated) {
+    return new InMemoryAccountService({
+      initialUser: user,
+    });
+  } else {
+    return new InMemoryAccountService({
+      startUnauthenticated: true,
+    });
+  }
 }
 
 /**

@@ -7,33 +7,44 @@ import { parsePersonName, normalizePersonName } from '../utils/person-name';
  */
 export interface InMemoryAccountServiceOptions {
   /**
-   * Initial user to pre-populate (for testing)
-   * If provided, the service starts authenticated with this user
+   * Initial user to pre-populate
+   * If not provided, uses a default local user
    */
   initialUser?: User;
+  /**
+   * Start unauthenticated (for testing onboarding flows)
+   * Default: false (starts authenticated)
+   */
+  startUnauthenticated?: boolean;
 }
+
+// Default local user for development
+const DEFAULT_LOCAL_USER: User = {
+  uid: 'local-user',
+  email: 'local@example.com',
+  name: { givenName: 'Local', familyName: 'User' },
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
 
 /**
  * In-memory implementation of AccountService for development/testing
  *
- * This service simulates authentication without requiring a backend.
- * By default, it starts unauthenticated. You can provide an initial user
- * to start in an authenticated state.
- *
- * Use this service for:
- * - Local development without Firebase
- * - Testing UI flows without auth dependencies
- * - Offline-first applications
+ * By default, starts authenticated with a local user for seamless development.
+ * Set startUnauthenticated: true to test onboarding/auth flows.
  */
 export class InMemoryAccountService implements AccountService {
-  private mockUser: User | null = null;
-  private isLoggedIn: boolean = false;
+  private mockUser: User | null;
+  private isLoggedIn: boolean;
   private authStateListeners: ((user: User | null) => void)[] = [];
   private logger = createLogger('InMemoryAccountService');
 
   constructor(private options: InMemoryAccountServiceOptions = {}) {
-    if (options.initialUser) {
-      this.mockUser = options.initialUser;
+    if (options.startUnauthenticated) {
+      this.mockUser = null;
+      this.isLoggedIn = false;
+    } else {
+      this.mockUser = options.initialUser || DEFAULT_LOCAL_USER;
       this.isLoggedIn = true;
     }
   }

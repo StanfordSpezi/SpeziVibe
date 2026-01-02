@@ -1,0 +1,21 @@
+{
+  "name": "scheduler",
+  "description": "Task scheduling and recurring events (inspired by Stanford Spezi SpeziScheduler)",
+  "dependencies": {
+    "@spezivibe/scheduler": "*",
+    "@blazejkustra/react-native-alert": "^1.0.0"
+  },
+  "copyFiles": [
+    "app/(tabs)/schedule.tsx"
+  ],
+  "replaceFiles": [
+    "lib/services/standard-context.tsx"
+  ],
+  "transforms": [
+    {
+      "file": "app/(tabs)/_layout.tsx",
+      "marker": "__INJECT_TABS__",
+      "content": "<Tabs.Screen\n        name=\"schedule\"\n        options={{\n          title: 'Schedule',\n          tabBarIcon: ({ color }) => <IconSymbol size={28} name=\"calendar\" color={color} />,\n        }}\n      />"
+    }
+  ]
+}

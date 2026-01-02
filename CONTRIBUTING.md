@@ -7,7 +7,8 @@ Thank you for your interest in contributing to SpeziVibe! This guide will help y
 1. Fork the repository
 2. Clone your fork: `git clone https://github.com/YOUR_USERNAME/SpeziVibe.git`
 3. Install dependencies: `npm install`
-4. Start the dev server: `npx expo start`
+4. Build packages: `npm run build`
+5. Run tests: `npm test`
 
 ## Development Workflow
 
@@ -29,7 +30,27 @@ Thank you for your interest in contributing to SpeziVibe! This guide will help y
 
 ### Testing Your Changes
 
-Since this is a template project, testing is primarily manual:
+#### Automated Testing
+
+Run all 423 tests across the project:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests for a specific package
+npm test --workspace=@spezivibe/account
+
+# Run CLI snapshot tests
+npm test --workspace=create-spezivibe-app
+
+# Update CLI snapshots after intentional changes
+npm run test:update --workspace=create-spezivibe-app
+```
+
+**All tests must pass before submitting a PR.**
+
+#### Manual Testing
 
 1. **Visual Testing**: Check all affected screens in light and dark modes
 2. **User Flows**: Test complete user journeys (onboarding, scheduling, etc.)
@@ -70,6 +91,7 @@ Since this is a template project, testing is primarily manual:
 ## Pull Request Guidelines
 
 ### PR Checklist
+- [ ] All automated tests pass (`npm test`)
 - [ ] Code follows project style guidelines
 - [ ] Changes tested in light and dark modes
 - [ ] No TypeScript errors or warnings

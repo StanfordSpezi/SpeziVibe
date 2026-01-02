@@ -1,0 +1,18 @@
+{
+  "name": "onboarding",
+  "description": "User onboarding flow with welcome, features, consent, and auth screens",
+  "dependencies": {
+    "@spezivibe/onboarding": "*",
+    "@spezivibe/account": "*"
+  },
+  "copyDirs": [
+    "app/(onboarding)"
+  ],
+  "replaceFiles": [
+    "app/_layout.tsx",
+    "hooks/use-onboarding-status.ts",
+    "hooks/use-auto-skip-if-authenticated.ts",
+    "lib/constants.ts",
+    "lib/services/standard-context.tsx"
+  ]
+}
