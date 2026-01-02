@@ -13,6 +13,7 @@ A React Native chat component library with multi-provider LLM support using the 
 - [API Reference](#api-reference)
 - [Platform Support](#platform-support)
 - [Examples](#examples)
+- [Security Considerations](#security-considerations)
 
 ## Features
 
@@ -61,7 +62,7 @@ EXPO_PUBLIC_ANTHROPIC_API_KEY=sk-ant-your-key-here
 EXPO_PUBLIC_GOOGLE_API_KEY=AIza-your-key-here
 ```
 
-> **Note:** This exposes the API key to the client. For production, consider using a backend proxy.
+> **Warning:** See [Security Considerations](#security-considerations) below for production deployments.
 
 ### 2. Create a Chat Screen
 
@@ -499,6 +500,46 @@ Following the **Spezi architecture pattern**, this module focuses on UI and real
 1. **Flexibility** - Use any storage solution (AsyncStorage, SQLite, cloud, etc.)
 2. **Simplicity** - Fewer dependencies and simpler module
 3. **Control** - You decide what to persist and when
+
+## Security Considerations
+
+### Client-Side API Keys
+
+When using `EXPO_PUBLIC_*` environment variables in React Native/Expo apps, **API keys are embedded in the JavaScript bundle and visible to end users**. This is a security risk because:
+
+1. **Bundle Inspection** - Users can extract the bundle and find your keys
+2. **Network Inspection** - API keys are sent in plain text with each request
+3. **Key Abuse** - Malicious users can use your keys for unauthorized requests
+
+### Production Recommendations
+
+For production deployments, implement a **backend proxy** that:
+
+1. Keeps API keys on your server (never exposed to clients)
+2. Authenticates users before allowing LLM requests
+3. Applies rate limiting to prevent abuse
+4. Logs usage for monitoring and billing
+
+**Example Architecture:**
+
+```
+Mobile App → Your Backend (with auth) → LLM Provider
+                     ↑
+            API key stored here
+```
+
+### Backend Proxy Options
+
+- **Firebase Cloud Functions** - If using Firebase backend
+- **Vercel Edge Functions** - If hosting web version on Vercel
+- **AWS Lambda / API Gateway** - For serverless deployments
+- **Custom Express/Fastify server** - For full control
+
+### When Client-Side Keys Are Acceptable
+
+- **Development and prototyping**
+- **Internal/enterprise apps** with trusted users
+- **Apps with strict API key restrictions** (IP allowlist, usage caps)
 
 ## Contributing
 

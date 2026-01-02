@@ -1,0 +1,47 @@
+{
+  "name": "create-spezivibe-app",
+  "version": "1.0.0",
+  "description": "Create a new SpeziVibe app with customizable features",
+  "type": "module",
+  "bin": {
+    "create-spezivibe-app": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --testPathPattern=tests/snapshot",
+    "test:update": "NODE_OPTIONS='--experimental-vm-modules' jest --testPathPattern=tests/snapshot --updateSnapshot",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "expo",
+    "react-native",
+    "spezi",
+    "health",
+    "template",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@inquirer/prompts": "^7.2.1",
+    "fs-extra": "^11.2.0",
+    "giget": "^1.2.3",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.10.5",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

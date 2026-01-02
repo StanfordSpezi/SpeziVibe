@@ -1,0 +1,18 @@
+{
+  "name": "questionnaire",
+  "description": "FHIR R4 compliant questionnaires and surveys (inspired by Stanford Spezi SpeziQuestionnaire)",
+  "dependencies": {
+    "@spezivibe/questionnaire": "*"
+  },
+  "copyDirs": [
+    "app/questionnaire",
+    "lib/questionnaires"
+  ],
+  "transforms": [
+    {
+      "file": "app/_layout.tsx",
+      "marker": "__INJECT_STACK_SCREENS__",
+      "content": "<Stack.Screen name=\"questionnaire\" options={{ presentation: 'modal' }} />"
+    }
+  ]
+}

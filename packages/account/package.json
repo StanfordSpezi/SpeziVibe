@@ -59,6 +59,7 @@
   "jest": {
     "preset": "react-native",
     "testTimeout": 15000,
+    "forceExit": true,
     "setupFiles": [
       "./jest.setup.js"
     ],
