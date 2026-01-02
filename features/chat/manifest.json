@@ -1,0 +1,30 @@
+{
+  "name": "chat",
+  "description": "AI-powered chat with LLM integration (OpenAI, Anthropic, Google)",
+  "dependencies": {
+    "@spezivibe/chat": "*",
+    "ai": "^6.0.3",
+    "@ai-sdk/openai": "^3.0.1",
+    "@ai-sdk/anthropic": "^3.0.1",
+    "@ai-sdk/google": "^3.0.1"
+  },
+  "workspaces": ["packages/chat"],
+  "copyDirs": [
+    "packages/chat"
+  ],
+  "copyFiles": [
+    "app/(tabs)/chat.tsx"
+  ],
+  "transforms": [
+    {
+      "file": "app/(tabs)/_layout.tsx",
+      "marker": "__INJECT_TABS__",
+      "content": "<Tabs.Screen\n        name=\"chat\"\n        options={{\n          title: 'Chat',\n          tabBarIcon: ({ color }) => <IconSymbol size={28} name=\"message.fill\" color={color} />,\n        }}\n      />"
+    }
+  ],
+  "envVars": {
+    "EXPO_PUBLIC_OPENAI_API_KEY": "",
+    "EXPO_PUBLIC_ANTHROPIC_API_KEY": "",
+    "EXPO_PUBLIC_GOOGLE_API_KEY": ""
+  }
+}

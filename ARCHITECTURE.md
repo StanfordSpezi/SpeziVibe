@@ -6,12 +6,13 @@ SpeziVibe is a React Native + Expo template for digital health applications. It 
 
 ## Tech Stack
 
-- **React Native 0.76** - Cross-platform mobile framework
-- **Expo 52** - Development platform and tooling
-- **TypeScript 5.3** - Type-safe JavaScript
+- **React Native 0.81** - Cross-platform mobile framework
+- **Expo 54** - Development platform and tooling
+- **TypeScript 5.9** - Type-safe JavaScript
 - **Expo Router** - File-based navigation system
 - **Formik + Yup** - Form state and validation
 - **AsyncStorage** - Local data persistence
+- **AI SDK** - LLM integration for chat features
 
 ## Core Architecture: The Standard Pattern
 
@@ -86,79 +87,124 @@ app/_layout.tsx:
 
 ```
 spezivibe/
-├── app/                          # Expo Router pages
-│   ├── (onboarding)/            # Onboarding flow route group
-│   │   ├── _layout.tsx          # Onboarding stack navigator
-│   │   ├── welcome.tsx          # Welcome screen
-│   │   ├── features.tsx         # Feature showcase
-│   │   ├── consent.tsx          # Informed consent
-│   │   ├── get-started.tsx      # Completion screen
-│   │   ├── register.tsx         # Registration with auto-skip
-│   │   └── sign-in.tsx          # Sign in with auto-skip
-│   ├── (tabs)/                  # Main app tabs route group
-│   │   ├── _layout.tsx          # Tab navigator
-│   │   ├── index.tsx            # Home tab
-│   │   ├── schedule.tsx         # Schedule tab
-│   │   ├── contacts.tsx         # Contacts tab
-│   │   └── explore.tsx          # Explore/settings tab
-│   ├── questionnaire/           # Questionnaire modal route
-│   │   ├── _layout.tsx          # Modal configuration
-│   │   └── [id].tsx             # Dynamic questionnaire screen
-│   └── _layout.tsx              # Root layout with Standard
-├── components/                   # Reusable UI components
-│   ├── themed-*.tsx             # Theme-aware components
-│   ├── calendar-strip.tsx       # Calendar navigation
-│   └── questionnaire-form.tsx   # Dynamic form component
-├── hooks/                       # Shared React hooks
-│   ├── use-color-scheme.ts     # Theme detection
-│   ├── use-theme-color.ts      # Color utilities
-│   ├── use-onboarding-status.ts # Onboarding completion check
-│   └── use-auto-skip-if-authenticated.ts # Auth skip logic
-├── lib/                         # Business logic modules
-│   ├── constants.ts            # App-wide constants
-│   ├── services/                # Backend services
-│   │   ├── standard-context.tsx # The Standard (core orchestrator)
-│   │   ├── account-service-factory.ts # Creates account service instances
-│   │   ├── backend-factory.ts  # Creates backend instances
-│   │   ├── config.ts           # Backend configuration
-│   │   ├── types.ts            # Shared type definitions
-│   │   ├── backends/           # Backend implementations
-│   │   │   ├── local-storage.ts # Local AsyncStorage backend
-│   │   │   └── firebase.ts     # Firebase backend
-│   │   ├── utils/              # Shared utilities
-│   │   │   ├── task-serialization.ts # Task serialization helpers
-│   │   │   └── object-utils.ts # removeUndefined utility
-│   │   └── README.md           # Backend documentation
-│   ├── scheduler/               # Task scheduling system
-│   │   ├── types.ts            # TypeScript definitions
-│   │   ├── scheduler.ts        # Core scheduler class
-│   │   ├── utils.ts            # Helper functions
-│   │   ├── context.tsx         # React Context provider
-│   │   ├── sample-tasks.ts     # Predefined tasks
-│   │   └── index.ts            # Module exports
-│   └── questionnaires/          # Questionnaire system
-│       ├── types.ts            # TypeScript definitions
-│       ├── sample-questionnaires.ts  # Predefined questionnaires
-│       └── index.ts            # Module exports
-├── packages/                    # Reusable npm packages
-│   ├── account/                # @spezivibe/account package
-│   │   ├── src/
-│   │   │   ├── types.ts        # User, AccountService interfaces
-│   │   │   ├── services/       # Firebase & Local implementations
-│   │   │   ├── providers/      # AccountProvider & useAccount hook
-│   │   │   ├── components/     # SignInForm, RegisterForm, etc.
-│   │   │   └── __tests__/      # Test suite (111 tests)
-│   │   └── README.md           # Account module documentation
-│   └── questionnaire/          # @spezivibe/questionnaire package
-│       ├── src/
-│       │   ├── types.ts        # FHIR-compatible questionnaire types
-│       │   └── index.ts        # Module exports
-│       └── README.md           # Questionnaire module documentation
-├── constants/                   # App-wide constants
-│   └── theme.ts                # Color scheme and fonts
-└── assets/                      # Static resources
-    └── images/                  # Images and logos
+├── cli/                          # create-spezivibe-app CLI tool
+│   ├── src/
+│   │   ├── index.ts              # CLI entry point with prompts
+│   │   ├── generator.ts          # Project generation orchestrator
+│   │   ├── prompts.ts            # Interactive prompts (Inquirer)
+│   │   ├── config.ts             # Backend discovery, feature configuration
+│   │   ├── types.ts              # TypeScript definitions
+│   │   └── utils.ts              # Dependency checking, verification
+│   └── tests/snapshot/           # Snapshot tests (30 tests)
+├── packages/                     # @spezivibe/* npm packages
+│   ├── account/                  # Authentication & account management (122 tests)
+│   ├── chat/                     # LLM chat with AI SDK (44 tests)
+│   ├── firebase/                 # Firebase backend implementation (47 tests)
+│   ├── onboarding/               # Onboarding flow components (46 tests)
+│   ├── questionnaire/            # FHIR R4 questionnaires (111 tests)
+│   └── scheduler/                # Task scheduling system (23 tests)
+├── template/                     # Base app template (copied to new projects)
+│   ├── app/                      # Expo Router pages
+│   │   ├── (tabs)/               # Main app tabs
+│   │   └── _layout.tsx           # Root layout with providers
+│   ├── components/               # Minimal UI components (ThemedView, ThemedText, etc.)
+│   ├── hooks/                    # Shared React hooks
+│   ├── lib/                      # Business logic modules
+│   │   ├── services/             # Backend services & Standard
+│   │   └── constants.ts          # App-wide constants
+│   └── constants/                # Theme configuration
+├── features/                     # Feature configs for CLI generation
+│   ├── onboarding/               # Onboarding feature files
+│   │   ├── manifest.json         # Feature manifest with transforms
+│   │   └── app/                  # App files to merge
+│   ├── firebase/                 # Firebase backend feature
+│   ├── chat/                     # Chat feature
+│   ├── scheduler/                # Scheduler feature
+│   └── questionnaire/            # Questionnaire feature
+├── ARCHITECTURE.md               # This file
+├── CONTRIBUTING.md               # Contribution guidelines
+└── package.json                  # Workspace configuration
 ```
+
+### Key Directories
+
+| Directory | Purpose |
+|-----------|---------|
+| `cli/` | CLI tool source code and tests |
+| `packages/` | Reusable npm packages with full test coverage |
+| `template/` | Base template copied to new projects |
+| `features/` | Feature-specific files merged during generation |
+
+## CLI Plugin System
+
+### Plugin-Based Backend Discovery
+
+The CLI uses a **plugin architecture** where backends are discovered automatically from feature manifests. Any feature with `category: "backend"` is offered as a backend option:
+
+```json
+// features/firebase/manifest.json
+{
+  "name": "firebase",
+  "category": "backend",
+  "description": "Cloud auth + storage with Firebase",
+  "autoIncludes": ["onboarding"],
+  "corePackages": ["account"],
+  "dependencies": { "firebase": "^12.7.0" },
+  "scripts": { "emulators": "firebase emulators:start" },
+  "copyFiles": ["firebase.json", ".firebaserc", "firestore.rules"],
+  "envVars": { "EXPO_PUBLIC_FIREBASE_API_KEY": "" }
+}
+```
+
+**Adding a new backend requires no CLI code changes** - just create a feature directory.
+
+### Feature Manifest Schema
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `name` | string | Feature identifier |
+| `description` | string | Human-readable description |
+| `category` | `"backend"` \| `"feature"` | Backend plugins vs regular features |
+| `autoIncludes` | string[] | Features to auto-add when selected |
+| `corePackages` | string[] | Packages to copy before other features |
+| `dependencies` | Record<string, string> | NPM dependencies |
+| `scripts` | Record<string, string> | NPM scripts to add |
+| `workspaces` | string[] | Workspace paths to add |
+| `copyDirs` | string[] | Directories to copy |
+| `copyFiles` | string[] | Files to copy (won't overwrite) |
+| `replaceFiles` | string[] | Files to replace (will overwrite) |
+| `transforms` | CodeTransform[] | Code injection transforms |
+| `envVars` | Record<string, string> | Environment variables (empty = prompt user) |
+
+### Backend-Specific Files
+
+Features can provide different file versions for different backends:
+
+```
+features/scheduler/
+├── app/(tabs)/schedule.tsx           # Default (local backend)
+├── app/(tabs)/schedule.firebase.tsx  # Used when Firebase is selected
+```
+
+The generator picks `file.{backend}.tsx` when that backend is selected, falling back to `file.tsx` otherwise.
+
+### Firebase Emulator Mode
+
+When Firebase is selected without credentials, the app automatically uses demo values and connects to the Firebase Emulator:
+
+```typescript
+// features/firebase/lib/services/config.ts
+const shouldUseEmulator = __DEV__ && !extra.firebase?.apiKey;
+
+const FIREBASE_CONFIG = {
+  apiKey: extra.firebase?.apiKey || (shouldUseEmulator ? 'demo-api-key' : ''),
+  projectId: extra.firebase?.projectId || (shouldUseEmulator ? 'demo-project' : ''),
+  useEmulator: shouldUseEmulator,
+  // ...
+};
+```
+
+This allows developers to start building immediately without Firebase console setup.
 
 ## Core Systems
 
@@ -576,12 +622,45 @@ interface Questionnaire {
 
 ## Testing Strategy
 
-**Current State**: No automated tests (template project)
+**Current State**: 423 tests across 25 test suites
 
-**Recommended Testing**:
-1. **Manual**: Test dark mode, all user flows
-2. **Exploratory**: Use test questionnaires in Explore tab
-3. **Reset Functions**: Use reset buttons to clear state
-4. **Device Testing**: Test on iOS and Android
+### Test Distribution
 
-**Future**: Add Jest + React Native Testing Library for unit/integration tests
+| Package | Tests | Description |
+|---------|-------|-------------|
+| `@spezivibe/account` | 122 | Authentication, profile management, InMemoryAccountService |
+| `@spezivibe/questionnaire` | 111 | FHIR R4 parsing, form validation, response handling |
+| `@spezivibe/firebase` | 47 | Firebase backend implementation, sync, error handling |
+| `@spezivibe/onboarding` | 46 | Onboarding flow, consent, feature screens |
+| `@spezivibe/chat` | 44 | AI SDK integration, message handling, providers |
+| `cli` | 30 | Snapshot tests for project generation |
+| `@spezivibe/scheduler` | 23 | Task scheduling, recurrence, occurrences |
+
+### Running Tests
+
+```bash
+# Run all tests across all workspaces
+npm test
+
+# Run tests for a specific package
+npm test --workspace=@spezivibe/account
+
+# Run CLI snapshot tests
+npm test --workspace=create-spezivibe-app
+
+# Update CLI snapshots after intentional changes
+npm run test:update --workspace=create-spezivibe-app
+```
+
+### Testing Patterns
+
+1. **Package Tests**: Each package in `packages/` has comprehensive unit tests using Jest and React Native Testing Library
+2. **CLI Snapshot Tests**: The CLI tool uses snapshot testing to catch regressions in generated project structure
+3. **InMemoryAccountService**: Used for testing authentication flows without Firebase
+
+### Manual Testing
+
+1. **Device Testing**: Test on iOS and Android simulators/devices
+2. **Dark Mode**: Verify theming works in both light and dark modes
+3. **User Flows**: Test onboarding, authentication, and feature workflows
+4. **Generated Apps**: Run `npm test` in generated projects to verify they work

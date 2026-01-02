@@ -1,0 +1,48 @@
+{
+  "name": "firebase",
+  "description": "Cloud auth + storage with Firebase",
+  "category": "backend",
+  "autoIncludes": ["onboarding"],
+  "corePackages": ["account"],
+  "dependencies": {
+    "@spezivibe/account": "*",
+    "@spezivibe/firebase": "*",
+    "firebase": "^12.7.0"
+  },
+  "scripts": {
+    "emulators": "firebase emulators:start",
+    "emulators:export": "firebase emulators:export ./firebase-data",
+    "emulators:import": "firebase emulators:start --import=./firebase-data"
+  },
+  "workspaces": ["packages/firebase"],
+  "copyDirs": [
+    "packages/firebase",
+    "components/account",
+    "app/(account)"
+  ],
+  "copyFiles": [
+    "firebase.json",
+    ".firebaserc",
+    "firestore.rules",
+    "firestore.indexes.json"
+  ],
+  "replaceFiles": [
+    "app.config.js",
+    "lib/services/backends/firebase.ts",
+    "lib/services/backend-factory.ts",
+    "lib/services/config.ts",
+    "lib/services/standard-context.tsx",
+    "app/_layout.tsx",
+    "app/(tabs)/index.tsx",
+    "app/(tabs)/explore.tsx",
+    "app/(tabs)/contacts.tsx"
+  ],
+  "envVars": {
+    "EXPO_PUBLIC_BACKEND_TYPE": "firebase",
+    "EXPO_PUBLIC_FIREBASE_API_KEY": "",
+    "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "",
+    "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "",
+    "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "",
+    "EXPO_PUBLIC_FIREBASE_APP_ID": ""
+  }
+}

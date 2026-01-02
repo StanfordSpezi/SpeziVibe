@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.expo/
+
+# Environment files (contain secrets)
+.env
+.env.local
+
+# macOS
+.DS_Store
+
+# Debug logs
+npm-debug.log*
+
+# TypeScript cache
+*.tsbuildinfo
+
+# IDE
+.idea/
+*.swp
+*.swo

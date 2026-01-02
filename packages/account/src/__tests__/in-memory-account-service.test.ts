@@ -4,7 +4,8 @@ describe('InMemoryAccountService', () => {
   let service: InMemoryAccountService;
 
   beforeEach(() => {
-    service = new InMemoryAccountService();
+    // Tests use startUnauthenticated mode to verify auth flows
+    service = new InMemoryAccountService({ startUnauthenticated: true });
   });
 
   describe('initialization', () => {
@@ -12,16 +13,31 @@ describe('InMemoryAccountService', () => {
       await expect(service.initialize()).resolves.not.toThrow();
     });
 
-    it('should be unauthenticated by default', async () => {
+    it('should be unauthenticated when startUnauthenticated is true', async () => {
       await service.initialize();
       const isAuth = await service.isAuthenticated();
       expect(isAuth).toBe(false);
     });
 
-    it('should have no user by default', async () => {
+    it('should have no user when startUnauthenticated is true', async () => {
       await service.initialize();
       const user = await service.getCurrentUser();
       expect(user).toBeNull();
+    });
+
+    it('should be authenticated by default (no options)', async () => {
+      const defaultService = new InMemoryAccountService();
+      await defaultService.initialize();
+      const isAuth = await defaultService.isAuthenticated();
+      expect(isAuth).toBe(true);
+    });
+
+    it('should have default local user by default (no options)', async () => {
+      const defaultService = new InMemoryAccountService();
+      await defaultService.initialize();
+      const user = await defaultService.getCurrentUser();
+      expect(user).not.toBeNull();
+      expect(user?.email).toBe('local@example.com');
     });
 
     it('should be authenticated with initialUser option', async () => {
