@@ -16,6 +16,12 @@ export interface InMemoryAccountServiceOptions {
    * Default: false (starts authenticated)
    */
   startUnauthenticated?: boolean;
+
+  /**
+   * Simulated network delay in milliseconds
+   * Default: 100ms (0ms in test environment)
+   */
+  simulatedDelayMs?: number;
 }
 
 // Default local user for development
@@ -38,8 +44,10 @@ export class InMemoryAccountService implements AccountService {
   private isLoggedIn: boolean;
   private authStateListeners: ((user: User | null) => void)[] = [];
   private logger = createLogger('InMemoryAccountService');
+  private delayMs: number;
 
   constructor(private options: InMemoryAccountServiceOptions = {}) {
+    this.delayMs = options.simulatedDelayMs ?? (process.env.NODE_ENV === 'test' ? 0 : 100);
     if (options.startUnauthenticated) {
       this.mockUser = null;
       this.isLoggedIn = false;
@@ -71,7 +79,7 @@ export class InMemoryAccountService implements AccountService {
     this.logger.debug('Mock login');
 
     // Simulate slight delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.simulateDelay();
 
     // Create mock user with provided email
     // Parse email username as given name
@@ -92,7 +100,7 @@ export class InMemoryAccountService implements AccountService {
     this.logger.debug('Mock registration');
 
     // Simulate slight delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.simulateDelay();
 
     // Normalize name: accept PersonName or string
     const name = credentials.name
@@ -118,7 +126,7 @@ export class InMemoryAccountService implements AccountService {
     this.logger.debug('Mock logout');
 
     // Simulate slight delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.simulateDelay();
 
     this.isLoggedIn = false;
     this.notifyListeners();
@@ -128,7 +136,7 @@ export class InMemoryAccountService implements AccountService {
     this.logger.debug('Mock password reset');
 
     // Simulate slight delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.simulateDelay();
 
     // In local mode, just log the reset
     this.logger.info('Password reset email sent (simulated)');
@@ -142,7 +150,7 @@ export class InMemoryAccountService implements AccountService {
     this.logger.debug('Mock profile update');
 
     // Simulate slight delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.simulateDelay();
 
     // Update mock user
     this.mockUser = {
@@ -162,7 +170,7 @@ export class InMemoryAccountService implements AccountService {
     this.logger.debug('Mock email update');
 
     // Simulate slight delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.simulateDelay();
 
     // Update mock user email
     this.mockUser = {
@@ -182,7 +190,7 @@ export class InMemoryAccountService implements AccountService {
     this.logger.debug('Mock password update');
 
     // Simulate slight delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.simulateDelay();
 
     this.logger.info('Password updated (simulated)');
   }
@@ -195,7 +203,7 @@ export class InMemoryAccountService implements AccountService {
     this.logger.debug('Mock account deletion');
 
     // Simulate slight delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await this.simulateDelay();
 
     this.isLoggedIn = false;
     this.mockUser = null;
@@ -236,5 +244,12 @@ export class InMemoryAccountService implements AccountService {
         this.logger.error('Error in auth state listener', error);
       }
     });
+  }
+
+  private async simulateDelay(): Promise<void> {
+    if (this.delayMs <= 0) {
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, this.delayMs));
   }
 }

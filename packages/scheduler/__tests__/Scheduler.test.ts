@@ -33,13 +33,11 @@ describe('Scheduler', () => {
         completionPolicy: {
           type: 'anytime',
         },
-        tags: ['test'],
       });
 
       expect(task.id).toBe('test-task-1');
       expect(task.title).toBe('Test Task');
       expect(task.createdAt).toBeInstanceOf(Date);
-      expect(task.effectiveFrom).toBeInstanceOf(Date);
     });
 
     it('should update an existing task', async () => {
@@ -59,7 +57,6 @@ describe('Scheduler', () => {
         completionPolicy: {
           type: 'anytime',
         },
-        tags: ['test'],
       });
 
       const updatedTask = await scheduler.createOrUpdateTask({
@@ -78,7 +75,6 @@ describe('Scheduler', () => {
         completionPolicy: {
           type: 'anytime',
         },
-        tags: ['test', 'updated'],
       });
 
       expect(updatedTask.title).toBe('Updated Title');
@@ -96,7 +92,6 @@ describe('Scheduler', () => {
           recurrence: { type: 'daily', hour: 9, minute: 0 },
         },
         completionPolicy: { type: 'anytime' },
-        tags: [],
       });
 
       await scheduler.createOrUpdateTask({
@@ -110,7 +105,6 @@ describe('Scheduler', () => {
           recurrence: { type: 'weekly', weekday: 1, hour: 10, minute: 0 },
         },
         completionPolicy: { type: 'anytime' },
-        tags: [],
       });
 
       const tasks = scheduler.getTasks();
@@ -130,7 +124,6 @@ describe('Scheduler', () => {
           recurrence: { type: 'daily', hour: 9, minute: 0 },
         },
         completionPolicy: { type: 'anytime' },
-        tags: [],
       });
 
       const task = scheduler.getTask('task-1');
@@ -149,7 +142,6 @@ describe('Scheduler', () => {
           recurrence: { type: 'daily', hour: 9, minute: 0 },
         },
         completionPolicy: { type: 'anytime' },
-        tags: [],
       });
 
       expect(scheduler.getTasks()).toHaveLength(1);
@@ -171,7 +163,6 @@ describe('Scheduler', () => {
           recurrence: { type: 'daily', hour: 9, minute: 0 },
         },
         completionPolicy: { type: 'anytime' },
-        tags: [],
       });
 
       await scheduler.createOrUpdateTask({
@@ -184,7 +175,6 @@ describe('Scheduler', () => {
           recurrence: { type: 'daily', hour: 9, minute: 0 },
         },
         completionPolicy: { type: 'anytime' },
-        tags: [],
       });
 
       expect(scheduler.getTasks()).toHaveLength(2);
@@ -211,7 +201,6 @@ describe('Scheduler', () => {
           },
         },
         completionPolicy: { type: 'anytime' },
-        tags: [],
       });
     });
 
@@ -257,7 +246,6 @@ describe('Scheduler', () => {
           },
         },
         completionPolicy: { type: 'anytime' },
-        tags: [],
       });
     });
 
@@ -318,7 +306,6 @@ describe('Scheduler', () => {
           recurrence: { type: 'daily', hour: 9, minute: 0 },
         },
         completionPolicy: { type: 'anytime' },
-        tags: [],
       });
 
       expect(AsyncStorage.setItem).toHaveBeenCalled();
@@ -338,7 +325,6 @@ describe('Scheduler', () => {
           recurrence: { type: 'daily', hour: 9, minute: 0 },
         },
         completionPolicy: { type: 'anytime' },
-        tags: [],
       });
 
       expect(listener).toHaveBeenCalled();
@@ -360,7 +346,6 @@ describe('Scheduler', () => {
           recurrence: { type: 'daily', hour: 9, minute: 0 },
         },
         completionPolicy: { type: 'anytime' },
-        tags: [],
       });
 
       expect(listener).not.toHaveBeenCalled();

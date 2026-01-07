@@ -3,7 +3,7 @@ import { Task } from './types';
 /**
  * Sample tasks for demonstration - varied schedule across the week
  */
-export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[] {
+export function createSampleTasks(): Omit<Task, 'createdAt'>[] {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -27,7 +27,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
         start: 0,
         end: 180, // 3 hours after
       },
-      tags: ['wellness', 'daily', 'morning'],
     },
     {
       id: 'monday-goals',
@@ -46,7 +45,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['weekly', 'goals', 'planning'],
     },
     {
       id: 'midweek-checkin',
@@ -66,7 +64,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['weekly', 'progress'],
     },
     {
       id: 'cardio-monday',
@@ -85,7 +82,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['exercise', 'cardio'],
     },
     {
       id: 'mindfulness-tuesday',
@@ -104,7 +100,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['mindfulness', 'meditation'],
     },
     {
       id: 'strength-tuesday',
@@ -123,7 +118,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['exercise', 'strength'],
     },
     {
       id: 'cardio-wednesday',
@@ -142,7 +136,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['exercise', 'cardio'],
     },
     {
       id: 'mindfulness-thursday',
@@ -161,7 +154,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['mindfulness', 'meditation'],
     },
     {
       id: 'strength-thursday',
@@ -180,7 +172,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['exercise', 'strength'],
     },
     {
       id: 'cardio-friday',
@@ -199,7 +190,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['exercise', 'cardio'],
     },
     {
       id: 'friday-reflection',
@@ -219,7 +209,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['weekly', 'reflection'],
     },
     {
       id: 'weekend-planning',
@@ -238,7 +227,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['weekend', 'planning'],
     },
     {
       id: 'sunday-prep',
@@ -257,7 +245,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['weekly', 'preparation'],
     },
     {
       id: 'evening-gratitude',
@@ -276,7 +263,6 @@ export function createSampleTasks(): Omit<Task, 'createdAt' | 'effectiveFrom'>[]
       completionPolicy: {
         type: 'anytime',
       },
-      tags: ['daily', 'gratitude', 'evening'],
     },
   ];
 }
