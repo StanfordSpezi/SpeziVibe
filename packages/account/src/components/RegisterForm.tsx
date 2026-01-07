@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -146,6 +146,11 @@ export function RegisterForm({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [sex, setSex] = useState('');
   const [showSexPicker, setShowSexPicker] = useState(false);
+
+  // Clear any errors from previous screens on mount
+  useEffect(() => {
+    clearError();
+  }, [clearError]);
 
   const emailInputRef = useRef<TextInput>(null);
   const passwordInputRef = useRef<TextInput>(null);

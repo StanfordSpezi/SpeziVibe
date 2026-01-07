@@ -104,7 +104,11 @@ export function AccountProvider({
   );
 
   const register = useCallback(
-    async (email: string, password: string, details?: Partial<import('../types').UserProfile>) => {
+    async (
+      email: string,
+      password: string,
+      details?: Partial<import('../types').UserProfile>
+    ) => {
       if (operationInProgress) {
         throw new Error('An authentication operation is already in progress');
       }
@@ -114,7 +118,11 @@ export function AccountProvider({
       setError(null);
 
       try {
-        await accountService.register({ email, password, ...details });
+        await accountService.register({
+          email,
+          password,
+          ...details,
+        });
 
         // Get the updated user
         const currentUser = await accountService.getCurrentUser();

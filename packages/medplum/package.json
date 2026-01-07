@@ -1,0 +1,60 @@
+{
+  "name": "@spezivibe/medplum",
+  "version": "1.0.0",
+  "description": "Medplum FHIR integration for SpeziVibe account management and backend services",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "prepublishOnly": "npm run clean && npm run build && npm run test"
+  },
+  "keywords": [
+    "react-native",
+    "medplum",
+    "fhir",
+    "healthcare",
+    "authentication",
+    "spezi",
+    "account",
+    "backend"
+  ],
+  "author": "SpeziVibe",
+  "license": "MIT",
+  "peerDependencies": {
+    "@spezivibe/account": "^1.0.0",
+    "react": ">=18.0.0",
+    "react-native": ">=0.70.0"
+  },
+  "dependencies": {
+    "@medplum/core": "^4.3.6",
+    "@medplum/expo-polyfills": "^4.3.6",
+    "@medplum/fhirtypes": "^4.3.6"
+  },
+  "devDependencies": {
+    "@spezivibe/account": "^1.0.0",
+    "@types/jest": "^29.5.14",
+    "@types/react": "~19.1.17",
+    "jest": "^29.7.0",
+    "react": "^19.1.0",
+    "react-native": "^0.81.5",
+    "ts-jest": "^29.2.5",
+    "typescript": "~5.9.2"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "moduleFileExtensions": ["ts", "tsx", "js", "jsx"],
+    "testMatch": ["**/__tests__/**/*.test.ts"],
+    "collectCoverageFrom": ["src/**/*.ts", "!src/**/*.d.ts"]
+  }
+}

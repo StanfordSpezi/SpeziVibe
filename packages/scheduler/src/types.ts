@@ -55,14 +55,10 @@ export interface Task {
   schedule: Schedule;
   /** Completion policy */
   completionPolicy: AllowedCompletionPolicy;
-  /** Optional tags for filtering */
-  tags?: string[];
   /** Link to questionnaire ID for questionnaire-type tasks */
   questionnaireId?: string;
   /** When the task was created */
   createdAt: Date;
-  /** When this version of the task became effective */
-  effectiveFrom: Date;
 }
 
 /**
@@ -138,10 +134,8 @@ export interface SerializedTask {
   category: TaskCategory;
   schedule: SerializedSchedule;
   completionPolicy: AllowedCompletionPolicy;
-  tags?: string[];
   questionnaireId?: string;
   createdAt: string;
-  effectiveFrom: string;
 }
 
 /**

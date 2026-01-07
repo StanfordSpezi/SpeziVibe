@@ -20,9 +20,12 @@ The CLI will prompt you to choose:
 
 ### Backend
 - **Firebase** - Cloud storage with Firestore and Firebase Authentication
+- **Medplum** - FHIR R4-compliant healthcare backend with [Medplum](https://medplum.com)
 - **Local AsyncStorage** - Offline-first, no server required
 
 When you select Firebase, you'll be prompted to enter your Firebase credentials. Leave them blank to use the Firebase Emulator for local development.
+
+When you select Medplum, configure your `.env` file with your Medplum project credentials (see [Medplum Setup](#medplum-setup)).
 
 ### Features
 - **Chat** - LLM-powered chat with AI providers (OpenAI, Anthropic, Google)
@@ -55,6 +58,23 @@ npm start          # Start Expo (Terminal 2)
 ```
 
 No Firebase console setup needed for local development!
+
+### Medplum Setup
+
+When you select the Medplum backend, configure your app for FHIR R4-compliant healthcare data:
+
+1. Create a Medplum project at [app.medplum.com](https://app.medplum.com)
+2. Create a Client Application (Project Admin → Clients)
+3. Configure your `.env` file:
+
+```bash
+EXPO_PUBLIC_BACKEND_TYPE=medplum
+EXPO_PUBLIC_MEDPLUM_BASE_URL=https://api.medplum.com/
+EXPO_PUBLIC_MEDPLUM_CLIENT_ID=your-client-id
+EXPO_PUBLIC_MEDPLUM_PROJECT_ID=your-project-id
+```
+
+See [`@spezivibe/medplum`](../packages/medplum/README.md) for full documentation.
 
 ## How It Works
 
@@ -101,20 +121,19 @@ The generator picks `file.{backend}.tsx` when that backend is selected, falling 
 
 ### Adding a New Backend
 
-To add a new backend (e.g., Medplum), just create `features/medplum/`:
+To add a new backend (e.g., Supabase), create `features/supabase/manifest.json`:
 
 ```json
 {
-  "name": "medplum",
+  "name": "supabase",
   "category": "backend",
-  "description": "FHIR-based healthcare backend",
+  "description": "PostgreSQL backend with Supabase",
   "autoIncludes": ["onboarding"],
   "dependencies": {
     "@spezivibe/account": "*",
-    "@spezivibe/medplum": "*",
-    "@medplum/core": "^3.0.0"
+    "@supabase/supabase-js": "^2.0.0"
   },
-  "envVars": { "EXPO_PUBLIC_MEDPLUM_BASE_URL": "" }
+  "envVars": { "EXPO_PUBLIC_SUPABASE_URL": "", "EXPO_PUBLIC_SUPABASE_ANON_KEY": "" }
 }
 ```
 

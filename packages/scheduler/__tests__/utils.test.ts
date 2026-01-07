@@ -108,9 +108,7 @@ describe('Utility Functions', () => {
             recurrence: { type: 'daily', hour: 9, minute: 0 },
           },
           completionPolicy: { type: 'anytime' },
-          tags: [],
           createdAt: new Date(),
-          effectiveFrom: new Date(),
         },
         occurrence: {
           scheduledDate: new Date('2024-01-01T09:00:00'),
@@ -140,9 +138,7 @@ describe('Utility Functions', () => {
             start: 0,
             end: 180, // 3 hours after
           },
-          tags: [],
           createdAt: new Date(),
-          effectiveFrom: new Date(),
         },
         occurrence: {
           scheduledDate: scheduledTime,

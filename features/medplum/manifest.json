@@ -1,0 +1,39 @@
+{
+  "name": "medplum",
+  "description": "FHIR-native healthcare backend with Medplum",
+  "category": "backend",
+  "autoIncludes": ["onboarding"],
+  "dependencies": {
+    "@spezivibe/account": "*",
+    "@spezivibe/medplum": "*",
+    "@medplum/core": "^4.3.6",
+    "@medplum/expo-polyfills": "^4.3.6",
+    "@react-native-async-storage/async-storage": "2.1.2",
+    "expo-secure-store": "~15.0.8",
+    "fhir": "^4.12.0"
+  },
+  "copyDirs": [
+    "components/account",
+    "app/(account)",
+    "lib/services/backends"
+  ],
+  "replaceFiles": [
+    "app.config.js",
+    "lib/services/backend-factory.ts",
+    "lib/services/config.ts",
+    "lib/services/types.ts",
+    "lib/services/standard-context.tsx",
+    "app/_layout.tsx",
+    "app/(tabs)/_layout.tsx",
+    "app/(tabs)/index.tsx",
+    "app/(tabs)/explore.tsx",
+    "app/(tabs)/contacts.tsx",
+    "app/(onboarding)/register.tsx"
+  ],
+  "envVars": {
+    "EXPO_PUBLIC_BACKEND_TYPE": "medplum",
+    "EXPO_PUBLIC_MEDPLUM_BASE_URL": "",
+    "EXPO_PUBLIC_MEDPLUM_CLIENT_ID": "",
+    "EXPO_PUBLIC_MEDPLUM_PROJECT_ID": ""
+  }
+}

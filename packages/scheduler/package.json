@@ -38,6 +38,7 @@
     "react-native": ">=0.70.0"
   },
   "devDependencies": {
+    "@react-native-async-storage/async-storage": "^2.2.0",
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-flow": "^7.27.1",
     "@babel/preset-react": "^7.28.5",

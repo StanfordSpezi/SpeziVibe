@@ -31,6 +31,9 @@ export interface AccountOverviewProps {
   /** Show logout button (default: true) */
   showLogout?: boolean;
 
+  /** Custom text for change password button (default: "Change Password") */
+  changePasswordButtonText?: string;
+
   /** Callback when edit profile is pressed */
   onEditProfile?: () => void;
 
@@ -71,6 +74,7 @@ export function AccountOverview({
   showEditProfile = true,
   showChangePassword = true,
   showLogout = true,
+  changePasswordButtonText = 'Change Password',
   onEditProfile,
   onChangePassword,
   onLogout,
@@ -230,11 +234,11 @@ export function AccountOverview({
             style={[styles.button, styles.secondaryButton, buttonStyle]}
             onPress={onChangePassword}
             accessibilityRole="button"
-            accessibilityLabel="Change Password"
+            accessibilityLabel={changePasswordButtonText}
             accessibilityHint="Double tap to change your password"
           >
             <Text style={[styles.buttonText, styles.secondaryButtonText, buttonTextStyle]}>
-              Change Password
+              {changePasswordButtonText}
             </Text>
           </TouchableOpacity>
         )}

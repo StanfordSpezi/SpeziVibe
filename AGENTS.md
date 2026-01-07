@@ -4,9 +4,9 @@ This guide is for AI development assistants (Claude, Copilot, Cursor, etc.) work
 
 ## Quick Context
 
-SpeziVibe is a **digital health app template** with a CLI tool for project scaffolding. It consists of:
+SpeziVibe is a **digital health app toolkit** with a CLI for project scaffolding. It consists of:
 
-- **CLI Tool** (`cli/`) - Generates customized projects from templates
+- **CLI Tool** (`cli/`) - Generates customized Expo apps from templates
 - **Package Library** (`packages/`) - Reusable npm packages (`@spezivibe/*`)
 - **Base Template** (`template/`) - Core app structure copied to new projects
 - **Feature Overlays** (`features/`) - Optional features merged during generation
@@ -20,7 +20,7 @@ SpeziVibe is a **digital health app template** with a CLI tool for project scaff
 
 ## Testing Requirements
 
-**All changes must pass 423 tests** before committing:
+**All changes must pass 478 tests** before committing:
 
 ```bash
 # Run all tests
@@ -33,18 +33,30 @@ npm test --workspace=@spezivibe/account
 npm run test:update --workspace=create-spezivibe-app
 ```
 
+### Test Distribution
+
+| Package | Tests | Description |
+|---------|-------|-------------|
+| `@spezivibe/account` | 122 | Authentication, profile management |
+| `@spezivibe/questionnaire` | 111 | FHIR R4 parsing, form validation |
+| `@spezivibe/medplum` | 55 | Medplum FHIR backend, resource mapping |
+| `@spezivibe/firebase` | 47 | Firebase backend implementation |
+| `@spezivibe/onboarding` | 46 | Onboarding flow components |
+| `@spezivibe/chat` | 44 | AI SDK integration |
+| `cli` | 30 | Snapshot tests for generation |
+| `@spezivibe/scheduler` | 23 | Task scheduling, recurrence |
+
 ## CLI Tool Development
 
 ### How the CLI Works
 
 1. User runs `npx create-spezivibe-app my-app`
 2. CLI discovers available backends from `features/*/manifest.json` (where `category: "backend"`)
-3. CLI prompts for backend type, features, and (if applicable) backend credentials
+3. CLI prompts for backend type, features, and credentials
 4. Generator copies `template/` to output directory
-5. Feature manifests apply code transforms, dependencies, scripts, and files
+5. Feature manifests apply code transforms, dependencies, and files
 6. Selected packages copied from `packages/`
-7. `.env` and `.env.example` files generated with user-provided values
-8. Verification ensures generated app is complete
+7. `.env` and `.env.example` files generated
 
 ### Plugin-Based Backend System
 
@@ -52,22 +64,30 @@ Backends are **discovered automatically** from feature manifests with `category:
 
 ```json
 {
-  "name": "firebase",
+  "name": "medplum",
   "category": "backend",
-  "description": "Cloud auth + storage with Firebase",
+  "description": "FHIR-native healthcare backend with Medplum",
   "autoIncludes": ["onboarding"],
-  "corePackages": ["account"],
-  "dependencies": { "firebase": "^12.7.0" },
-  "scripts": { "emulators": "firebase emulators:start" },
-  "copyFiles": ["firebase.json", ".firebaserc", "firestore.rules"],
+  "dependencies": {
+    "@spezivibe/medplum": "*",
+    "@medplum/core": "^4.3.6"
+  },
   "envVars": {
-    "EXPO_PUBLIC_FIREBASE_API_KEY": "",
-    "EXPO_PUBLIC_FIREBASE_PROJECT_ID": ""
+    "EXPO_PUBLIC_MEDPLUM_BASE_URL": "",
+    "EXPO_PUBLIC_MEDPLUM_CLIENT_ID": ""
   }
 }
 ```
 
 **Adding a new backend requires no CLI code changes** - just create a feature directory with the right manifest fields.
+
+### Available Backends
+
+| Backend | Description | Key Files |
+|---------|-------------|-----------|
+| **Local** | On-device AsyncStorage (default) | `template/lib/services/backends/local-storage.ts` |
+| **Firebase** | Cloud auth + Firestore | `features/firebase/`, `packages/firebase/` |
+| **Medplum** | FHIR R4 healthcare backend | `features/medplum/`, `packages/medplum/` |
 
 ### Feature Manifest Fields
 
@@ -77,10 +97,8 @@ Backends are **discovered automatically** from feature manifests with `category:
 | `description` | Human-readable description |
 | `category` | `"backend"` for backends, `"feature"` (default) for regular features |
 | `autoIncludes` | Features to automatically add when this is selected |
-| `corePackages` | Packages to copy before other features |
 | `dependencies` | NPM dependencies to add to package.json |
 | `scripts` | NPM scripts to add to package.json |
-| `workspaces` | Workspace paths to add |
 | `copyDirs` | Directories to copy |
 | `copyFiles` | Files to copy (won't overwrite) |
 | `replaceFiles` | Files to replace (will overwrite) |
@@ -95,9 +113,10 @@ Features can provide different file versions for different backends:
 features/scheduler/
 ├── app/(tabs)/schedule.tsx           # Default (local)
 ├── app/(tabs)/schedule.firebase.tsx  # Used when Firebase selected
+├── app/(tabs)/schedule.medplum.tsx   # Used when Medplum selected
 ```
 
-The generator picks `file.{backend}.tsx` when that backend is selected, otherwise uses `file.tsx`.
+The generator picks `file.{backend}.tsx` when that backend is selected.
 
 ### Injection Markers
 
@@ -172,7 +191,7 @@ All data flows through the Standard orchestrator:
 ```
 StandardProvider → Backend + AccountService
     ↓
- SchedulerProvider → Uses backend from Standard
+SchedulerProvider → Uses backend from Standard
     ↓
 AccountProvider → Wraps accountService for React
     ↓
@@ -218,9 +237,12 @@ See `.cursorrules` for detailed patterns. Key ones:
 
 1. Create feature directory: `features/<backend-name>/`
 2. Create `manifest.json` with `category: "backend"`
-3. Add `autoIncludes`, `corePackages`, `envVars` as needed
+3. Create package in `packages/<backend-name>/` with:
+   - Account service implementation
+   - Backend service implementation
+   - FHIR mapping utilities (if applicable)
 4. Add required files (config, app overrides)
-5. CLI will auto-discover it - no code changes needed!
+5. CLI will auto-discover it - no CLI code changes needed!
 
 ### Fixing a Bug
 
@@ -241,6 +263,7 @@ See `.cursorrules` for detailed patterns. Key ones:
 | `cli/src/types.ts` | CLI type definitions (including FeatureManifest) |
 | `template/app/_layout.tsx` | Root app layout with providers |
 | `template/lib/services/standard-context.tsx` | Standard pattern implementation |
+| `packages/medplum/src/utils/fhir-mapping.ts` | FHIR resource mapping |
 
 ## What NOT to Do
 
@@ -252,6 +275,8 @@ See `.cursorrules` for detailed patterns. Key ones:
 - Don't duplicate constants - import from `lib/constants.ts`
 - Don't mix authentication and data storage concerns
 - Don't hardcode backend types - use the plugin system
+- Don't add auth methods to BackendService - use AccountService
+- Don't add data methods to AccountService - use BackendService
 
 ## Commit Guidelines
 
