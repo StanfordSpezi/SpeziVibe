@@ -70,11 +70,11 @@ app/_layout.tsx:
            │   │   (Orchestrator)            │
            │   └─────────────────────────────┘
            │
-┌──────────┴───────────┐              ┌────────────────────┐
-│  LocalStorage        │              │    Firebase        │
-│  Backend             │              │    Backend         │
-│  (AsyncStorage)      │              │    (Firestore)     │
-└──────────────────────┘              └────────────────────┘
+┌──────────┴───────────┐   ┌────────────────────┐   ┌────────────────────┐
+│  LocalStorage        │   │    Firebase        │   │    Medplum         │
+│  Backend             │   │    Backend         │   │    Backend         │
+│  (AsyncStorage)      │   │    (Firestore)     │   │    (FHIR R4)       │
+└──────────────────────┘   └────────────────────┘   └────────────────────┘
 ```
 
 **Separation of Concerns**:
@@ -100,6 +100,7 @@ spezivibe/
 │   ├── account/                  # Authentication & account management (122 tests)
 │   ├── chat/                     # LLM chat with AI SDK (44 tests)
 │   ├── firebase/                 # Firebase backend implementation (47 tests)
+│   ├── medplum/                  # Medplum FHIR R4 backend implementation
 │   ├── onboarding/               # Onboarding flow components (46 tests)
 │   ├── questionnaire/            # FHIR R4 questionnaires (111 tests)
 │   └── scheduler/                # Task scheduling system (23 tests)
@@ -205,6 +206,43 @@ const FIREBASE_CONFIG = {
 ```
 
 This allows developers to start building immediately without Firebase console setup.
+
+### Medplum Backend Mode
+
+When Medplum is selected as the backend, the app uses FHIR R4 resources for data storage:
+
+| SpeziVibe Data | FHIR Resource |
+|----------------|---------------|
+| Users | Patient |
+| Tasks | Task |
+| Outcomes | Observation |
+| Questionnaire Responses | QuestionnaireResponse |
+| Consent | Consent |
+
+**Configuration** (`features/medplum/lib/services/config.ts`):
+```typescript
+export function getBackendConfig(): BackendConfig {
+  const baseUrl = Constants.expoConfig?.extra?.medplum?.baseUrl;
+  const clientId = Constants.expoConfig?.extra?.medplum?.clientId;
+  const projectId = Constants.expoConfig?.extra?.medplum?.projectId;
+
+  // Validate required configuration
+  if (!baseUrl || !clientId || !projectId) {
+    throw new Error('Medplum configuration missing. Check .env file.');
+  }
+
+  return {
+    type: 'medplum',
+    medplum: { baseUrl, clientId, projectId },
+  };
+}
+```
+
+**FHIR Compliance**: The Medplum backend follows FHIR R4 specifications including:
+- Task resources with `intent: 'order'` for executable tasks
+- Identifier fields on all resources for searchability
+- Paginated search queries handling large result sets
+- Standard FHIR Timing for schedules
 
 ## Core Systems
 
@@ -515,9 +553,7 @@ interface Task {
   schedule: Schedule;            // When it occurs
   completionPolicy: AllowedCompletionPolicy;
   questionnaireId?: string;      // Link to questionnaire
-  tags?: string[];               // For filtering
   createdAt: Date;               // Creation timestamp
-  effectiveFrom: Date;           // When task becomes active
 }
 ```
 
@@ -622,7 +658,7 @@ interface Questionnaire {
 
 ## Testing Strategy
 
-**Current State**: 423 tests across 25 test suites
+**Current State**: 478 tests across 26 test suites
 
 ### Test Distribution
 
@@ -635,6 +671,7 @@ interface Questionnaire {
 | `@spezivibe/chat` | 44 | AI SDK integration, message handling, providers |
 | `cli` | 30 | Snapshot tests for project generation |
 | `@spezivibe/scheduler` | 23 | Task scheduling, recurrence, occurrences |
+| `@spezivibe/medplum` | 55 | FHIR R4 resource mapping, consent management |
 
 ### Running Tests
 

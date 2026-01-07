@@ -1,7 +1,7 @@
 # SpeziVibe Development Rules
 
 ## Project Overview
-SpeziVibe is a cross-platform digital health app template built with React Native, Expo, and TypeScript. It implements the **Standard pattern** from Stanford Spezi and follows production-ready React patterns optimized for AI-assisted development.
+SpeziVibe is a cross-platform digital health app toolkit built with React Native, Expo, and TypeScript. It implements the **Standard pattern** from Stanford Spezi and follows production-ready React patterns optimized for AI-assisted development.
 
 ## Code Style & Conventions
 
@@ -32,11 +32,10 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
 ### State Management
 - **Standard Pattern**: Use `StandardProvider` as the central orchestrator
 - Access backend via `useStandard()` hook, never import backends directly
-- Use React Context for module state (`SchedulerProvider`, `AuthProvider`)
+- Use React Context for module state (`SchedulerProvider`, `AccountProvider`)
 - **ALWAYS memoize** context values with `useMemo`
 - **ALWAYS wrap functions** in `useCallback` when passed to contexts
 - Keep state close to where it's used
-- Use hooks properly: `useState`, `useEffect`, `useCallback`, `useMemo`, `useRef`
 
 ## Key Modules
 
@@ -72,10 +71,9 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
 - `config.ts` - Backend configuration (reads from .env)
 - `backends/local-storage.ts` - Local AsyncStorage backend (default)
 - `backends/firebase.ts` - Firebase backend (optional)
-- `utils/task-serialization.ts` - Shared task serialization helpers
-- `utils/object-utils.ts` - Shared utilities (removeUndefined)
+- `backends/medplum.ts` - Medplum FHIR backend (optional)
 
-**Supported Backends**: `local` (default), `firebase`
+**Supported Backends**: `local` (default), `firebase`, `medplum`
 
 **Separation of Concerns**:
 - BackendService handles ONLY data storage (tasks, outcomes, questionnaire data)
@@ -88,7 +86,6 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
 - `services/Scheduler.ts` - Main Scheduler class (uses backend from Standard)
 - `utils/` - Helper functions for occurrences, validation, and formatting
 - `providers/SchedulerProvider.tsx` - React Context provider (depends on Standard)
-- `sample-tasks.ts` - Predefined tasks for the template
 - `ui/` - Reusable UI components (ScheduleView, CalendarStrip, EventCard, etc.)
 
 **Task Types**: `questionnaire`, `task`, `reminder`, `measurement`
@@ -98,36 +95,44 @@ SpeziVibe is a cross-platform digital health app template built with React Nativ
 ### Questionnaires (`packages/questionnaire/`)
 Reusable npm package for FHIR-compatible questionnaires:
 - `types.ts` - Question and questionnaire types
-- `sample-questionnaires.ts` - Predefined questionnaires
 - Built with Formik + Yup for validation
 - Question types: `text`, `scale`, `multipleChoice`, `boolean`
 
 ### Account Module (`packages/account/`)
 Reusable npm package for authentication and account management:
 - **Components**: `SignInForm`, `RegisterForm`, `PasswordResetForm`, `AccountOverview`, `EditProfileForm`, `ChangePasswordForm`
-- **Services**: `FirebaseAccountService`, `InMemoryAccountService`
+- **Services**: `FirebaseAccountService`, `MedplumAccountService`, `InMemoryAccountService`
 - **Hooks**: `useAccount()` - Access auth state and methods
-- **Utilities**: `validateEmail`, `validatePassword`, `AccountError`, `AccountErrorCode`
-- **Configuration**: `AccountConfiguration` for required/collected fields
 
 **Usage**:
 ```typescript
 import { useAccount, SignInForm } from '@spezivibe/account';
-
 const { signedIn, user, login, logout } = useAccount();
 ```
+
+### Medplum Module (`packages/medplum/`)
+FHIR R4 backend for healthcare applications:
+- **Services**: `MedplumBackend`, `MedplumAccountService`
+- **FHIR Mapping**: `fhir-mapping.ts` - Maps SpeziVibe types to FHIR resources
+- **Resources**: Patient, Task, Observation, Consent, QuestionnaireResponse
+
+**FHIR Resource Mapping**:
+| SpeziVibe | FHIR Resource |
+|-----------|---------------|
+| User | Patient |
+| Task | Task |
+| Outcome | Observation |
+| Consent | Consent |
 
 ### Navigation
 - File-based routing with Expo Router
 - Route groups: `(tabs)`, `(onboarding)`, `questionnaire`
 - Modals: Use `presentation: 'modal'` in Stack.Screen
-- Deep linking: Use `router.push()` with params
 
 **Authentication Guards** (IMPORTANT):
 - Use **declarative** `<Redirect />` components in layouts for auth flows
 - Return `<Redirect href="..." />` based on state (NOT `router.replace()`)
 - Follow the pattern: LOADING → GUARD 1 → GUARD 2 → GUARD 3 → RENDER
-- Redirect component handles timing and prevents redirect loops automatically
 
 **Example** (app/_layout.tsx):
 ```typescript
@@ -152,26 +157,6 @@ function RootLayoutNav() {
   return <Stack>...</Stack>;
 }
 ```
-
-## Common Tasks
-
-### Adding a New Task
-1. Add to `packages/scheduler/src/sample-tasks.ts`
-2. Include `questionnaireId` if it's a questionnaire task
-3. Set appropriate `completionPolicy`
-4. Reset schedule via Explore tab
-
-### Adding a New Questionnaire
-1. Define in `lib/questionnaires/sample-questionnaires.ts`
-2. Create `Questionnaire` object with questions array
-3. Link to task via `questionnaireId`
-4. Test via Explore tab
-
-### Adding a New Screen
-1. Create in appropriate route group folder
-2. Add to `_layout.tsx` if needed
-3. Use `ThemedView` and `ThemedText` components
-4. Apply Stanford color scheme
 
 ## Color Scheme
 - Primary: `#8C1515` (Stanford Cardinal Red)
@@ -212,10 +197,10 @@ function RootLayoutNav() {
 
 4. **Navigation Guards**: Use declarative `<Redirect />` in layouts (NOT imperative navigation)
    ```typescript
-   // ✅ DO: Declarative in layout
+   // DO: Declarative in layout
    if (!signedIn) return <Redirect href="/sign-in" />;
 
-   // ❌ DON'T: Imperative with useEffect
+   // DON'T: Imperative with useEffect
    useEffect(() => {
      if (!signedIn) router.replace('/sign-in');
    }, [signedIn]);
@@ -235,26 +220,42 @@ function RootLayoutNav() {
 - Keep components small and focused
 - Extract reusable logic into hooks (see `hooks/` directory)
 - Use proper TypeScript types for all props
-- Never import `AsyncStorage` or Firebase directly - use Standard
+- Never import `AsyncStorage` or backends directly - use Standard
 - Business logic in `lib/`, UI in `components/` and `app/`
-- **Shared constants** go in `lib/constants.ts` (e.g., ONBOARDING_COMPLETED_KEY, ACCOUNT_CONFIGURATION)
-- **Shared hooks** go in `hooks/` (e.g., `use-onboarding-status.ts`, `use-auto-skip-if-authenticated.ts`)
+- **Shared constants** go in `lib/constants.ts`
+- **Shared hooks** go in `hooks/`
 - Test dark mode for all UI changes
-- Write clean, readable code for AI agents
 
 ### Common Pitfalls to Avoid
-- ❌ Forgetting cancellation tokens in async effects
-- ❌ Missing cleanup functions for subscriptions
-- ❌ Not memoizing context values (causes re-renders)
-- ❌ Missing dependencies in useCallback/useMemo
-- ❌ Using refs for values that should trigger re-renders
-- ❌ Returning null from providers during loading
-- ❌ Importing backends directly instead of using Standard
-- ❌ Blocking UX with sync operations (run in background)
-- ❌ Using imperative navigation (`router.replace()`) for auth guards - use `<Redirect />`
-- ❌ Duplicating constants - always import from `lib/constants.ts`
-- ❌ Adding auth methods to BackendService - use AccountService
-- ❌ Manual user ID sync - let Standard handle it automatically
+- Forgetting cancellation tokens in async effects
+- Missing cleanup functions for subscriptions
+- Not memoizing context values (causes re-renders)
+- Missing dependencies in useCallback/useMemo
+- Using refs for values that should trigger re-renders
+- Returning null from providers during loading
+- Importing backends directly instead of using Standard
+- Blocking UX with sync operations (run in background)
+- Using imperative navigation (`router.replace()`) for auth guards
+- Duplicating constants - always import from `lib/constants.ts`
+- Adding auth methods to BackendService - use AccountService
+- Manual user ID sync - let Standard handle it automatically
+
+## Testing
+
+**478 tests across 26 test suites must pass before committing.**
+
+```bash
+npm test                                    # Run all tests
+npm test --workspace=@spezivibe/account     # Run specific package
+npm run test:update --workspace=create-spezivibe-app  # Update snapshots
+```
+
+For account testing, use `InMemoryAccountService`:
+```typescript
+const service = new InMemoryAccountService({ startUnauthenticated: true });
+await service.initialize();
+await service.login({ email: 'test@example.com', password: 'password' });
+```
 
 ## Debugging
 - Use Expo Go for quick testing

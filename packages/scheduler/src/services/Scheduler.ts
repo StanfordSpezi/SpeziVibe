@@ -67,7 +67,6 @@ export class Scheduler {
                   : t.schedule.recurrence,
             },
             createdAt: new Date(t.createdAt),
-            effectiveFrom: new Date(t.effectiveFrom),
           })),
           outcomes: parsed.outcomes.map((o: SerializedOutcome): Outcome => ({
             ...o,
@@ -129,14 +128,13 @@ export class Scheduler {
   /**
    * Create or update a task
    */
-  async createOrUpdateTask(task: Omit<Task, 'createdAt' | 'effectiveFrom'>): Promise<Task> {
+  async createOrUpdateTask(task: Omit<Task, 'createdAt'>): Promise<Task> {
     const existingIndex = this.state.tasks.findIndex((t) => t.id === task.id);
     const now = new Date();
 
     const newTask: Task = {
       ...task,
       createdAt: existingIndex >= 0 ? this.state.tasks[existingIndex].createdAt : now,
-      effectiveFrom: now,
     };
 
     if (existingIndex >= 0) {

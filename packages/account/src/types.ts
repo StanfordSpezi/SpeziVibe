@@ -307,8 +307,17 @@ export interface AccountContextValue {
   /** Log in with email and password */
   login: (email: string, password: string) => Promise<void>;
 
-  /** Register a new user account with email and password */
-  register: (email: string, password: string, details?: Partial<UserProfile>) => Promise<void>;
+  /**
+   * Register a new user account with email and password
+   * @param email - User's email address
+   * @param password - User's password
+   * @param details - Optional profile details (name, dateOfBirth, sex)
+   */
+  register: (
+    email: string,
+    password: string,
+    details?: Partial<UserProfile>
+  ) => Promise<void>;
 
   /** Log out the current user */
   logout: () => Promise<void>;
