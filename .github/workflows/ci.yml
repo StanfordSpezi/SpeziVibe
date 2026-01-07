@@ -31,6 +31,7 @@ jobs:
           npm run build --workspace=@spezivibe/questionnaire
           npm run build --workspace=@spezivibe/chat
           npm run build --workspace=@spezivibe/firebase
+          npm run build --workspace=@spezivibe/medplum
 
       - name: Build CLI
         run: npm run build --workspace=create-spezivibe-app
@@ -66,6 +67,7 @@ jobs:
           npm run build --workspace=@spezivibe/questionnaire
           npm run build --workspace=@spezivibe/chat
           npm run build --workspace=@spezivibe/firebase
+          npm run build --workspace=@spezivibe/medplum
 
       - name: Build CLI
         run: npm run build --workspace=create-spezivibe-app
