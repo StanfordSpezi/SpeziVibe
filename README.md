@@ -3,7 +3,7 @@
 
   # SpeziVibe
 
-  **Digital health app template for iOS, Android, and Web**
+  **Digital health app templates designed for AI coding tools**
 
   [![Build and Test](https://github.com/StanfordSpezi/SpeziVibe/actions/workflows/ci.yml/badge.svg)](https://github.com/StanfordSpezi/SpeziVibe/actions/workflows/ci.yml)
   [![Built with Expo](https://img.shields.io/badge/Built%20with-Expo-000020.svg?style=flat&logo=expo)](https://expo.dev)
@@ -12,90 +12,53 @@
 </div>
 
 > [!WARNING]
-> This template is a work in progress and not yet stable for production use. Please use [SpeziTemplateApplication](https://github.com/StanfordSpezi/SpeziTemplateApplication) instead.
+> This toolkit is a work in progress and not yet stable for production use.
 
 ---
 
 ## About
 
-SpeziVibe is a digital health app template built with [React Native](https://reactnative.dev/) and [Expo](https://expo.dev/). Use the CLI to generate a customized app with features like AI chat, task scheduling, and health questionnaires.
+SpeziVibe is a toolkit for rapidly building digital health apps using [React Native](https://reactnative.dev/), [Expo](https://expo.dev/) and AI coding tools.
 
 ## Quick Start
 
-### Prerequisites
+The SpeziVibe command line interface (CLI) allows you to quickly scaffold an app with pre-built features that can then be customized using AI coding tools.
 
-- Node.js 20+ and npm
-- Expo Go app (for mobile testing) or iOS Simulator/Android Emulator
-
-### Create Your App
-
-> **Note:** The CLI will be available via `npx create-spezivibe-app` soon. For now, run it from the repo:
+**Prerequisites:** 
+[Node.js 20+](https://nodejs.org/en)
 
 ```bash
-git clone https://github.com/StanfordSpezi/SpeziVibe.git
-cd SpeziVibe
-npm install
-npm run build
-node cli/dist/index.js my-app
+npx create-spezivibe-app my-app
 ```
 
-The CLI will prompt you to:
-1. Choose a **project name** and **display name**
-2. Select a **backend** - Firebase (cloud) or Local (on-device)
-3. Pick **features** - Chat, Scheduler, Questionnaires
-4. Choose **LLM providers** (if Chat selected) - OpenAI, Anthropic, Google
+The CLI will prompt you to choose a backend and features, then generate a complete Expo app. Once running, press `i` for iOS, `a` for Android, or `w` for Web.
 
-### Run Your App
+## Backends
 
-```bash
-cd my-app
-npm start
-```
+SpeziVibe comes with the following pre-built backend integrations you can add into your template:
 
-Then press:
-- `i` for iOS Simulator
-- `a` for Android Emulator
-- `w` for Web
-- Scan QR code with Expo Go on your device
+| Backend | Description |
+|---------|-------------|
+| **Medplum** | FHIR R4 healthcare backend with [Medplum](https://medplum.com), cloud-based or self-hosted |
+| **Firebase** | Google Cloud-based backend with authentication and data store |
+| **Local** | On-device data storage, no server required |
 
-## Available Features
+## Features
 
-Add these features using the CLI:
+SpeziVibe comes with pre-built features you can add into your template to help you get started faster:
 
 | Feature | Description |
 |---------|-------------|
-| **Firebase** | Cloud backend with authentication and Firestore |
-| **Chat** | AI chat interface with OpenAI, Anthropic, or Google |
+| **Chat** | AI chat interface with OpenAI, Anthropic, or Google integration |
 | **Scheduler** | Task scheduling and recurring reminders |
-| **Questionnaire** | FHIR-compliant health questionnaires |
-| **Onboarding** | Welcome flow with consent (included with Firebase) |
-
-## Repository Structure
-
-```
-spezivibe/
-├── template/        # Base app template (use directly or via CLI)
-├── packages/        # @spezivibe/* npm packages
-├── features/        # Feature manifests and variant files
-└── cli/             # create-spezivibe-app CLI tool
-```
+| **Questionnaire** | FHIR-compliant questionnaires |
+| **Onboarding** | Welcome flow with informed consent and account creation |
 
 ## Documentation
 
-- [**Architecture Guide**](./ARCHITECTURE.md) - System design and patterns
-- [**CLI Guide**](./cli/README.md) - CLI tool details and plugin system
-- [**Contributing**](./CONTRIBUTING.md) - How to contribute
-
-## Contributing
-
-Contributions are welcome! Please read the [contribution guidelines](./CONTRIBUTING.md) first.
-
-```bash
-git clone https://github.com/StanfordSpezi/SpeziVibe.git
-cd SpeziVibe
-npm install
-npm test
-```
+- [Architecture Guide](./ARCHITECTURE.md) - System design and patterns
+- [CLI Guide](./cli/README.md) - CLI options and customization
+- [Contributing](./CONTRIBUTING.md) - How to contribute
 
 ## License
 

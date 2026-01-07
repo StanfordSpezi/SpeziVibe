@@ -132,7 +132,6 @@ function MyComponent() {
         start: 0,
         end: 180, // 3 hours
       },
-      tags: ['wellness', 'daily'],
     });
   };
 
@@ -169,14 +168,14 @@ schedule: {
 }
 ```
 
-### Custom Interval (Every N Days)
+### Monthly Recurring
 
 ```tsx
 schedule: {
   startDate: new Date(),
   recurrence: {
-    type: 'custom',
-    intervalDays: 3, // Every 3 days
+    type: 'monthly',
+    day: 15, // Day of month (1-31)
     hour: 12,
     minute: 0,
   },
@@ -412,7 +411,9 @@ import type {
   Event,
   Schedule,
   Outcome,
-  CompletionPolicy,
+  AllowedCompletionPolicy,
+  RecurrenceRule,
+  TaskCategory,
   SchedulerUITheme,
 } from '@spezivibe/scheduler';
 ```
