@@ -53,6 +53,7 @@ SpeziVibe comes with pre-built features you can add into your template to help y
 | **Scheduler** | Task scheduling and recurring reminders |
 | **Questionnaire** | FHIR-compliant questionnaires |
 | **Onboarding** | Welcome flow with informed consent and account creation |
+| **HealthKit** | Apple Health integration for health data access (iOS only) |
 
 ## Documentation
 
