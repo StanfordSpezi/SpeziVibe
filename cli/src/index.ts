@@ -115,8 +115,8 @@ ${pc.bold('Examples:')}
   npx create-spezivibe-app
 
 ${pc.bold('Features:')}
-  - Choose your backend (Firebase or Local AsyncStorage)
-  - Select features: Chat, Scheduler, Questionnaires, Onboarding
+  - Choose your backend (Firebase, Medplum, or Local AsyncStorage)
+  - Select features: Chat, Scheduler, Questionnaires, HealthKit
   - Pick LLM providers: OpenAI, Anthropic, Google
   - Get a customized Expo + React Native template
 `);
