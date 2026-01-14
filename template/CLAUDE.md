@@ -43,3 +43,30 @@ StandardProvider → SchedulerProvider → AccountProvider → App
 - Use `router.replace()` for auth guards
 - Forget cleanup functions in useEffect
 - Skip cancellation tokens in async effects
+
+## Development Agents
+
+Claude Code agents for common tasks. Invoke with `/agent-name`.
+
+### Development
+
+| Agent | Command | Purpose |
+|-------|---------|---------|
+| docs | `/docs` | Generate documentation and READMEs |
+| changelog | `/changelog` | Generate changelogs from git history |
+| test | `/test` | Generate Jest tests following project patterns |
+| fhir | `/fhir` | Validate FHIR R4 compliance in code |
+| fhir-mapping | `/fhir-mapping` | Generate FHIR resource mappings |
+| feature | `/feature` | Create new app features and screens |
+| release | `/release` | Create release notes for new versions |
+
+### Planning
+
+| Agent | Command | Purpose |
+|-------|---------|---------|
+| study-planner | `/study-planner` | Plan health studies and research protocols |
+| compliance | `/compliance` | Plan HIPAA, IRB, and regulatory compliance |
+| data-model | `/data-model` | Design health data models and FHIR structures |
+| ux-planner | `/ux-planner` | Design user flows and engagement strategies |
+
+Agent definitions are in `.claude/agents/`.
