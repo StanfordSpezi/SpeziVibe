@@ -76,6 +76,12 @@ export const FEATURES: FeatureConfig[] = [
     description: 'FHIR-compliant forms',
     defaultChecked: true,
   },
+  {
+    value: 'healthkit',
+    name: 'HealthKit',
+    description: 'Apple Health data access (iOS only)',
+    defaultChecked: false,
+  },
   // Note: Onboarding is no longer a selectable feature.
   // It's automatically included when Firebase backend is selected.
 ];

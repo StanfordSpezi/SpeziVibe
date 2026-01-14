@@ -700,6 +700,38 @@ async function generateGettingStarted(ctx: TransformContext): Promise<void> {
     }
   }
 
+  // HealthKit setup (if selected)
+  if (options.features.includes('healthkit')) {
+    lines.push('### HealthKit Setup (iOS Only)');
+    lines.push('');
+    lines.push('Your app includes Apple HealthKit integration for health data access.');
+    lines.push('');
+    lines.push('> **⚠️ Important:** HealthKit requires a custom development build.');
+    lines.push('> It will NOT work in Expo Go.');
+    lines.push('');
+    lines.push('#### Building for iOS:');
+    lines.push('');
+    lines.push('```bash');
+    lines.push('# Create native iOS project and run');
+    lines.push('npx expo prebuild --platform ios');
+    lines.push('npx expo run:ios');
+    lines.push('');
+    lines.push('# Or use EAS Build');
+    lines.push('eas build --platform ios --profile development');
+    lines.push('```');
+    lines.push('');
+    lines.push('#### Testing:');
+    lines.push('');
+    lines.push('- Use a **physical iOS device** for best results');
+    lines.push('- Simulator has limited HealthKit support');
+    lines.push('- Add test data: Simulator → Features → Health → Health Data');
+    lines.push('');
+    lines.push('#### Configuration:');
+    lines.push('');
+    lines.push('Edit `lib/healthkit-config.ts` to customize which health metrics to collect.');
+    lines.push('');
+  }
+
   // Features overview
   lines.push('## Your App Features');
   lines.push('');
@@ -720,6 +752,9 @@ async function generateGettingStarted(ctx: TransformContext): Promise<void> {
   }
   if (options.features.includes('questionnaire')) {
     lines.push('- **Questionnaires** - FHIR-compliant health forms');
+  }
+  if (options.features.includes('healthkit')) {
+    lines.push('- **HealthKit** - Apple Health data integration (iOS only)');
   }
   if (hasCloudBackend) {
     lines.push('- **Onboarding** - Welcome flow with consent management');
@@ -765,6 +800,9 @@ async function generateGettingStarted(ctx: TransformContext): Promise<void> {
   }
   if (options.features.includes('questionnaire')) {
     lines.push('│   └── questionnaire/# FHIR forms');
+  }
+  if (options.features.includes('healthkit')) {
+    lines.push('│   └── healthkit/    # Apple Health integration');
   }
   if (hasCloudBackend) {
     lines.push(`│   └── ${options.backend}/     # ${options.backend.charAt(0).toUpperCase() + options.backend.slice(1)} integration`);
