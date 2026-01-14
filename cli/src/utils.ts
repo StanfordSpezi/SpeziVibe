@@ -222,3 +222,81 @@ export function launchApp(projectDir: string): void {
     console.log(`  ${pc.red('✗')} Failed to launch app: ${err.message}`);
   });
 }
+
+/**
+ * Build iOS app for HealthKit support
+ * Runs expo prebuild and expo run:ios
+ */
+export async function buildIOSApp(
+  projectDir: string,
+  target: 'simulator' | 'device'
+): Promise<boolean> {
+  console.log('');
+  console.log(pc.magenta('Building iOS app...'));
+  console.log(pc.dim('This may take several minutes on first build.\n'));
+
+  // Step 1: Run expo prebuild
+  console.log(pc.cyan('Step 1/2: Creating native iOS project...'));
+  const prebuildSuccess = await runCommand(projectDir, 'npx', ['expo', 'prebuild', '--platform', 'ios']);
+
+  if (!prebuildSuccess) {
+    console.log(`  ${pc.red('✗')} Failed to create native iOS project`);
+    console.log(pc.dim('  Try running manually: npx expo prebuild --platform ios'));
+    return false;
+  }
+  console.log(`  ${pc.green('✓')} Native iOS project created`);
+
+  // Step 2: Run expo run:ios
+  console.log('');
+  console.log(pc.cyan('Step 2/2: Building and running iOS app...'));
+
+  const runArgs = ['expo', 'run:ios'];
+  if (target === 'device') {
+    runArgs.push('--device');
+  }
+
+  // This hands off to the build process
+  console.log(pc.dim(`  Running: npx ${runArgs.join(' ')}\n`));
+
+  const buildProcess = spawn('npx', runArgs, {
+    cwd: projectDir,
+    stdio: 'inherit',
+    shell: true,
+  });
+
+  return new Promise((resolve) => {
+    buildProcess.on('close', (code) => {
+      if (code === 0) {
+        console.log('');
+        console.log(`  ${pc.green('✓')} iOS build complete`);
+        resolve(true);
+      } else {
+        console.log('');
+        console.log(`  ${pc.yellow('!')} Build process exited with code ${code}`);
+        console.log(pc.dim('  This may be normal if you cancelled the build.'));
+        resolve(false);
+      }
+    });
+
+    buildProcess.on('error', (err) => {
+      console.log(`  ${pc.red('✗')} Failed to start build: ${err.message}`);
+      resolve(false);
+    });
+  });
+}
+
+/**
+ * Helper to run a command and wait for completion
+ */
+function runCommand(cwd: string, command: string, args: string[]): Promise<boolean> {
+  return new Promise((resolve) => {
+    const proc = spawn(command, args, {
+      cwd,
+      stdio: 'inherit',
+      shell: true,
+    });
+
+    proc.on('close', (code) => resolve(code === 0));
+    proc.on('error', () => resolve(false));
+  });
+}
