@@ -57,7 +57,7 @@
     "@ai-sdk/google": "^1.0.0",
     "@ai-sdk/openai": "^1.0.0",
     "@expo/vector-icons": "^15.0.3",
-    "ai": "^4.0.0",
+    "ai": "^5.0.52",
     "expo": "~54.0.30",
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-react": "^7.28.5",
