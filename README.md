@@ -11,9 +11,6 @@
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6.svg?style=flat&logo=typescript)](https://www.typescriptlang.org)
 </div>
 
-> [!WARNING]
-> This toolkit is a work in progress and not yet stable for production use.
-
 ---
 
 ## About
@@ -31,7 +28,30 @@ The SpeziVibe command line interface (CLI) allows you to quickly scaffold an app
 npx create-spezivibe-app my-app
 ```
 
-The CLI will prompt you to choose a backend and features, then generate a complete Expo app. Once running, press `i` for iOS, `a` for Android, or `w` for Web.
+The CLI will prompt you to choose a backend and features, then generate a complete Expo app in a directory of your choosing. You can then run the app using the following command in the newly created app directory:
+
+```bash
+npx expo start
+```
+
+Once running, press `i` for iOS, `a` for Android, or `w` for Web.
+
+### HealthKit: Custom Dev Client Required
+
+If you selected the **HealthKit** feature, you cannot use Expo Go because HealthKit requires native iOS code. You'll need to create a custom development client:
+
+```bash
+npx expo run:ios
+```
+
+This command will:
+1. Generate the native iOS project (if not already present)
+2. Build the app with HealthKit capabilities
+3. Install it on your iOS Simulator or connected device
+
+> **Note:** HealthKit only works on iOS. For physical devices, you'll need an Apple Developer account and proper provisioning profiles.
+
+After the initial build, you can use `npx expo start` for faster development iterations - it will automatically connect to your custom dev client instead of Expo Go.
 
 ## Backends
 
@@ -53,6 +73,7 @@ SpeziVibe comes with pre-built features you can add into your template to help y
 | **Scheduler** | Task scheduling and recurring reminders |
 | **Questionnaire** | FHIR-compliant questionnaires |
 | **Onboarding** | Welcome flow with informed consent and account creation |
+| **HealthKit** | Apple Health integration for health data access (iOS only) |
 
 ## Documentation
 

@@ -1,7 +1,7 @@
 // BackendType is dynamic - 'local' is the default, others are discovered from features
 export type BackendType = string;
 
-export type Feature = 'chat' | 'scheduler' | 'questionnaire';
+export type Feature = 'chat' | 'scheduler' | 'questionnaire' | 'healthkit';
 
 export type LLMProvider = 'openai' | 'anthropic' | 'google';
 

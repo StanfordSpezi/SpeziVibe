@@ -2,9 +2,9 @@
 
 import path from 'path';
 import pc from 'picocolors';
-import { runPrompts, askInstallDependencies, askLaunchApp } from './prompts.js';
+import { runPrompts, askInstallDependencies, askLaunchApp, askBuildForIOS } from './prompts.js';
 import { generateProject, printNextSteps } from './generator.js';
-import { checkDependencies, runNpmInstall, verifyProject, launchApp } from './utils.js';
+import { checkDependencies, runNpmInstall, verifyProject, launchApp, buildIOSApp } from './utils.js';
 import { blank, p, spin, note } from './pretty.js';
 
 const BANNER = `
@@ -73,10 +73,31 @@ async function main(): Promise<void> {
       }
     }
 
-    // Ask to launch app (only if dependencies were installed)
-    if (dependenciesInstalled) {
+    // Check if HealthKit was selected - offer to build for iOS
+    const hasHealthKit = options.features.includes('healthkit');
+    let iOSBuildStarted = false;
+
+    if (hasHealthKit && dependenciesInstalled) {
+      blank();
+      note('HealthKit requires a custom iOS build (it won\'t work in Expo Go)');
+
+      const buildChoice = await askBuildForIOS();
+      if (buildChoice !== 'skip') {
+        iOSBuildStarted = true;
+        await buildIOSApp(projectDir, buildChoice);
+        // After iOS build, we're done - the app should be running
+        return;
+      }
+    }
+
+    // Ask to launch app (only if dependencies were installed and not building iOS)
+    if (dependenciesInstalled && !iOSBuildStarted) {
       const shouldLaunch = await askLaunchApp();
       if (shouldLaunch) {
+        if (hasHealthKit) {
+          // Warn that Expo Go won't work with HealthKit
+          note('Note: HealthKit won\'t work in Expo Go. Use "npx expo run:ios" for HealthKit testing.');
+        }
         launchApp(projectDir);
         return; // Don't print next steps, we're launching
       }
@@ -115,8 +136,8 @@ ${pc.bold('Examples:')}
   npx create-spezivibe-app
 
 ${pc.bold('Features:')}
-  - Choose your backend (Firebase or Local AsyncStorage)
-  - Select features: Chat, Scheduler, Questionnaires, Onboarding
+  - Choose your backend (Firebase, Medplum, or Local AsyncStorage)
+  - Select features: Chat, Scheduler, Questionnaires, HealthKit
   - Pick LLM providers: OpenAI, Anthropic, Google
   - Get a customized Expo + React Native template
 `);

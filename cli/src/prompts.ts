@@ -207,3 +207,26 @@ export async function askLaunchApp(): Promise<boolean> {
     default: true,
   });
 }
+
+/**
+ * Ask user if they want to build for iOS (for HealthKit)
+ */
+export async function askBuildForIOS(): Promise<'simulator' | 'device' | 'skip'> {
+  return await select<'simulator' | 'device' | 'skip'>({
+    message: 'HealthKit requires a custom iOS build. Build now?',
+    choices: [
+      {
+        name: 'Build for iOS Simulator (Recommended for testing)',
+        value: 'simulator',
+      },
+      {
+        name: 'Build for iOS Device (Requires Apple Developer account)',
+        value: 'device',
+      },
+      {
+        name: 'Skip for now (I\'ll build later)',
+        value: 'skip',
+      },
+    ],
+  });
+}
