@@ -188,6 +188,49 @@ describe('Generator Snapshots', () => {
     });
   });
 
+  describe('HealthKit (Local)', () => {
+    let snapshot: ProjectSnapshot;
+
+    beforeAll(async () => {
+      snapshot = await generateAndSnapshot({
+        projectName: 'healthkit-app',
+        displayName: 'HealthKit App',
+        backend: 'local',
+        features: ['healthkit'],
+        llmProviders: [],
+      });
+    });
+
+    it('should include healthkit package', () => {
+      expect(snapshot.packages).toContain('healthkit');
+    });
+
+    it('should have health tab', () => {
+      expect(snapshot.tabs).toContain('health');
+    });
+
+    it('should have healthkit config file', () => {
+      expect(snapshot.files).toContain('lib/healthkit-config.ts');
+    });
+
+    it('should match package.json snapshot', () => {
+      expect(snapshot.keyFiles['package.json']).toMatchSnapshot('package.json');
+    });
+
+    it('should match app.config.js snapshot', () => {
+      expect(snapshot.keyFiles['app.config.js']).toMatchSnapshot('app.config.js');
+    });
+
+    it('should have HealthKit plugin in app.config.js', () => {
+      const appConfig = snapshot.keyFiles['app.config.js'];
+      expect(appConfig).toContain('@kingstinct/react-native-healthkit');
+    });
+
+    it('should match tabs layout snapshot', () => {
+      expect(snapshot.keyFiles['app/(tabs)/_layout.tsx']).toMatchSnapshot('tabs/_layout.tsx');
+    });
+  });
+
   describe('Firebase + Onboarding Combination', () => {
     let snapshot: ProjectSnapshot;
 
