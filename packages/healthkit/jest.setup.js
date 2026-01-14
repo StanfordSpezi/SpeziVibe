@@ -14,7 +14,7 @@ jest.mock('react-native', () => {
 
 // Mock expo-constants for Expo Go detection
 jest.mock('expo-constants', () => ({
-  appOwnership: 'standalone', // Not Expo Go by default
+  appOwnership: null, // null means standalone/dev client build (not Expo Go)
 }));
 
 // Mock HealthKit native module
@@ -31,15 +31,23 @@ jest.mock('@kingstinct/react-native-healthkit', () => ({
     return Promise.resolve(
       mockHealthData[type]
         ? {
-            value: mockHealthData[type],
-            startDate: new Date().toISOString(),
-            endDate: new Date().toISOString(),
+            quantity: mockHealthData[type],
+            unit: 'count',
+            startDate: new Date(),
+            endDate: new Date(),
+            uuid: 'mock-uuid',
+            quantityType: type,
+            metadata: {},
           }
-        : null
+        : undefined
     );
   }),
   queryQuantitySamples: jest.fn(() => Promise.resolve([])),
-  getStatisticsForQuantity: jest.fn(() => Promise.resolve({ sum: 0 })),
+  queryStatisticsForQuantity: jest.fn(() =>
+    Promise.resolve({
+      sumQuantity: { quantity: 0, unit: 'count' },
+    })
+  ),
   subscribeToChanges: jest.fn(() => jest.fn()),
 }));
 

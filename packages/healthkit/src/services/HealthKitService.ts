@@ -12,6 +12,12 @@ import type {
   HealthQueryOptions,
 } from '../types';
 import { SampleType, getUnitForType } from '../sample-types';
+import type {
+  QuantityTypeIdentifier,
+  SampleTypeIdentifierWriteable,
+  ObjectTypeIdentifier,
+  QuantitySample,
+} from '@kingstinct/react-native-healthkit';
 
 // Dynamically import HealthKit only on iOS
 let healthKit: typeof import('@kingstinct/react-native-healthkit') | null = null;
@@ -67,10 +73,11 @@ class HealthKitServiceImpl implements IHealthKitService {
     }
 
     try {
-      const read = readTypes.map((type) => type as string);
-      const write = writeTypes.map((type) => type as string);
+      // requestAuthorization(toShare, toRead) - write types first, then read types
+      const write = writeTypes as unknown as SampleTypeIdentifierWriteable[];
+      const read = readTypes as unknown as ObjectTypeIdentifier[];
 
-      await healthKit.requestAuthorization(read, write);
+      await healthKit.requestAuthorization(write, read);
       return true;
     } catch (error) {
       console.error('HealthKit authorization failed:', error);
@@ -87,19 +94,21 @@ class HealthKitServiceImpl implements IHealthKitService {
     }
 
     try {
-      const sample = await healthKit.getMostRecentQuantitySample(type as string);
+      const sample = await healthKit.getMostRecentQuantitySample(
+        type as QuantityTypeIdentifier
+      );
 
       if (!sample) {
         return null;
       }
 
       return {
-        value: sample.value,
-        unit: getUnitForType(type),
+        value: sample.quantity,
+        unit: sample.unit || getUnitForType(type),
         startDate: new Date(sample.startDate),
         endDate: new Date(sample.endDate),
-        sourceName: sample.sourceName,
-        sourceId: sample.sourceId,
+        sourceName: sample.sourceRevision?.source?.name,
+        sourceId: sample.sourceRevision?.source?.bundleIdentifier,
       };
     } catch (error) {
       console.error(`Failed to get sample for ${type}:`, error);
@@ -119,20 +128,25 @@ class HealthKitServiceImpl implements IHealthKitService {
     }
 
     try {
-      const samples = await healthKit.queryQuantitySamples(type as string, {
-        from: options.startDate,
-        to: options.endDate,
-        limit: options.limit,
-        ascending: options.ascending,
-      });
+      const samples = await healthKit.queryQuantitySamples(
+        type as QuantityTypeIdentifier,
+        {
+          filter: {
+            startDate: options.startDate,
+            endDate: options.endDate,
+          },
+          limit: options.limit,
+          ascending: options.ascending,
+        }
+      );
 
-      return samples.map((sample: { value: number; startDate: string; endDate: string; sourceName?: string; sourceId?: string }) => ({
-        value: sample.value,
-        unit: getUnitForType(type),
+      return samples.map((sample: QuantitySample) => ({
+        value: sample.quantity,
+        unit: sample.unit || getUnitForType(type),
         startDate: new Date(sample.startDate),
         endDate: new Date(sample.endDate),
-        sourceName: sample.sourceName,
-        sourceId: sample.sourceId,
+        sourceName: sample.sourceRevision?.source?.name,
+        sourceId: sample.sourceRevision?.source?.bundleIdentifier,
       }));
     } catch (error) {
       console.error(`Failed to query samples for ${type}:`, error);
@@ -152,18 +166,24 @@ class HealthKitServiceImpl implements IHealthKitService {
     }
 
     try {
-      const stats = await healthKit.getStatisticsForQuantity(type as string, {
-        from: options.startDate,
-        to: options.endDate,
-      });
+      const stats = await healthKit.queryStatisticsForQuantity(
+        type as QuantityTypeIdentifier,
+        ['cumulativeSum', 'discreteAverage', 'discreteMin', 'discreteMax'],
+        {
+          filter: {
+            startDate: options.startDate,
+            endDate: options.endDate,
+          },
+        }
+      );
 
       return {
-        sum: stats.sumQuantity,
-        average: stats.averageQuantity,
-        min: stats.minimumQuantity,
-        max: stats.maximumQuantity,
-        count: stats.discreteQuantitySamples?.length || 0,
-        unit: getUnitForType(type),
+        sum: stats.sumQuantity?.quantity,
+        average: stats.averageQuantity?.quantity,
+        min: stats.minimumQuantity?.quantity,
+        max: stats.maximumQuantity?.quantity,
+        count: 0, // Not directly available from this API
+        unit: stats.sumQuantity?.unit || getUnitForType(type),
       };
     } catch (error) {
       console.error(`Failed to get statistics for ${type}:`, error);

@@ -21,7 +21,8 @@ export function isExpoGo(): boolean {
  * Check if running in a standalone/dev client build
  */
 export function isStandalone(): boolean {
-  return Constants.appOwnership === 'standalone' || Constants.appOwnership === null;
+  // appOwnership is 'expo' in Expo Go, null in standalone/dev client builds
+  return Constants.appOwnership !== 'expo';
 }
 
 /**
