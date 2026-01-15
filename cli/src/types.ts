@@ -16,9 +16,16 @@ export interface ProjectOptions {
   envValues?: Record<string, string>;
 }
 
+export interface SourcePaths {
+  templateDir: string;
+  featuresDir: string;
+  packagesDir: string;
+}
+
 export interface TransformContext {
   options: ProjectOptions;
   projectDir: string;
+  source: SourcePaths;
 }
 
 /**
