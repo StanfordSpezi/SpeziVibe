@@ -413,6 +413,18 @@ export default function RootLayout() {
 
 exports[`Generator Snapshots Full Configuration (Firebase + All Features) should match file structure snapshot: files 1`] = `
 [
+  ".claude/commands/README.md",
+  ".claude/commands/changelog.md",
+  ".claude/commands/compliance.md",
+  ".claude/commands/data-model.md",
+  ".claude/commands/docs.md",
+  ".claude/commands/feature.md",
+  ".claude/commands/fhir-mapping.md",
+  ".claude/commands/fhir.md",
+  ".claude/commands/release.md",
+  ".claude/commands/study-planner.md",
+  ".claude/commands/test.md",
+  ".claude/commands/ux-planner.md",
   ".env",
   ".env.example",
   ".firebaserc",
@@ -1299,6 +1311,18 @@ export default function RootLayout() {
 
 exports[`Generator Snapshots Minimal Configuration should match file structure snapshot: files 1`] = `
 [
+  ".claude/commands/README.md",
+  ".claude/commands/changelog.md",
+  ".claude/commands/compliance.md",
+  ".claude/commands/data-model.md",
+  ".claude/commands/docs.md",
+  ".claude/commands/feature.md",
+  ".claude/commands/fhir-mapping.md",
+  ".claude/commands/fhir.md",
+  ".claude/commands/release.md",
+  ".claude/commands/study-planner.md",
+  ".claude/commands/test.md",
+  ".claude/commands/ux-planner.md",
   ".env",
   ".env.example",
   ".gitignore",
