@@ -2,7 +2,6 @@ import fs from 'fs-extra';
 import path from 'path';
 import os from 'os';
 import pc from 'picocolors';
-import { fileURLToPath } from 'url';
 import type { ProjectOptions, TransformContext, FeatureManifest, CodeTransform } from './types.js';
 import { checkGitConfig } from './utils.js';
 import {
@@ -34,15 +33,7 @@ import {
   spin,
   formatDuration,
 } from './pretty.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Paths relative to dist/ directory (cli/dist/ -> cli/../ -> repo root)
-const REPO_ROOT = path.join(__dirname, '..', '..');
-const TEMPLATE_DIR = path.join(REPO_ROOT, 'template');
-const FEATURES_DIR = path.join(REPO_ROOT, 'features');
-const PACKAGES_DIR = path.join(REPO_ROOT, 'packages');
+import { resolveSourcePaths } from './source.js';
 
 /**
  * Main project generation function
@@ -63,6 +54,9 @@ export async function generateProject(options: ProjectOptions): Promise<{ durati
     );
   }
 
+  // Resolve source paths (local repo or download from GitHub)
+  const source = await resolveSourcePaths();
+
   blank();
   hr();
   heading(`Creating ${options.displayName}`);
@@ -75,11 +69,12 @@ export async function generateProject(options: ProjectOptions): Promise<{ durati
   const ctx: TransformContext = {
     options,
     projectDir: tempDir,
+    source,
   };
 
   try {
     // Collect all features to apply (backend + selected features)
-    const allFeatures = await collectFeatures(options);
+    const allFeatures = await collectFeatures(ctx);
 
     // Step 1: Copy base template
     let spinner = spin('Copying base template...');
@@ -87,7 +82,7 @@ export async function generateProject(options: ProjectOptions): Promise<{ durati
     spinner.succeed('Base template copied');
 
     // Step 2: Load all feature manifests
-    const manifests = await loadFeatureManifests(allFeatures);
+    const manifests = await loadFeatureManifests(ctx, allFeatures);
 
     // Step 3: Validate feature selection (dependencies and conflicts)
     const selectionResult = validateFeatureSelection(allFeatures, manifests);
@@ -178,12 +173,13 @@ export async function generateProject(options: ProjectOptions): Promise<{ durati
  *
  * Local backend ('local') includes no additional features.
  */
-async function collectFeatures(options: ProjectOptions): Promise<string[]> {
+async function collectFeatures(ctx: TransformContext): Promise<string[]> {
+  const { options, source } = ctx;
   const features: string[] = [];
 
   if (options.backend !== 'local') {
     // Load the backend's manifest to get autoIncludes
-    const manifestPath = path.join(FEATURES_DIR, options.backend, 'manifest.json');
+    const manifestPath = path.join(source.featuresDir, options.backend, 'manifest.json');
     if (await fs.pathExists(manifestPath)) {
       const manifest = await fs.readJson(manifestPath);
       features.push(options.backend);
@@ -207,12 +203,13 @@ async function collectFeatures(options: ProjectOptions): Promise<string[]> {
 /**
  * Load and validate manifests for all features
  */
-async function loadFeatureManifests(featureNames: string[]): Promise<Map<string, FeatureManifest>> {
+async function loadFeatureManifests(ctx: TransformContext, featureNames: string[]): Promise<Map<string, FeatureManifest>> {
+  const { source } = ctx;
   const manifests = new Map<string, FeatureManifest>();
   const validationResults = [];
 
   for (const name of featureNames) {
-    const manifestPath = path.join(FEATURES_DIR, name, 'manifest.json');
+    const manifestPath = path.join(source.featuresDir, name, 'manifest.json');
     if (await fs.pathExists(manifestPath)) {
       const manifest = await fs.readJson(manifestPath);
       manifests.set(name, manifest);
@@ -244,11 +241,11 @@ async function loadFeatureManifests(featureNames: string[]): Promise<Map<string,
 // ============================================================================
 
 async function copyBaseTemplate(ctx: TransformContext): Promise<void> {
-  await copyTemplate(TEMPLATE_DIR, ctx.projectDir);
+  await copyTemplate(ctx.source.templateDir, ctx.projectDir);
 }
 
 async function copyPackage(ctx: TransformContext, packageName: string): Promise<void> {
-  await copyPackageToProject(PACKAGES_DIR, packageName, ctx.projectDir);
+  await copyPackageToProject(ctx.source.packagesDir, packageName, ctx.projectDir);
 }
 
 // ============================================================================
@@ -278,7 +275,7 @@ async function applyFeature(
   manifest: FeatureManifest,
   copiedPackages: Set<string>
 ): Promise<void> {
-  const featureDir = path.join(FEATURES_DIR, featureName);
+  const featureDir = path.join(ctx.source.featuresDir, featureName);
   const copyCtx: FeatureCopyContext = {
     featureDir,
     projectDir: ctx.projectDir,

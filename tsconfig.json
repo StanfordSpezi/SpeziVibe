@@ -11,5 +11,6 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-native"
-  }
+  },
+  "extends": "expo/tsconfig.base"
 }

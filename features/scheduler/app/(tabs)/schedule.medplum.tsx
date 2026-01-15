@@ -7,13 +7,18 @@ import { ThemedView } from '@/components/themed-view';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Spacing } from '@/constants/theme';
 import { ScheduleView, Event } from '@spezivibe/scheduler';
+import { AccountButton } from '@/components/account/account-button';
+import { AccountSheet } from '@/components/account/account-sheet';
+import { useAccount } from '@spezivibe/account';
 
 export default function ScheduleScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const { signedIn } = useAccount();
+  const [showAccountSheet, setShowAccountSheet] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // Refresh when screen comes into focus
+  // Refresh when screen comes into focus (e.g., returning from questionnaire)
   useFocusEffect(
     useCallback(() => {
       setRefreshKey((k) => k + 1);
@@ -48,8 +53,16 @@ export default function ScheduleScreen() {
             <ThemedText type="title" style={styles.title}>
               Schedule
             </ThemedText>
+            {signedIn && (
+              <AccountButton onPress={() => setShowAccountSheet(true)} />
+            )}
           </View>
         )}
+      />
+
+      <AccountSheet
+        visible={showAccountSheet}
+        onClose={() => setShowAccountSheet(false)}
       />
     </ThemedView>
   );
