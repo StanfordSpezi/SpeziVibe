@@ -30,7 +30,7 @@
   "dependencies": {
     "@inquirer/prompts": "^7.2.1",
     "fs-extra": "^11.2.0",
-    "giget": "^1.2.3",
+    "giget": "^3.0.0",
     "picocolors": "^1.1.1"
   },
   "devDependencies": {
