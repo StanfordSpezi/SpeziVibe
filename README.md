@@ -75,6 +75,42 @@ SpeziVibe comes with pre-built features you can add into your template to help y
 | **Onboarding** | Welcome flow with informed consent and account creation |
 | **HealthKit** | Apple Health integration for health data access (iOS only) |
 
+## Claude Code Commands
+
+Every generated app includes Claude Code slash commands for AI-assisted development. These are available in the `.claude/commands/` directory of your generated project.
+
+### Development Commands
+
+| Command | Description |
+|---------|-------------|
+| `/feature` | Create new app features, screens, tabs, hooks, and components |
+| `/test` | Generate Jest tests following project patterns (unit, component, FHIR round-trip) |
+| `/docs` | Generate documentation and READMEs for your app |
+| `/fhir` | Validate code for FHIR R4 compliance |
+| `/fhir-mapping` | Generate bidirectional FHIR resource mappings with round-trip tests |
+| `/changelog` | Generate changelogs from git history using Keep a Changelog format |
+| `/release` | Create release notes with migration guides for new versions |
+
+### Planning Commands
+
+| Command | Description |
+|---------|-------------|
+| `/study-planner` | Plan health studies, research protocols, data collection, and assessment schedules |
+| `/compliance` | Plan HIPAA, IRB, FDA, and GDPR regulatory compliance |
+| `/data-model` | Design health data models, FHIR resource structures, and HealthKit mappings |
+| `/ux-planner` | Design user flows, onboarding, engagement strategies, and accessibility |
+
+### Usage
+
+Invoke a command in Claude Code with optional context:
+
+```
+/feature add a medication tracking tab
+/study-planner design a 12-week diabetes management study
+/compliance review HIPAA requirements for our app
+/test write tests for the auth service
+```
+
 ## Documentation
 
 - [Architecture Guide](./ARCHITECTURE.md) - System design and patterns
