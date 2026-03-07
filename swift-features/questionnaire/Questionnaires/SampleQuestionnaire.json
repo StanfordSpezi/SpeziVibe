@@ -1,0 +1,29 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "daily-check-in",
+  "title": "Daily Check-In",
+  "status": "active",
+  "item": [
+    {
+      "linkId": "mood",
+      "text": "How are you feeling today?",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "great", "display": "Great" } },
+        { "valueCoding": { "code": "good", "display": "Good" } },
+        { "valueCoding": { "code": "okay", "display": "Okay" } },
+        { "valueCoding": { "code": "not-great", "display": "Not Great" } }
+      ]
+    },
+    {
+      "linkId": "pain-level",
+      "text": "Rate your pain level (0-10)",
+      "type": "integer"
+    },
+    {
+      "linkId": "notes",
+      "text": "Any additional notes?",
+      "type": "text"
+    }
+  ]
+}

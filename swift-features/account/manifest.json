@@ -1,0 +1,24 @@
+{
+  "name": "Account",
+  "category": "feature",
+  "platform": "swift",
+  "description": "User authentication and profile management via SpeziAccount",
+  "spmPackages": {
+    "SpeziAccount": {
+      "url": "https://github.com/StanfordSpezi/SpeziAccount.git",
+      "from": "2.2.0",
+      "products": ["SpeziAccount"]
+    }
+  },
+  "targetDependencies": ["SpeziAccount"],
+  "copyFiles": [
+    "Account/AccountButton.swift",
+    "Account/AccountSheet.swift",
+    "Account/AccountSetupHeader.swift"
+  ],
+  "onboardingSteps": ["AccountOnboarding()"],
+  "onboardingCopyFiles": ["AccountOnboarding.swift"],
+  "homeViewImports": ["@_spi(TestingSupport) import SpeziAccount"],
+  "homeViewSheets": ".sheet(isPresented: $presentingAccount) {\n            AccountSheet(dismissAfterSignIn: false)\n        }\n        .accountRequired(!FeatureFlags.disableFirebase && !FeatureFlags.skipOnboarding) {\n            AccountSheet()\n        }",
+  "homeToolbar": "ToolbarItem(placement: .topBarTrailing) {\n                        AccountButton()\n                    }"
+}
