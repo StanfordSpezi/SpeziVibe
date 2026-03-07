@@ -40,6 +40,7 @@ export class ReactNativePlatformGenerator implements PlatformGenerator {
   readonly id = 'react-native';
   readonly name = 'React Native (Expo)';
   readonly description = 'Cross-platform mobile app with Expo and React Native';
+  readonly ready = true;
 
   async getBackends(): Promise<BackendOption[]> {
     const backends = await discoverBackends();
@@ -369,14 +370,14 @@ export class ReactNativePlatformGenerator implements PlatformGenerator {
 
     const packageJsonPath = path.join(projectDir, 'package.json');
     let packageJson = await fs.readFile(packageJsonPath, 'utf-8');
-    packageJson = packageJson.replace(/"name": "spezivibe-app"/, `"name": "${options.projectName}"`);
+    packageJson = packageJson.replaceAll('"name": "spezivibe-app"', `"name": "${options.projectName}"`);
     await fs.writeFile(packageJsonPath, packageJson);
 
     const appConfigPath = path.join(projectDir, 'app.config.js');
     let appConfig = await fs.readFile(appConfigPath, 'utf-8');
-    appConfig = appConfig.replace(/name: "SpeziVibe"/, `name: "${options.displayName}"`);
-    appConfig = appConfig.replace(/slug: "spezivibe-app"/, `slug: "${options.projectName}"`);
-    appConfig = appConfig.replace(/scheme: "spezivibe-app"/, `scheme: "${options.projectName}"`);
+    appConfig = appConfig.replaceAll('name: "SpeziVibe"', `name: "${options.displayName}"`);
+    appConfig = appConfig.replaceAll('slug: "spezivibe-app"', `slug: "${options.projectName}"`);
+    appConfig = appConfig.replaceAll('scheme: "spezivibe-app"', `scheme: "${options.projectName}"`);
     await fs.writeFile(appConfigPath, appConfig);
   }
 

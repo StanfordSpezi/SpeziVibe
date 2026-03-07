@@ -31,12 +31,12 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
   readonly id = 'swift';
   readonly name = 'iOS (Swift + Spezi)';
   readonly description = 'Native iOS app with Swift and Stanford Spezi framework (coming soon)';
+  readonly ready = false;
 
   async getBackends(): Promise<BackendOption[]> {
     return [
       { value: 'local', name: 'Local (SwiftData)', description: 'On-device persistence with SwiftData' },
       { value: 'firebase', name: 'Firebase (SpeziFirebase)', description: 'Cloud storage with SpeziFirebase' },
-      { value: 'fhir', name: 'FHIR (SpeziFHIR)', description: 'FHIR R4 healthcare backend' },
     ];
   }
 

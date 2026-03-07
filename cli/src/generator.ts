@@ -76,7 +76,7 @@ export function printNextSteps(
   });
 
   if (dependenciesInstalled) {
-    steps = steps.filter((step) => step !== 'npm install');
+    steps = steps.filter((step) => !step.startsWith('npm install'));
   }
 
   for (const step of steps) {

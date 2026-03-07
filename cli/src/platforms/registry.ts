@@ -25,7 +25,7 @@ export function getAvailablePlatforms(): PlatformGenerator[] {
  * Get only platforms that are ready for use (not stubs)
  */
 export function getReadyPlatforms(): PlatformGenerator[] {
-  return platforms.filter((p) => p.id !== 'swift'); // Swift is a stub for now
+  return platforms.filter((p) => p.ready !== false);
 }
 
 /**

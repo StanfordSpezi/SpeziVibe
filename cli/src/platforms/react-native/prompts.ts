@@ -102,7 +102,10 @@ export async function promptForLLMProviders(): Promise<LLMProvider[]> {
 
   // Ensure at least one provider is selected (default to first)
   if (llmProviders.length === 0) {
-    const defaultProvider = LLM_PROVIDERS.find((p) => p.defaultChecked) || LLM_PROVIDERS[0];
+    if (LLM_PROVIDERS.length === 0) {
+      throw new Error('No LLM providers configured. Check your platform configuration.');
+    }
+    const defaultProvider = LLM_PROVIDERS.find((p) => p.defaultChecked) ?? LLM_PROVIDERS[0];
     llmProviders = [defaultProvider.value];
     console.log(`  No providers selected, defaulting to ${defaultProvider.name}`);
   }

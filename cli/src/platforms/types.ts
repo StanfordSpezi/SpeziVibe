@@ -41,6 +41,8 @@ export interface PlatformGenerator {
   readonly name: string;
   /** Description for CLI prompt */
   readonly description: string;
+  /** Whether this platform is ready for use (false for stubs) */
+  readonly ready?: boolean;
 
   /** Get available backends for this platform */
   getBackends(): Promise<BackendOption[]>;

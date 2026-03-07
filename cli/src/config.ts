@@ -57,8 +57,11 @@ export async function discoverBackends(): Promise<FeatureManifest[]> {
         }
       }
     }
-  } catch {
-    // Features directory doesn't exist or can't be read
+  } catch (err) {
+    // Only silence ENOENT (directory doesn't exist); log other errors
+    if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+      console.warn('Warning: Failed to discover backends:', err);
+    }
   }
 
   return backends;

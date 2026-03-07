@@ -2,9 +2,8 @@ import { input, select, checkbox, confirm } from '@inquirer/prompts';
 import pc from 'picocolors';
 import type { BackendType, Feature, LLMProvider, ProjectOptions } from './types.js';
 import type { PlatformGenerator } from './platforms/types.js';
-import { getReadyPlatforms, getPlatform } from './platforms/registry.js';
-import { discoverBackends, FEATURES, LLM_PROVIDERS } from './config.js';
-import { promptForLLMKeys, promptForEnvVars, promptForLLMProviders } from './platforms/react-native/prompts.js';
+import { getReadyPlatforms } from './platforms/registry.js';
+import { discoverBackends } from './config.js';
 
 function toKebabCase(str: string): string {
   return str
@@ -28,19 +27,13 @@ export async function selectPlatform(): Promise<PlatformGenerator> {
     return readyPlatforms[0];
   }
 
-  const platformId = await select<string>({
+  return select<PlatformGenerator>({
     message: 'Select a platform:',
     choices: readyPlatforms.map((p) => ({
       name: `${p.name} - ${p.description}`,
-      value: p.id,
+      value: p,
     })),
   });
-
-  const platform = getPlatform(platformId);
-  if (!platform) {
-    throw new Error(`Unknown platform: ${platformId}`);
-  }
-  return platform;
 }
 
 export async function runPrompts(projectName?: string): Promise<{ options: ProjectOptions; platformId: string }> {
@@ -89,12 +82,15 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
     })),
   });
 
-  // Prompt for backend env vars if applicable
+  // Prompt for backend env vars if applicable (React Native only — has feature manifests)
   let envValues: Record<string, string> = {};
-  const backends = await discoverBackends();
-  const selectedBackend = backends.find(b => b.name === backend);
-  if (selectedBackend) {
-    envValues = await promptForEnvVars(selectedBackend);
+  if (platform.id === 'react-native') {
+    const { promptForEnvVars } = await import('./platforms/react-native/prompts.js');
+    const backends = await discoverBackends();
+    const selectedBackend = backends.find(b => b.name === backend);
+    if (selectedBackend) {
+      envValues = await promptForEnvVars(selectedBackend);
+    }
   }
 
   // Feature selection (from platform)
@@ -108,9 +104,10 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
     })),
   });
 
-  // LLM provider selection (only if chat is enabled)
+  // LLM provider selection (React Native only, when chat is enabled)
   let llmProviders: LLMProvider[] = [];
-  if (features.includes('chat')) {
+  if (platform.id === 'react-native' && features.includes('chat')) {
+    const { promptForLLMProviders, promptForLLMKeys } = await import('./platforms/react-native/prompts.js');
     llmProviders = await promptForLLMProviders();
 
     // Prompt for LLM API keys
