@@ -30,7 +30,5 @@
   "onboardingImports": [
     "SpeziNotifications"
   ],
-  "entitlements": {
-    "aps-environment": "development"
-  }
+  "entitlements": {}
 }

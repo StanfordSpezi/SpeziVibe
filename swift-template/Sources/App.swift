@@ -17,6 +17,14 @@ struct {{ProjectName}}App: App {
     @AppStorage(StorageKeys.onboardingFlowComplete) var completedOnboardingFlow = false
 
 
+    private var showOnboarding: Binding<Bool> {
+        Binding(
+            get: { !completedOnboardingFlow },
+            set: { completedOnboardingFlow = !$0 }
+        )
+    }
+
+
     var body: some Scene {
         WindowGroup {
             ZStack {
@@ -26,7 +34,7 @@ struct {{ProjectName}}App: App {
                     EmptyView()
                 }
             }
-            .sheet(isPresented: !$completedOnboardingFlow) {
+            .sheet(isPresented: showOnboarding) {
                 OnboardingFlow()
             }
             .spezi(appDelegate)

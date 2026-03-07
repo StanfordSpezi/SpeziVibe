@@ -7,10 +7,12 @@
     "create-spezivibe-app": "./dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "swift-template",
+    "swift-features"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp -r ../swift-template ./swift-template && cp -r ../swift-features ./swift-features",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest --testPathPattern=tests/snapshot",
