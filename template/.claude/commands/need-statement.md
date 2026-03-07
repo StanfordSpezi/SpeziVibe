@@ -76,14 +76,14 @@ The outcome is how you'll prove your solution works — and it must be something
 1. "If this problem were solved perfectly, what would change for your population?"
 2. "Which ONE outcome would matter most to the key decision-maker?"
 3. "How would you *measure* that? Is there an established clinical metric or validated instrument?"
-4. "How long and expensive would a study be to prove improvement? (High: >5yr, tens of millions / Medium: >2yr, millions / Low: 1-2yr, <$1M)"
+4. "How long and expensive would a study be to prove improvement? (High: >5 years, tens of millions / Medium: >2 years, millions / Low: 1–2 years, <$1M)"
 5. "Would someone — hospital, insurer, patient, employer — actually *pay more* for demonstrated improvement on this outcome?"
 
 **Push for specificity:**
 
 | Vague | Better |
 |-------|--------|
-| "Improve quality of life" | "Increase PHQ-9 depression score by ≥5 points" |
+| "Improve quality of life" | "Decrease PHQ-9 depression score by ≥5 points" |
 | "Reduce chronic illness" | "Reduce rate of new-onset Type 2 diabetes diagnoses" |
 | "Save physician time" | "Reduce physician inbox response time by 40%" |
 
