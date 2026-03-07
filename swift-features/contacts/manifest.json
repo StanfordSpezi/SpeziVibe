@@ -7,10 +7,14 @@
     "SpeziContact": {
       "url": "https://github.com/StanfordSpezi/SpeziContact.git",
       "from": "1.0.0",
-      "products": ["SpeziContact"]
+      "products": [
+        "SpeziContact"
+      ]
     }
   },
-  "targetDependencies": ["SpeziContact"],
+  "targetDependencies": [
+    "SpeziContact"
+  ],
   "copyFiles": [
     "Contacts/ContactsView.swift"
   ],

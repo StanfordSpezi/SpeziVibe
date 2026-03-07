@@ -2,7 +2,7 @@ name: "{{ProjectName}}"
 options:
   bundleIdPrefix: com.spezivibe
   deploymentTarget:
-    iOS: "17.0"
+    iOS: "18.0"
   xcodeVersion: "16.0"
   groupSortPosition: top
   generateEmptyDirectories: true
@@ -15,13 +15,14 @@ settings:
 packages:
   Spezi:
     url: https://github.com/StanfordSpezi/Spezi.git
-    from: "1.8.0"
+    from: "1.10.0"
   SpeziViews:
     url: https://github.com/StanfordSpezi/SpeziViews.git
-    from: "1.8.0"
-  SpeziStorage:
-    url: https://github.com/StanfordSpezi/SpeziStorage.git
-    from: "1.2.0"
+    from: "1.12.0"
+  SpeziOnboarding:
+    url: https://github.com/StanfordSpezi/SpeziOnboarding.git
+    from: "2.0.0"
+
 # __INJECT_SPM_PACKAGES__
 
 targets:
@@ -43,7 +44,8 @@ targets:
     dependencies:
       - package: Spezi
       - package: SpeziViews
-      - package: SpeziStorage
+      - package: SpeziOnboarding
+
 # __INJECT_TARGET_DEPENDENCIES__
     scheme:
       testTargets:

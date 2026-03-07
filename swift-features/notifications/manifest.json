@@ -7,17 +7,29 @@
     "SpeziNotifications": {
       "url": "https://github.com/StanfordSpezi/SpeziNotifications.git",
       "from": "1.0.0",
-      "products": ["SpeziNotifications"]
+      "products": [
+        "SpeziNotifications"
+      ]
     }
   },
-  "targetDependencies": ["SpeziNotifications"],
+  "targetDependencies": [
+    "SpeziNotifications"
+  ],
   "copyFiles": [
     "NotificationPermissions.swift"
   ],
-  "delegateImports": ["SpeziNotifications"],
-  "delegateModules": ["Notifications()"],
-  "onboardingSteps": ["NotificationPermissions()"],
-  "onboardingImports": ["SpeziNotifications"],
+  "delegateImports": [
+    "SpeziNotifications"
+  ],
+  "delegateModules": [
+    "Notifications()"
+  ],
+  "onboardingSteps": [
+    "NotificationPermissions()"
+  ],
+  "onboardingImports": [
+    "SpeziNotifications"
+  ],
   "entitlements": {
     "aps-environment": "development"
   }

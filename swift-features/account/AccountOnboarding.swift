@@ -7,19 +7,25 @@
 
 import SpeziAccount
 import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 
 struct AccountOnboarding: View {
-    @Environment(Account.self) private var account
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+    @Environment(ManagedNavigationStack.Path.self) private var path
 
 
     var body: some View {
-        AccountSetup {
+        AccountSetup { _ in
+            // setup complete
+        } header: {
             AccountSetupHeader()
         } continue: {
-            onboardingNavigationPath.nextStep()
+            Button("Continue") {
+                path.nextStep()
+            }
+            .frame(maxWidth: .infinity, minHeight: 38)
+            .buttonStyle(.borderedProminent)
         }
     }
 }

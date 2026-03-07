@@ -4,18 +4,17 @@
   "platform": "swift",
   "description": "Welcome flow and consent via SpeziOnboarding",
   "spmPackages": {
-    "SpeziOnboarding": {
-      "url": "https://github.com/StanfordSpezi/SpeziOnboarding.git",
-      "from": "1.3.0",
-      "products": ["SpeziOnboarding"]
-    },
     "SpeziConsent": {
       "url": "https://github.com/StanfordSpezi/SpeziConsent.git",
       "from": "0.1.0",
-      "products": ["SpeziConsent"]
+      "products": [
+        "SpeziConsent"
+      ]
     }
   },
-  "targetDependencies": ["SpeziOnboarding", "SpeziConsent"],
+  "targetDependencies": [
+    "SpeziConsent"
+  ],
   "copyFiles": [
     "Consent.swift",
     "InterestingModules.swift"

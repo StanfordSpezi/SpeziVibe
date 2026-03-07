@@ -6,13 +6,22 @@
   "spmPackages": {
     "SpeziFirebase": {
       "url": "https://github.com/StanfordSpezi/SpeziFirebase.git",
-      "from": "1.2.0",
-      "products": ["SpeziFirebaseAccount", "SpeziFirebaseAccountStorage", "SpeziFirebaseStorage", "SpeziFirestore"]
+      "from": "2.0.0",
+      "products": [
+        "SpeziFirebaseAccount",
+        "SpeziFirebaseAccountStorage",
+        "SpeziFirebaseStorage",
+        "SpeziFirestore"
+      ]
     },
     "FirebaseSDK": {
       "url": "https://github.com/firebase/firebase-ios-sdk.git",
       "from": "11.0.0",
-      "products": ["FirebaseAuth", "FirebaseFirestore", "FirebaseStorage"]
+      "products": [
+        "FirebaseAuth",
+        "FirebaseFirestore",
+        "FirebaseStorage"
+      ]
     }
   },
   "targetDependencies": [
@@ -23,7 +32,10 @@
     "FirebaseFirestore",
     "FirebaseStorage"
   ],
-  "autoIncludes": ["account", "onboarding"],
+  "autoIncludes": [
+    "account",
+    "onboarding"
+  ],
   "copyFiles": [
     "FirebaseConfiguration.swift"
   ],

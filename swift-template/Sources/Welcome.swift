@@ -6,11 +6,12 @@
 //
 
 import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 
 struct Welcome: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+    @Environment(ManagedNavigationStack.Path.self) private var path
 
 
     var body: some View {
@@ -19,30 +20,25 @@ struct Welcome: View {
             subtitle: "Your digital health companion",
             areas: [
                 .init(
-                    icon: Image(systemName: "heart.text.clipboard"),
+                    icon: { Image(systemName: "heart.text.clipboard").foregroundStyle(.pink) },
                     title: "Health Data",
                     description: "Securely manage your health information."
                 ),
                 .init(
-                    icon: Image(systemName: "lock.shield"),
+                    icon: { Image(systemName: "lock.shield").foregroundStyle(.blue) },
                     title: "Privacy First",
                     description: "Your data stays under your control."
                 ),
                 .init(
-                    icon: Image(systemName: "sparkles"),
+                    icon: { Image(systemName: "sparkles").foregroundStyle(.orange) },
                     title: "Powered by Spezi",
                     description: "Built on Stanford's open-source digital health framework."
                 )
             ],
             actionText: "Get Started",
             action: {
-                onboardingNavigationPath.nextStep()
+                path.nextStep()
             }
         )
     }
-}
-
-
-#Preview {
-    Welcome()
 }
