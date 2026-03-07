@@ -160,22 +160,34 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
         }
       }
 
-      // 4. Merge injection markers (before variable substitution so injected content gets substituted too)
+      // 4. Generate consent document based on selected features
+      if (allFeatures.includes('onboarding')) {
+        spinner = spin('Generating consent document...');
+        await this.generateConsentDocument(
+          tempDir,
+          options.displayName,
+          allFeatures,
+          options.backend
+        );
+        spinner.succeed('Generated consent document');
+      }
+
+      // 5. Merge injection markers (before variable substitution so injected content gets substituted too)
       spinner = spin('Applying code transforms...');
       await this.applyInjections(tempDir, manifests, allFeatures, swiftName);
       spinner.succeed('Applied code transforms');
 
-      // 5. Apply variable substitution across all files (including injected content)
+      // 6. Apply variable substitution across all files (including injected content)
       spinner = spin('Applying project settings...');
       await this.applyVariableSubstitution(tempDir, swiftName, options.displayName);
       spinner.succeed('Applied project settings');
 
-      // 6. Rename template files to project name
+      // 7. Rename template files to project name
       spinner = spin('Renaming files...');
       await this.renameEntitlementsFile(tempDir, swiftName);
       spinner.succeed('Renamed files');
 
-      // 7. Run xcodegen if available
+      // 8. Run xcodegen if available
       spinner = spin('Generating Xcode project...');
       const xcodegen = await this.runXcodegen(tempDir);
       if (xcodegen.success) {
@@ -186,7 +198,7 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
         note('Then run: cd ' + options.outputDir + ' && xcodegen generate');
       }
 
-      // 8. Init git
+      // 9. Init git
       spinner = spin('Initializing git repository...');
       const gitResult = await this.initGit(tempDir);
       if (gitResult.success) {
@@ -196,7 +208,7 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
         if (gitResult.warning) note(gitResult.warning);
       }
 
-      // 9. Move to final directory (overwrite: false to prevent TOCTOU race)
+      // 10. Move to final directory (overwrite: false to prevent TOCTOU race)
       try {
         await fs.move(tempDir, finalDir, { overwrite: false });
       } catch (moveErr: unknown) {
@@ -336,6 +348,142 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
         }
       }
     }
+  }
+
+  // ============================================================================
+  // Private: Consent Document Generation
+  // ============================================================================
+
+  /**
+   * Generates a consent document tailored to the specific features selected
+   * by the user. Only mentions data types and capabilities that are actually
+   * present in the generated app. This is critical for health apps — the
+   * consent must accurately reflect what the app does.
+   */
+  private async generateConsentDocument(
+    projectDir: string,
+    displayName: string,
+    features: string[],
+    backend: string
+  ): Promise<void> {
+    const hasHealthKit = features.includes('healthkit');
+    const hasQuestionnaire = features.includes('questionnaire');
+    const hasAccount = features.includes('account') || backend === 'firebase';
+    const hasScheduler = features.includes('scheduler');
+    const hasNotifications = features.includes('notifications');
+    const hasContacts = features.includes('contacts');
+    const usesCloud = backend === 'firebase' || backend === 'medplum';
+
+    // --- Purpose section ---
+    const purposeParts = ['manage your health activities'];
+    if (hasScheduler) purposeParts.push('stay on top of scheduled health tasks');
+    if (hasQuestionnaire) purposeParts.push('complete health assessments');
+    if (hasHealthKit) purposeParts.push('track health data from Apple Health');
+
+    // --- Data Collection bullets ---
+    const dataBullets: string[] = [];
+    dataBullets.push('- **App usage data** such as settings and preferences');
+
+    if (hasHealthKit) {
+      dataBullets.push(
+        '- **Apple Health data** including health samples you authorize the app to read (e.g., step count, heart rate, activity data)'
+      );
+    }
+
+    if (hasQuestionnaire) {
+      dataBullets.push(
+        '- **Questionnaire responses** from health assessments you complete within the app'
+      );
+    }
+
+    if (hasScheduler) {
+      dataBullets.push(
+        '- **Task completion data** from scheduled health activities and check-ins'
+      );
+    }
+
+    if (hasAccount) {
+      dataBullets.push(
+        '- **Account information** such as your name, email address, and authentication credentials'
+      );
+    }
+
+    if (hasNotifications) {
+      dataBullets.push(
+        '- **Notification preferences** and device tokens for delivering reminders'
+      );
+    }
+
+    // --- Data Storage section ---
+    let storageText: string;
+    if (usesCloud) {
+      storageText =
+        'Your data is stored securely using industry-standard encryption. ' +
+        'When synced to the cloud, data is transmitted over encrypted connections and stored ' +
+        'in compliance with applicable data protection regulations.';
+    } else {
+      storageText =
+        'Your data is stored locally on your device using encrypted storage. ' +
+        'No data is transmitted to external servers unless you explicitly choose to share it.';
+    }
+
+    // --- Withdrawal section ---
+    let withdrawalText: string;
+    if (hasAccount) {
+      withdrawalText =
+        'You may withdraw your consent at any time by deleting your account through the app\'s settings. ' +
+        'Upon account deletion, your associated data will be removed from our systems in accordance with ' +
+        'the app\'s data retention policy.';
+    } else {
+      withdrawalText =
+        'You may withdraw your consent at any time by deleting the app from your device. ' +
+        'Since your data is stored locally, removing the app will delete all associated data.';
+    }
+
+    // --- Contact section ---
+    let contactText: string;
+    if (hasContacts) {
+      contactText =
+        'If you have questions about this consent or the app\'s data practices, ' +
+        'please use the contact information provided in the app\'s Contacts section.';
+    } else {
+      contactText =
+        'If you have questions about this consent or the app\'s data practices, ' +
+        'please contact the app development team.';
+    }
+
+    // --- Assemble the full document ---
+    const doc = `# Consent Form
+
+## Purpose
+${displayName} is designed to help you ${purposeParts.join(', ')}.
+
+## Data Collection
+By using this application, you agree to the collection and processing of the following data:
+
+${dataBullets.join('\n')}
+
+## Data Storage & Security
+${storageText}
+
+## Privacy
+Your data is handled in accordance with applicable privacy regulations, including HIPAA where applicable. Data is used only for the purposes described in this application and is never sold to third parties.
+
+## Withdrawal of Consent
+${withdrawalText}
+
+## Contact
+${contactText}
+
+---
+
+By signing below, you confirm that you have read and understood the above information and agree to participate.
+`;
+
+    // Write the consent document
+    const consentPath = path.join(projectDir, 'Sources', 'Resources', 'ConsentDocument.md');
+    await fs.ensureDir(path.dirname(consentPath));
+    await fs.writeFile(consentPath, doc);
   }
 
   // ============================================================================
