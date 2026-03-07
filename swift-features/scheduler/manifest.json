@@ -7,16 +7,24 @@
     "SpeziScheduler": {
       "url": "https://github.com/StanfordSpezi/SpeziScheduler.git",
       "from": "1.2.0",
-      "products": ["SpeziScheduler"]
+      "products": [
+        "SpeziScheduler",
+        "SpeziSchedulerUI"
+      ]
     }
   },
-  "targetDependencies": ["SpeziScheduler"],
+  "targetDependencies": [
+    "SpeziScheduler",
+    "SpeziSchedulerUI"
+  ],
   "copyFiles": [
     "Schedule/ScheduleView.swift",
     "Schedule/EventView.swift",
     "Schedule/AppScheduler.swift"
   ],
-  "delegateImports": ["SpeziScheduler"],
+  "delegateImports": [
+    "SpeziScheduler"
+  ],
   "delegateModules": [
     "{{ProjectName}}Scheduler()",
     "Scheduler()"

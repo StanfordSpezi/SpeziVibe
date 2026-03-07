@@ -5,42 +5,36 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SpeziNotifications
 import SpeziOnboarding
+import SpeziViews
 import SwiftUI
+import UserNotifications
 
 
 struct NotificationPermissions: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
-    @Environment(\.notificationSettings) private var notificationSettings
+    @Environment(ManagedNavigationStack.Path.self) private var path
 
 
     var body: some View {
         OnboardingView(
-            contentView: {
-                VStack(spacing: 16) {
-                    OnboardingTitleView(
-                        title: "Notifications",
-                        subtitle: "{{DisplayName}} sends reminders for scheduled health tasks."
-                    )
-                    Spacer()
-                    Image(systemName: "bell.badge.fill")
-                        .font(.system(size: 80))
-                        .foregroundColor(.orange)
-                        .accessibilityHidden(true)
-                    Spacer()
+            title: "Notifications",
+            subtitle: "{{DisplayName}} sends reminders for scheduled health tasks.",
+            areas: [
+                .init(
+                    icon: { Image(systemName: "bell.badge.fill").foregroundStyle(.orange) },
+                    title: "Stay on Track",
+                    description: "Get timely reminders for health check-ins and tasks."
+                )
+            ],
+            actionText: "Allow Notifications",
+            action: {
+                do {
+                    let center = UNUserNotificationCenter.current()
+                    try await center.requestAuthorization(options: [.alert, .badge, .sound])
+                } catch {
+                    // User denied, continue anyway
                 }
-            },
-            actionView: {
-                OnboardingActionsView("Allow Notifications") {
-                    do {
-                        let center = UNUserNotificationCenter.current()
-                        try await center.requestAuthorization(options: [.alert, .badge, .sound])
-                    } catch {
-                        // User denied, continue anyway
-                    }
-                    onboardingNavigationPath.nextStep()
-                }
+                path.nextStep()
             }
         )
     }

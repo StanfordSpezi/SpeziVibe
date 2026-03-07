@@ -7,35 +7,30 @@
 
 import SpeziHealthKit
 import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 
 struct HealthKitPermissions: View {
     @Environment(HealthKit.self) private var healthKit
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+    @Environment(ManagedNavigationStack.Path.self) private var path
 
 
     var body: some View {
         OnboardingView(
-            contentView: {
-                VStack(spacing: 16) {
-                    OnboardingTitleView(
-                        title: "HealthKit Access",
-                        subtitle: "{{DisplayName}} can access your Apple Health data to provide personalized health insights."
-                    )
-                    Spacer()
-                    Image(systemName: "heart.text.square.fill")
-                        .font(.system(size: 100))
-                        .foregroundColor(.red)
-                        .accessibilityHidden(true)
-                    Spacer()
-                }
-            },
-            actionView: {
-                OnboardingActionsView("Grant Access") {
-                    healthKit.askForAuthorization()
-                    onboardingNavigationPath.nextStep()
-                }
+            title: "HealthKit Access",
+            subtitle: "{{DisplayName}} can access your Apple Health data to provide personalized health insights.",
+            areas: [
+                .init(
+                    icon: { Image(systemName: "heart.text.square.fill").foregroundStyle(.red) },
+                    title: "Health Data",
+                    description: "Access step count, heart rate, and more from Apple Health."
+                )
+            ],
+            actionText: "Grant Access",
+            action: {
+                try await healthKit.askForAuthorization()
+                path.nextStep()
             }
         )
     }
