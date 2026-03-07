@@ -109,6 +109,7 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
     const startTime = Date.now();
     const finalDir = path.resolve(options.outputDir);
 
+    // Pre-check for user-friendly error (the actual move uses overwrite: false for safety)
     if (await fs.pathExists(finalDir)) {
       throw new Error(`Directory ${finalDir} already exists`);
     }
@@ -195,8 +196,15 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
         if (gitResult.warning) note(gitResult.warning);
       }
 
-      // 9. Move to final directory
-      await fs.move(tempDir, finalDir);
+      // 9. Move to final directory (overwrite: false to prevent TOCTOU race)
+      try {
+        await fs.move(tempDir, finalDir, { overwrite: false });
+      } catch (moveErr: unknown) {
+        if (moveErr instanceof Error && moveErr.message.includes('dest already exists')) {
+          throw new Error(`Directory ${finalDir} already exists`);
+        }
+        throw moveErr;
+      }
 
       const duration = Date.now() - startTime;
       const filesCreated = await this.countFiles(finalDir);
@@ -353,7 +361,11 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
 
         content = content.replace(/\{\{ProjectName\}\}/g, projectName);
         content = content.replace(/\{\{projectNameLower\}\}/g, projectNameLower);
-        content = content.replace(/\{\{DisplayName\}\}/g, displayName);
+
+        // Use XML-escaped display name for plist/XML files to prevent invalid XML
+        const isPlist = filePath.endsWith('.plist') || filePath.endsWith('.xml');
+        const safeDisplayName = isPlist ? this.escapeXml(displayName) : displayName;
+        content = content.replace(/\{\{DisplayName\}\}/g, safeDisplayName);
 
         if (content !== original) {
           await fs.writeFile(filePath, content);
@@ -362,6 +374,15 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
         // Skip binary files that can't be read as text
       }
     }
+  }
+
+  private escapeXml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
   }
 
   // ============================================================================
@@ -579,10 +600,16 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
   }
 
   private findRepoRoot(): string {
-    // When running from local repo: cli/dist/platforms/swift/index.js -> cli/dist -> cli -> repo root
     const __dirname = path.dirname(new URL(import.meta.url).pathname);
+    // When running from local repo: cli/dist/platforms/swift/index.js -> cli/dist -> cli -> repo root
     const repoRoot = path.join(__dirname, '..', '..', '..', '..');
-    return repoRoot;
+    // When running from npm package: cli/dist/platforms/swift/index.js -> cli/dist -> cli (templates bundled inside)
+    const packageRoot = path.join(__dirname, '..', '..', '..');
+    // Prefer repo root (dev), fall back to package root (npm published)
+    if (fs.pathExistsSync(path.join(repoRoot, 'swift-template'))) {
+      return repoRoot;
+    }
+    return packageRoot;
   }
 
   private async renameEntitlementsFile(projectDir: string, projectName: string): Promise<void> {
