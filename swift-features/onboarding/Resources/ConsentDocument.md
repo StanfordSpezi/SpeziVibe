@@ -4,17 +4,19 @@
 This application is designed to help you manage your health data and participate in digital health activities.
 
 ## Data Collection
-By using this application, you agree to the collection and processing of the health data you choose to share. This may include:
+By using this application, you agree to the collection and processing of the data you choose to share. This may include:
 
-- **Health metrics** from Apple HealthKit (if enabled)
-- **Questionnaire responses** you submit
-- **Account information** for authentication
+- **App usage data** and preferences
+- **Information you provide** through the app's features
 
 ## Privacy
-Your data is handled in accordance with applicable privacy regulations. You can withdraw consent at any time by deleting your account.
+Your data is handled in accordance with applicable privacy regulations. All data is stored securely and used only for the purposes described in this application.
+
+## Withdrawal
+You may withdraw your consent at any time through the app's settings. Upon withdrawal, your data will be handled according to the app's data retention policy.
 
 ## Contact
-If you have questions about this consent, please contact the study team.
+If you have questions about this consent or the app's data practices, please contact the app development team through the information provided in the app.
 
 ---
 

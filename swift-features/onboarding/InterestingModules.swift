@@ -20,14 +20,9 @@ struct InterestingModules: View {
             subtitle: "{{DisplayName}} includes the following features.",
             areas: [
                 .init(
-                    icon: { Image(systemName: "list.clipboard").foregroundStyle(.blue) },
-                    title: "Track Health Tasks",
-                    description: "Stay on top of scheduled health activities and check-ins."
-                ),
-                .init(
-                    icon: { Image(systemName: "doc.text.fill").foregroundStyle(.green) },
-                    title: "Health Questionnaires",
-                    description: "Complete FHIR-compliant health assessments."
+                    icon: { Image(systemName: "heart.circle.fill").foregroundStyle(.pink) },
+                    title: "Your Health Companion",
+                    description: "Track and manage your health journey with personalized tools."
                 ),
                 .init(
                     icon: { Image(systemName: "lock.shield").foregroundStyle(.purple) },

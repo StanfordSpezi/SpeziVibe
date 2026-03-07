@@ -11,15 +11,32 @@ import SwiftUI
 
 struct AccountButton: View {
     @Binding var isPresented: Bool
+    @State private var internalPresented = false
+    private let usesInternalState: Bool
 
 
-    init(isPresented: Binding<Bool> = .constant(false)) {
+    init(isPresented: Binding<Bool>) {
         _isPresented = isPresented
+        usesInternalState = false
+    }
+
+
+    init() {
+        _isPresented = .constant(false)
+        usesInternalState = true
+    }
+
+
+    private var effectiveBinding: Binding<Bool> {
+        if usesInternalState {
+            return $internalPresented
+        }
+        return $isPresented
     }
 
 
     var body: some View {
-        Button(action: { isPresented = true }) {
+        Button(action: { effectiveBinding.wrappedValue = true }) {
             Image(systemName: "person.circle")
         }
     }

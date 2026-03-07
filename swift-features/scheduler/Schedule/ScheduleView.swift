@@ -14,7 +14,7 @@ import SwiftUI
 struct ScheduleView: View {
     @Binding var presentingAccount: Bool
 
-    @State private var date: Date = .today
+    @State private var date = Date()
 
 
     var body: some View {

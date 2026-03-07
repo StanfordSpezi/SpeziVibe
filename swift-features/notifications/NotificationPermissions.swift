@@ -18,7 +18,7 @@ struct NotificationPermissions: View {
     var body: some View {
         OnboardingView(
             title: "Notifications",
-            subtitle: "{{DisplayName}} sends reminders for scheduled health tasks.",
+            subtitle: "{{DisplayName}} uses notifications to keep you informed and on track.",
             areas: [
                 .init(
                     icon: { Image(systemName: "bell.badge.fill").foregroundStyle(.orange) },

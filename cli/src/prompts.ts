@@ -104,11 +104,11 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
   const featureLabel = platform.id === 'swift'
     ? 'Which Spezi modules do you want to include?'
     : 'Which features do you want to include?';
-  const features = await checkbox<Feature>({
+  const features = await checkbox<string>({
     message: featureLabel,
     choices: featureOptions.map((f) => ({
       name: f.name,
-      value: f.value as Feature,
+      value: f.value,
       checked: f.defaultChecked,
     })),
   });
