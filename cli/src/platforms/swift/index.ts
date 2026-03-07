@@ -377,6 +377,8 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
     // Collect all injections by marker
     const spmPackages: string[] = [];
     const targetDeps: string[] = [];
+    // Build a map of product name → package name for xcodegen dependency resolution
+    const productToPackage = new Map<string, string>();
     const delegateImports: string[] = [];
     const delegateModules: string[] = [];
     const delegateHelpers: string[] = [];
@@ -400,12 +402,22 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
       if (m.spmPackages) {
         for (const [name, pkg] of Object.entries(m.spmPackages)) {
           spmPackages.push(`  ${name}:\n    url: ${pkg.url}\n    from: "${pkg.from}"`);
+          // Map each product to its package name for dependency resolution
+          for (const product of pkg.products) {
+            productToPackage.set(product, name);
+          }
         }
       }
 
       if (m.targetDependencies) {
         for (const dep of m.targetDependencies) {
-          targetDeps.push(`      - package: ${dep.includes('/') ? dep.split('/')[0] : dep}\n        product: ${dep}`);
+          const pkgName = productToPackage.get(dep) ?? dep;
+          // If the product name matches the package name, use simple format
+          if (pkgName === dep) {
+            targetDeps.push(`      - package: ${dep}`);
+          } else {
+            targetDeps.push(`      - package: ${pkgName}\n        product: ${dep}`);
+          }
         }
       }
 
@@ -540,9 +552,14 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
   // ============================================================================
 
   private async runXcodegen(projectDir: string): Promise<{ success: boolean }> {
+    // Include common Homebrew paths in PATH for child process
+    const env = {
+      ...process.env,
+      PATH: `${process.env.PATH}:/opt/homebrew/bin:/usr/local/bin`,
+    };
     try {
-      execSync('which xcodegen', { stdio: 'ignore' });
-      execSync('xcodegen generate', { cwd: projectDir, stdio: 'ignore' });
+      execSync('which xcodegen', { stdio: 'ignore', env });
+      execSync('xcodegen generate', { cwd: projectDir, stdio: 'pipe', env });
       return { success: true };
     } catch {
       return { success: false };

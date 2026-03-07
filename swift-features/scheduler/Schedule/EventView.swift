@@ -6,6 +6,7 @@
 //
 
 import SpeziScheduler
+import SpeziSchedulerUI
 import SpeziViews
 import SwiftUI
 
@@ -13,33 +14,17 @@ import SwiftUI
 struct EventView: View {
     let event: Event
 
-    @Environment({{ProjectName}}Scheduler.self) private var scheduler
-
-
     var body: some View {
         InstructionsTile(event) {
-            action
+            completeEvent(event)
         }
     }
 
-    @ViewBuilder private var action: some View {
-        if event.complete {
-            Button(action: {}) {
-                Label("Completed", systemImage: "checkmark.circle.fill")
-            }
-            .tint(.green)
-            .disabled(true)
-        } else {
-            Button(action: markComplete) {
-                Label("Mark Complete", systemImage: "checkmark.circle")
-            }
-            .tint(.accentColor)
-        }
-    }
-
-    private func markComplete() {
-        Task {
-            try? await event.complete()
+    private func completeEvent(_ event: Event) {
+        do {
+            try event.complete()
+        } catch {
+            // Event completion was prevented by task completion policy
         }
     }
 }

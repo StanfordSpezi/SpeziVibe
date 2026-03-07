@@ -6,6 +6,7 @@
 //
 
 import SpeziScheduler
+import SpeziSchedulerUI
 import SpeziViews
 import SwiftUI
 
@@ -13,23 +14,17 @@ import SwiftUI
 struct ScheduleView: View {
     @Binding var presentingAccount: Bool
 
-    @EventQuery(in: Date.today..<Date.tomorrow) private var events: [Event]
+    @State private var date: Date = .today
 
 
     var body: some View {
         NavigationStack {
-            Group {
-                if events.isEmpty {
-                    ContentUnavailableView(
-                        "No Tasks",
-                        systemImage: "checkmark.circle",
-                        description: Text("You have no scheduled tasks for today.")
-                    )
-                } else {
-                    List {
-                        ForEach(events) { event in
-                            EventView(event: event)
-                        }
+            EventScheduleList(date: date) { event in
+                InstructionsTile(event) {
+                    do {
+                        try event.complete()
+                    } catch {
+                        // Event completion was prevented
                     }
                 }
             }

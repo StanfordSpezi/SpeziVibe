@@ -6,11 +6,12 @@
 //
 
 import SpeziOnboarding
+import SpeziViews
 import SwiftUI
 
 
 struct InterestingModules: View {
-    @Environment(OnboardingNavigationPath.self) private var onboardingNavigationPath
+    @Environment(ManagedNavigationStack.Path.self) private var path
 
 
     var body: some View {
@@ -19,24 +20,24 @@ struct InterestingModules: View {
             subtitle: "{{DisplayName}} includes the following features.",
             areas: [
                 .init(
-                    icon: Image(systemName: "list.clipboard"),
+                    icon: { Image(systemName: "list.clipboard").foregroundStyle(.blue) },
                     title: "Track Health Tasks",
                     description: "Stay on top of scheduled health activities and check-ins."
                 ),
                 .init(
-                    icon: Image(systemName: "doc.text.fill"),
+                    icon: { Image(systemName: "doc.text.fill").foregroundStyle(.green) },
                     title: "Health Questionnaires",
                     description: "Complete FHIR-compliant health assessments."
                 ),
                 .init(
-                    icon: Image(systemName: "lock.shield"),
+                    icon: { Image(systemName: "lock.shield").foregroundStyle(.purple) },
                     title: "Secure & Private",
                     description: "Your health data is encrypted and stays under your control."
                 )
             ],
             actionText: "Continue",
             action: {
-                onboardingNavigationPath.nextStep()
+                path.nextStep()
             }
         )
     }
