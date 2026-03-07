@@ -1,0 +1,40 @@
+{
+  "name": "HealthKit",
+  "category": "feature",
+  "platform": "swift",
+  "description": "Apple Health data collection via SpeziHealthKit",
+  "spmPackages": {
+    "SpeziHealthKit": {
+      "url": "https://github.com/StanfordSpezi/SpeziHealthKit.git",
+      "from": "1.0.0",
+      "products": ["SpeziHealthKit"]
+    },
+    "HealthKitOnFHIR": {
+      "url": "https://github.com/StanfordBDHG/HealthKitOnFHIR.git",
+      "from": "1.0.0",
+      "products": ["HealthKitOnFHIR"]
+    }
+  },
+  "targetDependencies": ["SpeziHealthKit", "HealthKitOnFHIR"],
+  "copyFiles": [
+    "HealthKitPermissions.swift"
+  ],
+  "delegateImports": ["SpeziHealthKit"],
+  "delegateModules": [
+    "healthKit"
+  ],
+  "delegateHelpers": "private var healthKit: HealthKit {\n        HealthKit {\n            CollectSample(.stepCount)\n            CollectSample(.heartRate)\n        }\n    }",
+  "standardImports": ["HealthKitOnFHIR", "SpeziHealthKit"],
+  "standardConformances": ["HealthKitConstraint"],
+  "standardMethods": "func handleNewSamples<Sample>(_ addedSamples: some Collection<Sample>, ofType sampleType: SampleType<Sample>) async {\n        for sample in addedSamples {\n            logger.debug(\"Received new HealthKit sample: \\(sample)\")\n        }\n    }\n\n    func handleDeletedObjects<Sample>(_ deletedObjects: some Collection<HKDeletedObject>, ofType sampleType: SampleType<Sample>) async {\n        for object in deletedObjects {\n            logger.debug(\"Received removed HealthKit sample with id \\(object.uuid)\")\n        }\n    }",
+  "onboardingImports": ["SpeziHealthKit"],
+  "onboardingSteps": ["if HKHealthStore.isHealthDataAvailable() {\n                HealthKitPermissions()\n            }"],
+  "entitlements": {
+    "com.apple.developer.healthkit": true,
+    "com.apple.developer.healthkit.access": ["health-records"]
+  },
+  "infoPlistEntries": {
+    "NSHealthShareUsageDescription": "This app uses your health data to track your wellbeing.",
+    "NSHealthUpdateUsageDescription": "This app records health data on your behalf."
+  }
+}

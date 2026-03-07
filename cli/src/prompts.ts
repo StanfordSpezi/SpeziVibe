@@ -84,33 +84,38 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
   const backend = await select<BackendType>({
     message: 'Select a backend:',
     choices: backendOptions.map((b) => ({
-      name: `${b.name}`,
+      name: `${b.name} — ${b.description}`,
       value: b.value,
     })),
   });
 
-  // Prompt for backend env vars if applicable
+  // Prompt for backend env vars if applicable (React Native only)
   let envValues: Record<string, string> = {};
-  const backends = await discoverBackends();
-  const selectedBackend = backends.find(b => b.name === backend);
-  if (selectedBackend) {
-    envValues = await promptForEnvVars(selectedBackend);
+  if (platform.id === 'react-native') {
+    const backends = await discoverBackends();
+    const selectedBackend = backends.find(b => b.name === backend);
+    if (selectedBackend) {
+      envValues = await promptForEnvVars(selectedBackend);
+    }
   }
 
-  // Feature selection (from platform)
+  // Feature selection (from platform — Spezi module picker for Swift)
   const featureOptions = await platform.getFeatures();
+  const featureLabel = platform.id === 'swift'
+    ? 'Which Spezi modules do you want to include?'
+    : 'Which features do you want to include?';
   const features = await checkbox<Feature>({
-    message: 'Which features do you want to include?',
+    message: featureLabel,
     choices: featureOptions.map((f) => ({
-      name: `${f.name} (${f.description})`,
+      name: f.name,
       value: f.value as Feature,
       checked: f.defaultChecked,
     })),
   });
 
-  // LLM provider selection (only if chat is enabled)
+  // LLM provider selection (React Native only, when chat is enabled)
   let llmProviders: LLMProvider[] = [];
-  if (features.includes('chat')) {
+  if (platform.id === 'react-native' && features.includes('chat')) {
     llmProviders = await promptForLLMProviders();
 
     // Prompt for LLM API keys
