@@ -1,0 +1,23 @@
+{
+  "name": "Contacts",
+  "category": "feature",
+  "platform": "swift",
+  "description": "Provider contact information cards via SpeziContact",
+  "spmPackages": {
+    "SpeziContact": {
+      "url": "https://github.com/StanfordSpezi/SpeziContact.git",
+      "from": "1.0.0",
+      "products": ["SpeziContact"]
+    }
+  },
+  "targetDependencies": ["SpeziContact"],
+  "copyFiles": [
+    "Contacts/ContactsView.swift"
+  ],
+  "tabs": {
+    "case": "contacts",
+    "label": "Contacts",
+    "icon": "person.fill",
+    "view": "ContactsView(presentingAccount: $presentingAccount)"
+  }
+}
