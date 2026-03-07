@@ -16,16 +16,16 @@ struct AccountOnboarding: View {
 
 
     var body: some View {
-        AccountSetup { _ in
-            // setup complete
-        } header: {
-            AccountSetupHeader()
-        } continue: {
-            Button("Continue") {
-                path.nextStep()
+        AccountSetup(
+            setupComplete: { _ in },
+            header: { AccountSetupHeader() },
+            continue: {
+                Button("Continue") {
+                    path.nextStep()
+                }
+                .frame(maxWidth: .infinity, minHeight: 38)
+                .buttonStyle(.borderedProminent)
             }
-            .frame(maxWidth: .infinity, minHeight: 38)
-            .buttonStyle(.borderedProminent)
-        }
+        )
     }
 }

@@ -17,7 +17,8 @@
   ],
   "copyFiles": [
     "Consent.swift",
-    "InterestingModules.swift"
+    "InterestingModules.swift",
+    "Resources/ConsentDocument.md"
   ],
   "onboardingSteps": [
     "InterestingModules()",
