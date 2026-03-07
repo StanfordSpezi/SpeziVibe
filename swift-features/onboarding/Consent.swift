@@ -16,30 +16,12 @@ struct Consent: View {
     @State private var viewState: ViewState = .idle
 
 
-    private static let consentMarkdown = """
-    # Consent
-
-    This is a sample consent document for **{{DisplayName}}**.
-
-    By signing below, you agree to participate in this digital health study.
-
-    ## Data Collection
-
-    Your data will be stored securely and used only for the purposes described.
-
-    ## Your Rights
-
-    You may withdraw your consent at any time by contacting the research team.
-    """
-
     var body: some View {
-        if let document = try? ConsentDocument(markdown: Self.consentMarkdown) {
-            OnboardingConsentView(
-                consentDocument: document,
-                viewState: $viewState
-            ) {
-                path.nextStep()
-            }
+        OnboardingConsentView(
+            consentDocument: nil,
+            viewState: $viewState
+        ) {
+            path.nextStep()
         }
     }
 }
