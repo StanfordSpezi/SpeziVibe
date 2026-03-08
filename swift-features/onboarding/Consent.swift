@@ -16,18 +16,19 @@ struct Consent: View {
     @State private var viewState: ViewState = .idle
 
 
-    private var consentMarkdown: Data {
+    private var consentDocument: ConsentDocument? {
         guard let url = Bundle.main.url(forResource: "ConsentDocument", withExtension: "md"),
-              let data = try? Data(contentsOf: url) else {
-            return Data("Consent document not found.".utf8)
+              let markdown = try? String(contentsOf: url, encoding: .utf8),
+              let doc = try? ConsentDocument(markdown: markdown) else {
+            return nil
         }
-        return data
+        return doc
     }
 
 
     var body: some View {
         OnboardingConsentView(
-            markdown: consentMarkdown,
+            consentDocument: consentDocument,
             viewState: $viewState
         ) {
             path.nextStep()
