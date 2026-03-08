@@ -29,29 +29,29 @@
 		<string>armv7</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>This app may use the camera to capture photos for health assessments and documentation.</string>
+	<string>This app uses the camera to capture photos for documenting health-related observations, such as wound healing progress or medication labels.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>This app may use the microphone for voice input during health assessments.</string>
+	<string>This app uses the microphone to record voice input, allowing you to log health observations or complete assessments hands-free.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app may access your photo library to import images for health records.</string>
+	<string>This app accesses your photo library to import images for health records, such as uploading photos of medical documents or health progress.</string>
 	<key>NSHealthShareUsageDescription</key>
-	<string>This app reads your health data to provide personalized health insights.</string>
+	<string>This app reads health data such as heart rate, activity levels, and workout history to provide personalized insights that help you monitor and improve your overall wellness.</string>
 	<key>NSHealthUpdateUsageDescription</key>
-	<string>This app writes health data to keep your records up to date.</string>
-	<key>NSCalendarsUsageDescription</key>
-	<string>This app may access your calendar to schedule health-related reminders.</string>
-	<key>NSContactsUsageDescription</key>
-	<string>This app may access contacts to help share health information with caregivers.</string>
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>This app may use the local network for nearby device communication.</string>
-	<key>NSFaceIDUsageDescription</key>
-	<string>This app uses Face ID to protect your health data.</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>This app may use speech recognition for voice-based health input.</string>
+	<string>This app saves health data such as completed workouts and activity summaries to keep your health records current and help you track progress over time.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app may use your location for location-based health features.</string>
+	<string>This app uses your location to associate health activities with where they occurred, such as mapping a walking route or identifying nearby health resources.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This app accesses your calendar to schedule health-related reminders, such as medication times, upcoming appointments, or wellness check-ins.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app accesses your contacts to help you share health information with caregivers or emergency contacts when needed.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app uses the local network to communicate with nearby health devices and sensors for real-time data collection.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>This app uses Face ID to verify your identity and protect access to your personal health information.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app uses speech recognition to convert voice input into text, allowing you to log health observations or complete questionnaires hands-free.</string>
 	<key>NSMotionUsageDescription</key>
-	<string>This app may use motion data to track physical activity.</string>
+	<string>This app uses motion and fitness data to track your physical activity, such as counting steps and monitoring movement patterns, to help you stay active and meet your health goals.</string>
 	<!-- __INJECT_PLIST_ENTRIES__ -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
