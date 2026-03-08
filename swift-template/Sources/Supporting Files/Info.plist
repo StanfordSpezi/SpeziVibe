@@ -28,6 +28,8 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>This app may use the camera to capture photos for health assessments and documentation.</string>
 	<!-- __INJECT_PLIST_ENTRIES__ -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
