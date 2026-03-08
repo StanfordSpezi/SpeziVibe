@@ -13,6 +13,7 @@ This directory contains Claude Code agents to assist with developing your digita
 | `/test` | Generate Jest tests |
 | `/fhir` | Validate FHIR R4 compliance |
 | `/fhir-mapping` | Generate FHIR resource mappings |
+| `/fhir-designer` | Design FHIR data models from clinical requirements |
 | `/feature` | Create new app features and screens |
 | `/release` | Create release notes |
 
@@ -86,6 +87,25 @@ Generates FHIR R4 resource mappings.
 **Use when:**
 - Adding support for new FHIR resources
 - Extending existing mappings
+
+---
+
+### `/fhir-designer` - FHIR Data Model Designer
+
+Designs a complete FHIR R4 data model from clinical requirements. Maps clinical concepts to appropriate resources, recommends profiles and implementation guides, generates sample FHIR JSON, and shows how resources connect. All output appears in chat — copy what you need into the project.
+
+**Use when:**
+- Starting a Medplum-backed app and need to design the data model
+- Unsure which FHIR resources or profiles fit your clinical use case
+- Building questionnaires, care plans, or observation pipelines
+- Need sample FHIR JSON before implementing TypeScript mappings
+
+**Example:**
+```text
+/fhir-designer we're building a chronic pain management app that tracks daily pain scores, medication adherence, and weekly questionnaires
+```
+
+**Follow with** `/fhir-mapping` to generate the TypeScript mapping code.
 
 ---
 
