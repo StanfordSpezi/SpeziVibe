@@ -30,6 +30,28 @@
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>This app may use the camera to capture photos for health assessments and documentation.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app may use the microphone for voice input during health assessments.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app may access your photo library to import images for health records.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>This app reads your health data to provide personalized health insights.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>This app writes health data to keep your records up to date.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This app may access your calendar to schedule health-related reminders.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app may access contacts to help share health information with caregivers.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app may use the local network for nearby device communication.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>This app uses Face ID to protect your health data.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app may use speech recognition for voice-based health input.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app may use your location for location-based health features.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This app may use motion data to track physical activity.</string>
 	<!-- __INJECT_PLIST_ENTRIES__ -->
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
