@@ -49,9 +49,7 @@
   ],
   "entitlements": {
     "com.apple.developer.healthkit": true,
-    "com.apple.developer.healthkit.access": [
-      "health-records"
-    ]
+    "com.apple.developer.healthkit.access": []
   },
   "infoPlistEntries": {
     "NSHealthShareUsageDescription": "This app uses your health data to track your wellbeing.",

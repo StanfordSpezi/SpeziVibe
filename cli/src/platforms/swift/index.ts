@@ -562,6 +562,7 @@ By signing below, you confirm that you have read and understood the above inform
     const tabCases: string[] = [];
     const tabViews: string[] = [];
     const entitlements: Record<string, unknown> = {};
+    const infoPlistEntries: Record<string, string> = {};
 
     for (const featureName of allFeatures) {
       const m = manifests.get(featureName);
@@ -602,6 +603,7 @@ By signing below, you confirm that you have read and understood the above inform
       if (m.homeViewSheets) homeViewSheets.push(m.homeViewSheets);
       if (m.homeToolbar) homeToolbars.push(m.homeToolbar);
       if (m.entitlements) Object.assign(entitlements, m.entitlements);
+      if (m.infoPlistEntries) Object.assign(infoPlistEntries, m.infoPlistEntries);
 
       if (m.tabs) {
         tabCases.push(`case ${m.tabs.case}`);
@@ -680,6 +682,19 @@ By signing below, you confirm that you have read and understood the above inform
         '            // __INJECT_ONBOARDING_STEPS__': onboardingSteps.map((s) => `            ${s}`).join('\n'),
       }
     );
+
+    // Apply Info.plist entries (e.g., usage descriptions for HealthKit)
+    if (Object.keys(infoPlistEntries).length > 0) {
+      const plistPath = path.join(projectDir, 'Sources', 'Supporting Files', 'Info.plist');
+      if (await fs.pathExists(plistPath)) {
+        let content = await fs.readFile(plistPath, 'utf-8');
+        const plistLines = Object.entries(infoPlistEntries)
+          .map(([key, value]) => `\t<key>${key}</key>\n\t<string>${this.escapeXml(value)}</string>`)
+          .join('\n');
+        content = content.replace('<!-- __INJECT_PLIST_ENTRIES__ -->', plistLines);
+        await fs.writeFile(plistPath, content);
+      }
+    }
 
     // Apply entitlements
     if (Object.keys(entitlements).length > 0) {
