@@ -88,6 +88,7 @@ Every generated app includes Claude Code slash commands for AI-assisted developm
 | `/docs` | Generate documentation and READMEs for your app |
 | `/fhir` | Validate code for FHIR R4 compliance |
 | `/fhir-mapping` | Generate bidirectional FHIR resource mappings with round-trip tests |
+| `/fhir-designer` | Design FHIR data models from clinical concepts, generate sample JSON, recommend profiles |
 | `/changelog` | Generate changelogs from git history using Keep a Changelog format |
 | `/release` | Create release notes with migration guides for new versions |
 

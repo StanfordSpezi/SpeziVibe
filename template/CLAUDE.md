@@ -57,6 +57,7 @@ Claude Code agents for common tasks. Invoke with `/agent-name`.
 | test | `/test` | Generate Jest tests following project patterns |
 | fhir | `/fhir` | Validate FHIR R4 compliance in code |
 | fhir-mapping | `/fhir-mapping` | Generate FHIR resource mappings |
+| fhir-designer | `/fhir-designer` | Design FHIR data models from clinical requirements |
 | feature | `/feature` | Create new app features and screens |
 | release | `/release` | Create release notes for new versions |
 
