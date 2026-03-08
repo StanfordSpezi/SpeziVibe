@@ -40,6 +40,10 @@
 	<string>This app saves health data such as completed workouts and activity summaries to keep your health records current and help you track progress over time.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app uses your location to associate health activities with where they occurred, such as mapping a walking route or identifying nearby health resources.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app uses your location in the background to continuously track health-related activities, such as recording a walking or running route for your fitness log.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app uses your location in the background to continuously track health-related activities, such as recording a walking or running route for your fitness log.</string>
 	<key>NSCalendarsUsageDescription</key>
 	<string>This app accesses your calendar to schedule health-related reminders, such as medication times, upcoming appointments, or wellness check-ins.</string>
 	<key>NSContactsUsageDescription</key>
