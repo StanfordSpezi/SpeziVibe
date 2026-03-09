@@ -1,0 +1,53 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper: Check if user owns the document
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Helper: Check if user has a specific role
+    function hasRole(role) {
+      return isAuthenticated()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+
+    // Helper: Check if user is admin
+    function isAdmin() {
+      return hasRole('admin');
+    }
+
+    // Helper: Check if user is a provider assigned to this patient
+    function isAssignedProvider(userId) {
+      return isAuthenticated()
+        && hasRole('provider')
+        && exists(/databases/$(database)/documents/users/$(userId)/providers/$(request.auth.uid));
+    }
+
+    // Users can only access their own data
+    match /users/{userId}/{document=**} {
+      allow read: if isOwner(userId) || isAssignedProvider(userId) || isAdmin();
+      allow write: if isOwner(userId) || isAdmin();
+    }
+
+    // Audit log: write-only for authenticated users, read-only for admins
+    match /audit_log/{logId} {
+      allow create: if isAuthenticated();
+      allow read: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    // Default: deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

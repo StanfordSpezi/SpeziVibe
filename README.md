@@ -36,6 +36,24 @@ npx expo start
 
 Once running, press `i` for iOS, `a` for Android, or `w` for Web.
 
+### HIPAA Mode
+
+For apps handling Protected Health Information (PHI), use the `--hipaa` flag:
+
+```bash
+npx create-spezivibe-app my-health-app --hipaa
+```
+
+HIPAA mode adds:
+- **Audit logging** via `@spezivibe/audit` (tracks all PHI access)
+- **Session timeout** (auto-logout after 15 min inactivity)
+- **PHI sanitization** (strips sensitive data from logs)
+- **Enhanced security rules** (role-based access for Firebase)
+- **HIPAA_CHECKLIST.md** (backend-specific compliance checklist)
+- **BAA reminder** (Business Associate Agreement guidance)
+
+The CLI also prompts interactively: "Will this app handle Protected Health Information (PHI)?"
+
 ### HealthKit: Custom Dev Client Required
 
 If you selected the **HealthKit** feature, you cannot use Expo Go because HealthKit requires native iOS code. You'll need to create a custom development client:

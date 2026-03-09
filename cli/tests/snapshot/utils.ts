@@ -42,6 +42,8 @@ export async function createProjectSnapshot(projectDir: string): Promise<Project
     'app/_layout.tsx',
     'app/(tabs)/_layout.tsx',
     '.env.example',
+    'HIPAA_CHECKLIST.md',
+    'firestore.rules',
   ];
 
   const fileContents: Record<string, string> = {};
