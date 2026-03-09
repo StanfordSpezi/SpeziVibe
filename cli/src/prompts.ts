@@ -89,6 +89,40 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
     })),
   });
 
+  // Firebase configuration (Swift only — prompt for GoogleService-Info.plist values)
+  let firebaseConfig: { apiKey: string; gcmSenderId: string; projectId: string; appId: string } | undefined;
+  if (platform.id === 'swift' && backend === 'firebase') {
+    const hasExisting = await confirm({
+      message: '🔥 Do you have an existing Firebase project? (You\'ll need values from GoogleService-Info.plist)',
+      default: true,
+    });
+
+    if (hasExisting) {
+      const apiKey = await input({
+        message: 'Firebase API Key (API_KEY from GoogleService-Info.plist):',
+        validate: (v) => v.trim() ? true : 'API key is required',
+      });
+      const gcmSenderId = await input({
+        message: 'GCM Sender ID (GCM_SENDER_ID):',
+        validate: (v) => v.trim() ? true : 'GCM Sender ID is required',
+      });
+      const projectId = await input({
+        message: 'Firebase Project ID (PROJECT_ID):',
+        validate: (v) => v.trim() ? true : 'Project ID is required',
+      });
+      const appId = await input({
+        message: 'Firebase App ID (GOOGLE_APP_ID):',
+        validate: (v) => v.trim() ? true : 'App ID is required',
+      });
+      firebaseConfig = {
+        apiKey: apiKey.trim(),
+        gcmSenderId: gcmSenderId.trim(),
+        projectId: projectId.trim(),
+        appId: appId.trim(),
+      };
+    }
+  }
+
   // Prompt for backend env vars if applicable (React Native only)
   let envValues: Record<string, string> = {};
   if (platform.id === 'react-native') {
@@ -355,6 +389,7 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
       schedulerTasks,
       contacts,
       notificationConfig,
+      firebaseConfig,
     },
     platformId: platform.id,
   };
