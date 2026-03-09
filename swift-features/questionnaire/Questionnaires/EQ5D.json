@@ -1,0 +1,74 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "eq-5d-5l",
+  "title": "EQ-5D-5L Health Status",
+  "status": "active",
+  "description": "A validated 5-dimension health-related quality of life measure",
+  "item": [
+    {
+      "linkId": "eq5d-mobility",
+      "text": "Mobility",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "1", "display": "I have no problems walking" } },
+        { "valueCoding": { "code": "2", "display": "I have slight problems walking" } },
+        { "valueCoding": { "code": "3", "display": "I have moderate problems walking" } },
+        { "valueCoding": { "code": "4", "display": "I have severe problems walking" } },
+        { "valueCoding": { "code": "5", "display": "I am unable to walk" } }
+      ]
+    },
+    {
+      "linkId": "eq5d-selfcare",
+      "text": "Self-Care",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "1", "display": "I have no problems washing or dressing myself" } },
+        { "valueCoding": { "code": "2", "display": "I have slight problems washing or dressing myself" } },
+        { "valueCoding": { "code": "3", "display": "I have moderate problems washing or dressing myself" } },
+        { "valueCoding": { "code": "4", "display": "I have severe problems washing or dressing myself" } },
+        { "valueCoding": { "code": "5", "display": "I am unable to wash or dress myself" } }
+      ]
+    },
+    {
+      "linkId": "eq5d-activities",
+      "text": "Usual Activities (e.g., work, study, housework, family or leisure activities)",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "1", "display": "I have no problems doing my usual activities" } },
+        { "valueCoding": { "code": "2", "display": "I have slight problems doing my usual activities" } },
+        { "valueCoding": { "code": "3", "display": "I have moderate problems doing my usual activities" } },
+        { "valueCoding": { "code": "4", "display": "I have severe problems doing my usual activities" } },
+        { "valueCoding": { "code": "5", "display": "I am unable to do my usual activities" } }
+      ]
+    },
+    {
+      "linkId": "eq5d-pain",
+      "text": "Pain / Discomfort",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "1", "display": "I have no pain or discomfort" } },
+        { "valueCoding": { "code": "2", "display": "I have slight pain or discomfort" } },
+        { "valueCoding": { "code": "3", "display": "I have moderate pain or discomfort" } },
+        { "valueCoding": { "code": "4", "display": "I have severe pain or discomfort" } },
+        { "valueCoding": { "code": "5", "display": "I have extreme pain or discomfort" } }
+      ]
+    },
+    {
+      "linkId": "eq5d-anxiety",
+      "text": "Anxiety / Depression",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "1", "display": "I am not anxious or depressed" } },
+        { "valueCoding": { "code": "2", "display": "I am slightly anxious or depressed" } },
+        { "valueCoding": { "code": "3", "display": "I am moderately anxious or depressed" } },
+        { "valueCoding": { "code": "4", "display": "I am severely anxious or depressed" } },
+        { "valueCoding": { "code": "5", "display": "I am extremely anxious or depressed" } }
+      ]
+    },
+    {
+      "linkId": "eq5d-vas",
+      "text": "How would you rate your health today on a scale from 0 to 100? (0 = worst health, 100 = best health)",
+      "type": "integer"
+    }
+  ]
+}

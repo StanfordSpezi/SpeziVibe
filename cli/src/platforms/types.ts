@@ -26,6 +26,10 @@ export interface GenerationOptions {
   llmProviders: string[];
   outputDir: string;
   envValues?: Record<string, string>;
+  /** Selected validated questionnaires (e.g., 'phq-9', 'gad-7') */
+  questionnaires?: string[];
+  /** Custom questionnaire questions (one per line) */
+  customQuestions?: string[];
 }
 
 export interface GenerationResult {

@@ -161,6 +161,60 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
         }
       }
 
+      // 3.5. Handle questionnaire selection
+      if (allFeatures.includes('questionnaire')) {
+        const questionnaireManifest = manifests.get('questionnaire');
+        const qOpts = (questionnaireManifest as any)?.questionnaireOptions;
+        const questDir = path.join(tempDir, 'Sources', 'Questionnaires');
+        await fs.ensureDir(questDir);
+
+        let questionnairesAdded = false;
+
+        // Copy selected validated questionnaires
+        if (options.questionnaires && options.questionnaires.length > 0 && qOpts?.validated) {
+          for (const qId of options.questionnaires) {
+            const qDef = qOpts.validated[qId];
+            if (qDef?.file) {
+              const src = path.join(featuresDir, 'questionnaire', qDef.file);
+              const dest = path.join(questDir, path.basename(qDef.file));
+              if (await fs.pathExists(src)) {
+                await fs.copy(src, dest);
+                questionnairesAdded = true;
+              }
+            }
+          }
+        }
+
+        // Generate questionnaire from custom questions
+        if (options.customQuestions && options.customQuestions.length > 0) {
+          const customQ = {
+            resourceType: 'Questionnaire',
+            id: 'custom-questionnaire',
+            title: `${options.displayName} Questionnaire`,
+            status: 'active',
+            item: options.customQuestions.map((q, i) => ({
+              linkId: `q${i + 1}`,
+              text: q,
+              type: 'string',
+            })),
+          };
+          await fs.writeJson(
+            path.join(questDir, 'CustomQuestionnaire.json'),
+            customQ,
+            { spaces: 2 }
+          );
+          questionnairesAdded = true;
+        }
+
+        // If no questionnaires selected, copy the default sample
+        if (!questionnairesAdded) {
+          const defaultSrc = path.join(featuresDir, 'questionnaire', 'Questionnaires', 'SampleQuestionnaire.json');
+          if (await fs.pathExists(defaultSrc)) {
+            await fs.copy(defaultSrc, path.join(questDir, 'SampleQuestionnaire.json'));
+          }
+        }
+      }
+
       // 4. Generate consent document based on selected features
       if (allFeatures.includes('onboarding')) {
         spinner = spin('Generating consent document...');

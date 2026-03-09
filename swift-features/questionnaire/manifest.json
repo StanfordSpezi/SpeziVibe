@@ -24,7 +24,6 @@
     "FHIRQuestionnaires"
   ],
   "copyFiles": [
-    "Questionnaires/SampleQuestionnaire.json",
     "Questionnaires/Bundle+Questionnaire.swift"
   ],
   "standardImports": [
@@ -33,5 +32,25 @@
   "standardMethods": "func add(\n        response: ModelsR4.QuestionnaireResponse,\n        for questionnaire: ModelsR4.Questionnaire\n    ) async {\n        let responseId = response.identifier?.value?.value?.string ?? UUID().uuidString\n        logger.debug(\"Received questionnaire response: \\(responseId)\")\n    }",
   "requires": [
     "scheduler"
-  ]
+  ],
+  "questionnaireOptions": {
+    "validated": {
+      "phq-9": {
+        "name": "PHQ-9 (Patient Health Questionnaire)",
+        "description": "9-item depression screening",
+        "file": "Questionnaires/PHQ9.json"
+      },
+      "gad-7": {
+        "name": "GAD-7 (Generalized Anxiety Disorder)",
+        "description": "7-item anxiety screening",
+        "file": "Questionnaires/GAD7.json"
+      },
+      "eq-5d": {
+        "name": "EQ-5D-5L (Health Status)",
+        "description": "5-dimension quality of life measure",
+        "file": "Questionnaires/EQ5D.json"
+      }
+    },
+    "defaultQuestionnaire": "Questionnaires/SampleQuestionnaire.json"
+  }
 }

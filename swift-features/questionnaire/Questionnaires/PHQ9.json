@@ -1,0 +1,108 @@
+{
+  "resourceType": "Questionnaire",
+  "id": "phq-9",
+  "title": "Patient Health Questionnaire (PHQ-9)",
+  "status": "active",
+  "description": "A validated 9-item depression screening instrument",
+  "item": [
+    {
+      "linkId": "phq9-1",
+      "text": "Little interest or pleasure in doing things",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "0", "display": "Not at all" } },
+        { "valueCoding": { "code": "1", "display": "Several days" } },
+        { "valueCoding": { "code": "2", "display": "More than half the days" } },
+        { "valueCoding": { "code": "3", "display": "Nearly every day" } }
+      ]
+    },
+    {
+      "linkId": "phq9-2",
+      "text": "Feeling down, depressed, or hopeless",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "0", "display": "Not at all" } },
+        { "valueCoding": { "code": "1", "display": "Several days" } },
+        { "valueCoding": { "code": "2", "display": "More than half the days" } },
+        { "valueCoding": { "code": "3", "display": "Nearly every day" } }
+      ]
+    },
+    {
+      "linkId": "phq9-3",
+      "text": "Trouble falling or staying asleep, or sleeping too much",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "0", "display": "Not at all" } },
+        { "valueCoding": { "code": "1", "display": "Several days" } },
+        { "valueCoding": { "code": "2", "display": "More than half the days" } },
+        { "valueCoding": { "code": "3", "display": "Nearly every day" } }
+      ]
+    },
+    {
+      "linkId": "phq9-4",
+      "text": "Feeling tired or having little energy",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "0", "display": "Not at all" } },
+        { "valueCoding": { "code": "1", "display": "Several days" } },
+        { "valueCoding": { "code": "2", "display": "More than half the days" } },
+        { "valueCoding": { "code": "3", "display": "Nearly every day" } }
+      ]
+    },
+    {
+      "linkId": "phq9-5",
+      "text": "Poor appetite or overeating",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "0", "display": "Not at all" } },
+        { "valueCoding": { "code": "1", "display": "Several days" } },
+        { "valueCoding": { "code": "2", "display": "More than half the days" } },
+        { "valueCoding": { "code": "3", "display": "Nearly every day" } }
+      ]
+    },
+    {
+      "linkId": "phq9-6",
+      "text": "Feeling bad about yourself — or that you are a failure or have let yourself or your family down",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "0", "display": "Not at all" } },
+        { "valueCoding": { "code": "1", "display": "Several days" } },
+        { "valueCoding": { "code": "2", "display": "More than half the days" } },
+        { "valueCoding": { "code": "3", "display": "Nearly every day" } }
+      ]
+    },
+    {
+      "linkId": "phq9-7",
+      "text": "Trouble concentrating on things, such as reading the newspaper or watching television",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "0", "display": "Not at all" } },
+        { "valueCoding": { "code": "1", "display": "Several days" } },
+        { "valueCoding": { "code": "2", "display": "More than half the days" } },
+        { "valueCoding": { "code": "3", "display": "Nearly every day" } }
+      ]
+    },
+    {
+      "linkId": "phq9-8",
+      "text": "Moving or speaking so slowly that other people could have noticed? Or the opposite — being so fidgety or restless that you have been moving around a lot more than usual",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "0", "display": "Not at all" } },
+        { "valueCoding": { "code": "1", "display": "Several days" } },
+        { "valueCoding": { "code": "2", "display": "More than half the days" } },
+        { "valueCoding": { "code": "3", "display": "Nearly every day" } }
+      ]
+    },
+    {
+      "linkId": "phq9-9",
+      "text": "Thoughts that you would be better off dead or of hurting yourself in some way",
+      "type": "choice",
+      "answerOption": [
+        { "valueCoding": { "code": "0", "display": "Not at all" } },
+        { "valueCoding": { "code": "1", "display": "Several days" } },
+        { "valueCoding": { "code": "2", "display": "More than half the days" } },
+        { "valueCoding": { "code": "3", "display": "Nearly every day" } }
+      ]
+    }
+  ]
+}
