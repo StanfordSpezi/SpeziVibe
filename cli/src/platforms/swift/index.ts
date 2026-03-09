@@ -350,6 +350,19 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
       }
     }
 
+    // Copy feature-specific scripts (e.g., supabase-setup.sh)
+    const featureScriptsDir = path.join(featureDir, 'scripts');
+    if (await fs.pathExists(featureScriptsDir)) {
+      const scriptsDestDir = path.join(projectDir, 'scripts');
+      await fs.ensureDir(scriptsDestDir);
+      const scriptFiles = await fs.readdir(featureScriptsDir);
+      for (const scriptFile of scriptFiles) {
+        const src = path.join(featureScriptsDir, scriptFile);
+        const dest = path.join(scriptsDestDir, scriptFile);
+        await fs.copy(src, dest);
+      }
+    }
+
     // Copy onboarding-specific files
     if (manifest.onboardingCopyFiles) {
       for (const file of manifest.onboardingCopyFiles) {
@@ -381,11 +394,11 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
   ): Promise<void> {
     const hasHealthKit = features.includes('healthkit');
     const hasQuestionnaire = features.includes('questionnaire');
-    const hasAccount = features.includes('account') || backend === 'firebase';
+    const hasAccount = features.includes('account') || backend === 'firebase' || backend === 'supabase';
     const hasScheduler = features.includes('scheduler');
     const hasNotifications = features.includes('notifications');
     const hasContacts = features.includes('contacts');
-    const usesCloud = backend === 'firebase' || backend === 'medplum';
+    const usesCloud = backend === 'firebase' || backend === 'supabase' || backend === 'medplum';
 
     // --- Purpose section ---
     const purposeParts = ['manage your health activities'];
