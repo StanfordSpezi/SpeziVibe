@@ -13,7 +13,7 @@ platforms/
     config.ts           # RN-specific features, LLM providers
     prompts.ts          # RN-specific prompts (LLM keys, env vars)
   swift/
-    index.ts            # SwiftPlatformGenerator (stub)
+    index.ts            # SwiftPlatformGenerator
 ```
 
 ## Adding a New Platform
