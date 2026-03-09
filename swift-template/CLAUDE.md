@@ -36,6 +36,52 @@ Configuration(standard: {{ProjectName}}Standard()) {
 | `Sources/OnboardingFlow.swift` | Onboarding/consent flow |
 | `Sources/SharedContext/FeatureFlags.swift` | Dev/test feature toggles |
 
+## Setup Checklist
+
+Before building for the first time:
+
+1. **Firebase Setup (one command):**
+   ```bash
+   ./scripts/firebase-setup.sh
+   ```
+   This automatically: creates Firebase project, registers iOS app, downloads GoogleService-Info.plist,
+   enables Email/Password auth, creates Firestore database, deploys security rules, enables Storage.
+
+   Or manually:
+   - Go to [Firebase Console](https://console.firebase.google.com) → Create project → Add iOS app
+   - Download `GoogleService-Info.plist` to `Sources/Resources/GoogleService-Info.plist`
+   - Enable Authentication → Email/Password
+   - Create Firestore database
+   - Ensure the `BUNDLE_ID` in the plist matches `PRODUCT_BUNDLE_IDENTIFIER` in `project.yml`
+
+2. **Code Signing** — Set your `DEVELOPMENT_TEAM` in `project.yml` (currently `Q922968VSH`)
+
+## Pre-Deploy Testing
+
+**Every build is gated by smoke tests.** The `build-and-deploy.sh` script automatically runs these
+before uploading to TestFlight:
+
+- ✅ App launches without crashing
+- ✅ App launches in offline mode (Firebase disabled)
+- ✅ Home screen loads with tab bar
+- ✅ All tabs are accessible
+- ✅ Onboarding flow starts correctly
+- ✅ Signup UI is reachable
+
+If any test fails, the build is **blocked** from uploading. Fix the issue first.
+
+```bash
+# Run smoke tests manually
+xcodebuild test -scheme {{ProjectName}} -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -only-testing:{{ProjectName}}UITests/SmokeTests -skipMacroValidation
+
+# Deploy (tests run automatically before upload)
+./scripts/build-and-deploy.sh
+
+# Skip tests (not recommended)
+./scripts/build-and-deploy.sh --skip-tests
+```
+
 ## Commands
 
 ```bash
@@ -47,6 +93,40 @@ xcodebuild test -scheme {{ProjectName}} -destination 'platform=iOS Simulator,nam
 
 # Regenerate Xcode project (after modifying project.yml)
 xcodegen generate
+
+# Build, archive, and upload to TestFlight (one command!)
+./scripts/build-and-deploy.sh
+
+# Bump build number + build + upload
+./scripts/build-and-deploy.sh --bump
+
+# Build only (no upload)
+./scripts/build-and-deploy.sh --build-only
+```
+
+### Archive & Upload (manual)
+
+```bash
+# Archive with macro validation bypass
+xcodebuild archive \
+  -project {{ProjectName}}.xcodeproj \
+  -scheme {{ProjectName}} \
+  -destination "generic/platform=iOS" \
+  -archivePath /tmp/{{ProjectName}}.xcarchive \
+  -allowProvisioningUpdates \
+  -skipMacroValidation \
+  CODE_SIGN_STYLE=Automatic \
+  DEVELOPMENT_TEAM=Q922968VSH
+
+# Export + upload
+xcodebuild -exportArchive \
+  -archivePath /tmp/{{ProjectName}}.xcarchive \
+  -exportOptionsPlist export-options.plist \
+  -exportPath /tmp/{{ProjectName}}-export \
+  -allowProvisioningUpdates \
+  -authenticationKeyPath ~/Downloads/AuthKey_S8RY46W528.p8 \
+  -authenticationKeyID S8RY46W528 \
+  -authenticationKeyIssuerID 493bc6bd-8a12-42a0-9faa-08dab2890fc5
 ```
 
 ## Critical Rules

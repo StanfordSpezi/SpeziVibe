@@ -66,6 +66,7 @@ interface SwiftManifest {
   standardDependencies?: string;
   onboardingImports?: string[];
   onboardingSteps?: string[];
+  resourceFiles?: string[];
   onboardingCopyFiles?: string[];
   homeViewImports?: string[];
   homeViewSheets?: string;
@@ -337,6 +338,18 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
       }
     }
 
+    // Copy resource files (e.g., GoogleService-Info.plist)
+    if (manifest.resourceFiles) {
+      for (const file of manifest.resourceFiles) {
+        const src = path.join(featureDir, file);
+        const dest = path.join(projectDir, 'Sources', 'Resources', file);
+        if (await fs.pathExists(src)) {
+          await fs.ensureDir(path.dirname(dest));
+          await fs.copy(src, dest);
+        }
+      }
+    }
+
     // Copy onboarding-specific files
     if (manifest.onboardingCopyFiles) {
       for (const file of manifest.onboardingCopyFiles) {
@@ -514,6 +527,10 @@ By signing below, you confirm that you have read and understood the above inform
         const isPlist = filePath.endsWith('.plist') || filePath.endsWith('.xml');
         const safeDisplayName = isPlist ? this.escapeXml(displayName) : displayName;
         content = content.replace(/\{\{DisplayName\}\}/g, safeDisplayName);
+
+        // Bundle ID substitution (used by GoogleService-Info.plist)
+        const bundleId = `com.spezivibe.${projectNameLower}`;
+        content = content.replace(/\{\{bundleId\}\}/g, bundleId);
 
         if (content !== original) {
           await fs.writeFile(filePath, content);

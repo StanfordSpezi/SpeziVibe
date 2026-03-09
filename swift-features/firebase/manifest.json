@@ -43,12 +43,14 @@
     "Delegate.swift",
     "Standard.swift"
   ],
+  "resourceFiles": [
+    "GoogleService-Info.plist"
+  ],
   "envVars": {
     "FIREBASE_PROJECT_ID": "",
     "FIREBASE_API_KEY": ""
   },
   "extraFiles": [
-    "GoogleService-Info.plist.example",
     "firebase.json",
     "firestore.rules",
     ".firebaserc"
