@@ -61,6 +61,13 @@ export interface GenerationOptions {
   contacts?: ContactInfo[];
   /** Notification configuration */
   notificationConfig?: NotificationConfig;
+  /** Firebase project configuration */
+  firebaseConfig?: {
+    apiKey: string;
+    gcmSenderId: string;
+    projectId: string;
+    appId: string;
+  };
 }
 
 export interface GenerationResult {

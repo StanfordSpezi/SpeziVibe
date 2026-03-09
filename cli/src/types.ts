@@ -49,6 +49,13 @@ export interface ProjectOptions {
   contacts?: ContactInfo[];
   /** Notification configuration */
   notificationConfig?: NotificationConfig;
+  /** Firebase project configuration (for GoogleService-Info.plist) */
+  firebaseConfig?: {
+    apiKey: string;
+    gcmSenderId: string;
+    projectId: string;
+    appId: string;
+  };
 }
 
 export interface SourcePaths {
