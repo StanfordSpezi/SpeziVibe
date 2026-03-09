@@ -1,0 +1,37 @@
+{
+  "name": "Supabase",
+  "category": "backend",
+  "platform": "swift",
+  "description": "Cloud storage and authentication via Supabase (Postgres + Auth + Storage)",
+  "spmPackages": {
+    "Supabase": {
+      "url": "https://github.com/supabase/supabase-swift.git",
+      "from": "2.0.0",
+      "products": [
+        "Supabase"
+      ]
+    }
+  },
+  "targetDependencies": [
+    "Supabase"
+  ],
+  "autoIncludes": [
+    "account",
+    "onboarding"
+  ],
+  "copyFiles": [
+    "SupabaseConfiguration.swift",
+    "SupabaseAccountService.swift"
+  ],
+  "replaceFiles": [
+    "Delegate.swift",
+    "Standard.swift"
+  ],
+  "resourceFiles": [
+    "Supabase.plist"
+  ],
+  "envVars": {
+    "SUPABASE_URL": "",
+    "SUPABASE_ANON_KEY": ""
+  }
+}

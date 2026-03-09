@@ -88,4 +88,9 @@ export const SWIFT_BACKENDS = [
     name: 'Firebase',
     description: 'Cloud storage with SpeziFirebase + Firestore',
   },
+  {
+    value: 'supabase',
+    name: 'Supabase',
+    description: 'Open-source backend with Postgres, Auth, and Storage',
+  },
 ];
