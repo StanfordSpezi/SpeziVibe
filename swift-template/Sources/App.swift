@@ -16,6 +16,11 @@ struct {{ProjectName}}App: App {
     @UIApplicationDelegateAdaptor({{ProjectName}}Delegate.self) var appDelegate
     @AppStorage(StorageKeys.onboardingFlowComplete) var completedOnboardingFlow = false
 
+    /// Check if Firebase is properly configured (GoogleService-Info.plist exists)
+    private static var isFirebaseConfigured: Bool {
+        Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil
+    }
+
 
     private var showOnboarding: Binding<Bool> {
         Binding(
