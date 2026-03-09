@@ -1,6 +1,6 @@
 import { input, select, checkbox, confirm } from '@inquirer/prompts';
 import pc from 'picocolors';
-import type { BackendType, Feature, LLMProvider, ProjectOptions } from './types.js';
+import type { BackendType, Feature, LLMProvider, ProjectOptions, SchedulerTask, ContactInfo, NotificationConfig } from './types.js';
 import type { PlatformGenerator } from './platforms/types.js';
 import { getReadyPlatforms, getPlatform } from './platforms/registry.js';
 import { discoverBackends, FEATURES, LLM_PROVIDERS } from './config.js';
@@ -149,6 +149,185 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
     }
   }
 
+  // ── Color Palette (Swift only) ──
+  let primaryColor: string | undefined;
+  if (platform.id === 'swift') {
+    const colorChoice = await select<string>({
+      message: '🎨 Choose a primary color for your app:',
+      choices: [
+        { name: '🔴 Stanford Cardinal (#8C1515)', value: '#8C1515' },
+        { name: '🔵 Ocean Blue (#0077B6)', value: '#0077B6' },
+        { name: '🌲 Forest Green (#2D6A4F)', value: '#2D6A4F' },
+        { name: '💜 Amethyst Purple (#7B2CBF)', value: '#7B2CBF' },
+        { name: '🌅 Sunset Orange (#F77F00)', value: '#F77F00' },
+        { name: '🩶 Slate (#475569)', value: '#475569' },
+        { name: '✏️  Custom hex color', value: 'custom' },
+      ],
+    });
+
+    if (colorChoice === 'custom') {
+      primaryColor = await input({
+        message: 'Enter your hex color (e.g., #FF5733):',
+        validate: (value) => {
+          if (/^#[0-9A-Fa-f]{6}$/.test(value.trim())) return true;
+          return 'Please enter a valid hex color (e.g., #FF5733)';
+        },
+      });
+      primaryColor = primaryColor.trim();
+    } else {
+      primaryColor = colorChoice;
+    }
+  }
+
+  // ── App Icon (Swift only) ──
+  let appIconPath: string | undefined;
+  if (platform.id === 'swift') {
+    const wantsIcon = await confirm({
+      message: '🖼️  Do you have a custom app icon to use? (1024x1024 PNG recommended)',
+      default: false,
+    });
+    if (wantsIcon) {
+      appIconPath = await input({
+        message: 'Path to your app icon file:',
+        validate: (value) => {
+          if (!value.trim()) return 'Please provide a file path';
+          return true;
+        },
+      });
+      appIconPath = appIconPath.trim();
+    }
+  }
+
+  // ── HealthKit Data Types ──
+  let healthKitTypes: string[] = [];
+  if (features.includes('healthkit')) {
+    healthKitTypes = await checkbox<string>({
+      message: '🩺 What health data do you want to collect?',
+      choices: [
+        { name: 'Steps (stepCount)', value: 'stepCount', checked: true },
+        { name: 'Heart Rate (heartRate)', value: 'heartRate', checked: true },
+        { name: 'Blood Pressure — Systolic (bloodPressureSystolic)', value: 'bloodPressureSystolic' },
+        { name: 'Blood Pressure — Diastolic (bloodPressureDiastolic)', value: 'bloodPressureDiastolic' },
+        { name: 'Weight (bodyMass)', value: 'bodyMass' },
+        { name: 'Height (height)', value: 'height' },
+        { name: 'Blood Glucose (bloodGlucose)', value: 'bloodGlucose' },
+        { name: 'Oxygen Saturation (oxygenSaturation)', value: 'oxygenSaturation' },
+        { name: 'Sleep Analysis (sleepAnalysis)', value: 'sleepAnalysis' },
+        { name: 'Active Energy (activeEnergyBurned)', value: 'activeEnergyBurned' },
+        { name: 'Workouts (workoutType)', value: 'workoutType' },
+      ],
+    });
+  }
+
+  // ── Scheduler Tasks ──
+  let schedulerTasks: SchedulerTask[] = [];
+  if (features.includes('scheduler')) {
+    let addMore = true;
+    while (addMore) {
+      const taskName = await input({
+        message: '📋 Task name:',
+        default: schedulerTasks.length === 0 ? 'Daily Check-In' : undefined,
+        validate: (v) => v.trim() ? true : 'Task name is required',
+      });
+
+      const taskFrequency = await select<'daily' | 'weekly' | 'monthly'>({
+        message: `How often should "${taskName.trim()}" run?`,
+        choices: [
+          { name: 'Daily', value: 'daily' },
+          { name: 'Weekly', value: 'weekly' },
+          { name: 'Monthly', value: 'monthly' },
+        ],
+      });
+
+      const taskTime = await input({
+        message: 'What time? (HH:MM, 24h format):',
+        default: '09:00',
+        validate: (v) => /^\d{2}:\d{2}$/.test(v.trim()) ? true : 'Use HH:MM format (e.g., 09:00)',
+      });
+
+      schedulerTasks.push({
+        name: taskName.trim(),
+        frequency: taskFrequency,
+        time: taskTime.trim(),
+      });
+
+      addMore = await confirm({
+        message: 'Add another scheduled task?',
+        default: false,
+      });
+    }
+  }
+
+  // ── Contacts Builder ──
+  let contacts: ContactInfo[] = [];
+  if (features.includes('contacts')) {
+    let addMore = true;
+    while (addMore) {
+      const cName = await input({
+        message: '👤 Contact name:',
+        validate: (v) => v.trim() ? true : 'Name is required',
+      });
+
+      const cTitle = await input({
+        message: `Title for ${cName.trim()} (optional):`,
+      });
+
+      const cOrg = await input({
+        message: `Organization (optional):`,
+      });
+
+      const cEmail = await input({
+        message: `Email (optional):`,
+      });
+
+      const cPhone = await input({
+        message: `Phone (optional):`,
+      });
+
+      contacts.push({
+        name: cName.trim(),
+        title: cTitle.trim() || undefined,
+        org: cOrg.trim() || undefined,
+        email: cEmail.trim() || undefined,
+        phone: cPhone.trim() || undefined,
+      });
+
+      addMore = await confirm({
+        message: 'Add another contact?',
+        default: false,
+      });
+    }
+  }
+
+  // ── Notification Configuration ──
+  let notificationConfig: NotificationConfig | undefined;
+  if (features.includes('notifications')) {
+    const permissionTiming = await select<'onboarding' | 'firstUse'>({
+      message: '🔔 When should the app request notification permissions?',
+      choices: [
+        { name: 'During onboarding (recommended)', value: 'onboarding' },
+        { name: 'On first use (lazy permission)', value: 'firstUse' },
+      ],
+    });
+
+    let linkedTasks: string[] = [];
+    if (schedulerTasks.length > 0) {
+      linkedTasks = await checkbox<string>({
+        message: 'Link notifications to which scheduled tasks?',
+        choices: schedulerTasks.map((t) => ({
+          name: t.name,
+          value: t.name,
+          checked: true,
+        })),
+      });
+    }
+
+    notificationConfig = {
+      permissionTiming,
+      linkedTasks: linkedTasks.length > 0 ? linkedTasks : undefined,
+    };
+  }
+
   // LLM provider selection (React Native only, when chat is enabled)
   let llmProviders: LLMProvider[] = [];
   if (platform.id === 'react-native' && features.includes('chat')) {
@@ -170,6 +349,12 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
       envValues,
       questionnaires,
       customQuestions,
+      primaryColor,
+      appIconPath,
+      healthKitTypes,
+      schedulerTasks,
+      contacts,
+      notificationConfig,
     },
     platformId: platform.id,
   };
