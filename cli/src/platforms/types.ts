@@ -18,6 +18,25 @@ export interface FeatureOption {
   defaultChecked: boolean;
 }
 
+export interface SchedulerTask {
+  name: string;
+  frequency: 'daily' | 'weekly' | 'monthly';
+  time: string; // HH:MM
+}
+
+export interface ContactInfo {
+  name: string;
+  title?: string;
+  org?: string;
+  email?: string;
+  phone?: string;
+}
+
+export interface NotificationConfig {
+  permissionTiming: 'onboarding' | 'firstUse';
+  linkedTasks?: string[];
+}
+
 export interface GenerationOptions {
   projectName: string;
   displayName: string;
@@ -30,6 +49,18 @@ export interface GenerationOptions {
   questionnaires?: string[];
   /** Custom questionnaire questions (one per line) */
   customQuestions?: string[];
+  /** Primary brand color hex (e.g., '#0077B6') */
+  primaryColor?: string;
+  /** Optional app icon file path */
+  appIconPath?: string;
+  /** Selected HealthKit data types to collect */
+  healthKitTypes?: string[];
+  /** Configured scheduler tasks */
+  schedulerTasks?: SchedulerTask[];
+  /** Provider contacts */
+  contacts?: ContactInfo[];
+  /** Notification configuration */
+  notificationConfig?: NotificationConfig;
 }
 
 export interface GenerationResult {
