@@ -1,7 +1,9 @@
 import { input, select, checkbox, confirm } from '@inquirer/prompts';
 import pc from 'picocolors';
-import type { BackendType, Feature, FeatureManifest, LLMProvider, ProjectOptions } from './types.js';
-import { discoverBackends, FEATURES, LLM_PROVIDERS, getProviderConfig } from './config.js';
+import type { BackendType, Feature, LLMProvider, ProjectOptions } from './types.js';
+import type { PlatformGenerator } from './platforms/types.js';
+import { getReadyPlatforms } from './platforms/registry.js';
+import { discoverBackends } from './config.js';
 
 function toKebabCase(str: string): string {
   return str
@@ -11,84 +13,33 @@ function toKebabCase(str: string): string {
 }
 
 /**
- * Convert env var name to human-readable label
- * e.g., "EXPO_PUBLIC_FIREBASE_API_KEY" -> "Firebase API Key"
+ * Prompt for platform selection
+ * Auto-selects if only one platform is available
  */
-function envVarToLabel(envVar: string): string {
-  return envVar
-    .replace(/^EXPO_PUBLIC_/, '')
-    .replace(/_/g, ' ')
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
+export async function selectPlatform(): Promise<PlatformGenerator> {
+  const readyPlatforms = getReadyPlatforms();
+
+  if (readyPlatforms.length === 0) {
+    throw new Error('No platforms available');
+  }
+
+  if (readyPlatforms.length === 1) {
+    return readyPlatforms[0];
+  }
+
+  return select<PlatformGenerator>({
+    message: 'Select a platform:',
+    choices: readyPlatforms.map((p) => ({
+      name: `${p.name} - ${p.description}`,
+      value: p,
+    })),
+  });
 }
 
-/**
- * Prompt user for LLM API keys
- */
-async function promptForLLMKeys(providers: LLMProvider[]): Promise<Record<string, string>> {
-  const envValues: Record<string, string> = {};
+export async function runPrompts(projectName?: string): Promise<{ options: ProjectOptions; platformId: string }> {
+  // Platform selection (auto-selects if only one available)
+  const platform = await selectPlatform();
 
-  if (providers.length === 0) {
-    return envValues;
-  }
-
-  console.log('');
-  console.log(pc.cyan('Configure LLM API Keys:'));
-  console.log(pc.dim('  (leave blank to configure later in .env file)'));
-  console.log('');
-
-  for (const provider of providers) {
-    const config = getProviderConfig(provider);
-    if (config) {
-      console.log(pc.dim(`  Get your key at: ${config.setupUrl}`));
-      const value = await input({
-        message: `  ${config.name} API Key:`,
-        default: '',
-      });
-      envValues[config.envVar] = value;
-    }
-  }
-
-  return envValues;
-}
-
-/**
- * Prompt user for backend environment variable values
- */
-async function promptForEnvVars(backendManifest: FeatureManifest): Promise<Record<string, string>> {
-  const envValues: Record<string, string> = {};
-
-  if (!backendManifest.envVars) {
-    return envValues;
-  }
-
-  // Find env vars that need user input (empty values)
-  const promptableVars = Object.entries(backendManifest.envVars)
-    .filter(([_, value]) => value === '');
-
-  if (promptableVars.length === 0) {
-    return envValues;
-  }
-
-  console.log('');
-  console.log(pc.cyan(`Configure ${backendManifest.name}:`));
-  console.log(pc.dim('  (leave blank to configure later in .env file)'));
-  console.log('');
-
-  for (const [envVar] of promptableVars) {
-    const label = envVarToLabel(envVar);
-    const value = await input({
-      message: `  ${label}:`,
-      default: '',
-    });
-    envValues[envVar] = value;
-  }
-
-  return envValues;
-}
-
-export async function runPrompts(projectName?: string): Promise<ProjectOptions> {
   // Project name
   const name = projectName || await input({
     message: 'What is your project name?',
@@ -121,56 +72,43 @@ export async function runPrompts(projectName?: string): Promise<ProjectOptions> 
     },
   });
 
-  // Backend selection (discovered from features)
-  const backends = await discoverBackends();
-  const backendChoices = [
-    { name: 'Local (on-device only, no auth)', value: 'local' },
-    ...backends.map((b) => ({
-      name: `${b.name} (${b.description})`,
-      value: b.name,
-    })),
-  ];
-
+  // Backend selection (from platform)
+  const backendOptions = await platform.getBackends();
   const backend = await select<BackendType>({
     message: 'Select a backend:',
-    choices: backendChoices,
+    choices: backendOptions.map((b) => ({
+      name: `${b.name}`,
+      value: b.value,
+    })),
   });
 
-  // Prompt for backend env vars if applicable
+  // Prompt for backend env vars if applicable (React Native only — has feature manifests)
   let envValues: Record<string, string> = {};
-  const selectedBackend = backends.find(b => b.name === backend);
-  if (selectedBackend) {
-    envValues = await promptForEnvVars(selectedBackend);
+  if (platform.id === 'react-native') {
+    const { promptForEnvVars } = await import('./platforms/react-native/prompts.js');
+    const backends = await discoverBackends();
+    const selectedBackend = backends.find(b => b.name === backend);
+    if (selectedBackend) {
+      envValues = await promptForEnvVars(selectedBackend);
+    }
   }
 
-  // Feature selection (from config)
+  // Feature selection (from platform)
+  const featureOptions = await platform.getFeatures();
   const features = await checkbox<Feature>({
     message: 'Which features do you want to include?',
-    choices: FEATURES.map((f) => ({
+    choices: featureOptions.map((f) => ({
       name: `${f.name} (${f.description})`,
-      value: f.value,
+      value: f.value as Feature,
       checked: f.defaultChecked,
     })),
   });
 
-  // LLM provider selection (only if chat is enabled)
+  // LLM provider selection (React Native only, when chat is enabled)
   let llmProviders: LLMProvider[] = [];
-  if (features.includes('chat')) {
-    llmProviders = await checkbox<LLMProvider>({
-      message: 'Which LLM providers do you want to support?',
-      choices: LLM_PROVIDERS.map((p) => ({
-        name: `${p.name} (${p.description})`,
-        value: p.value,
-        checked: p.defaultChecked,
-      })),
-    });
-
-    // Ensure at least one provider is selected (default to first)
-    if (llmProviders.length === 0) {
-      const defaultProvider = LLM_PROVIDERS.find((p) => p.defaultChecked) || LLM_PROVIDERS[0];
-      llmProviders = [defaultProvider.value];
-      console.log(`  No providers selected, defaulting to ${defaultProvider.name}`);
-    }
+  if (platform.id === 'react-native' && features.includes('chat')) {
+    const { promptForLLMProviders, promptForLLMKeys } = await import('./platforms/react-native/prompts.js');
+    llmProviders = await promptForLLMProviders();
 
     // Prompt for LLM API keys
     const llmEnvValues = await promptForLLMKeys(llmProviders);
@@ -178,13 +116,16 @@ export async function runPrompts(projectName?: string): Promise<ProjectOptions> 
   }
 
   return {
-    projectName: toKebabCase(name),
-    displayName,
-    backend,
-    features,
-    llmProviders,
-    outputDir,
-    envValues,
+    options: {
+      projectName: toKebabCase(name),
+      displayName,
+      backend,
+      features,
+      llmProviders,
+      outputDir,
+      envValues,
+    },
+    platformId: platform.id,
   };
 }
 

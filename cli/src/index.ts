@@ -40,11 +40,11 @@ async function main(): Promise<void> {
   }
 
   try {
-    // Run interactive prompts
-    const options = await runPrompts(projectName);
+    // Run interactive prompts (includes platform selection)
+    const { options, platformId } = await runPrompts(projectName);
 
-    // Generate project
-    await generateProject(options);
+    // Generate project using selected platform
+    await generateProject(options, platformId);
 
     // Ask to install dependencies (unless skipped via flag)
     const projectDir = path.resolve(options.outputDir);
@@ -104,7 +104,7 @@ async function main(): Promise<void> {
     }
 
     // Print next steps
-    printNextSteps(options, dependenciesInstalled);
+    printNextSteps(options, dependenciesInstalled, platformId);
   } catch (err) {
     if (err instanceof Error) {
       // Handle user cancellation (Ctrl+C)
@@ -136,10 +136,10 @@ ${pc.bold('Examples:')}
   npx create-spezivibe-app
 
 ${pc.bold('Features:')}
+  - Select platform: React Native (Expo), iOS (Swift + Spezi, coming soon)
   - Choose your backend (Firebase, Medplum, or Local AsyncStorage)
   - Select features: Chat, Scheduler, Questionnaires, HealthKit
   - Pick LLM providers: OpenAI, Anthropic, Google
-  - Get a customized Expo + React Native template
 `);
 }
 
