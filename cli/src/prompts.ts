@@ -113,6 +113,42 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
     })),
   });
 
+  // Questionnaire selection (Swift only, when questionnaire feature is enabled)
+  let questionnaires: string[] = [];
+  let customQuestions: string[] = [];
+  if (features.includes('questionnaire')) {
+    const qChoice = await select<string>({
+      message: 'How would you like to set up questionnaires?',
+      choices: [
+        { name: 'Validated instruments (PHQ-9, GAD-7, EQ-5D)', value: 'validated' },
+        { name: 'Custom questions (I\'ll type them in)', value: 'custom' },
+        { name: 'Both (validated + custom)', value: 'both' },
+        { name: 'Use sample questionnaire (can customize later)', value: 'sample' },
+      ],
+    });
+
+    if (qChoice === 'validated' || qChoice === 'both') {
+      questionnaires = await checkbox<string>({
+        message: 'Select validated questionnaires:',
+        choices: [
+          { name: 'PHQ-9 — Patient Health Questionnaire (depression)', value: 'phq-9', checked: true },
+          { name: 'GAD-7 — Generalized Anxiety Disorder (anxiety)', value: 'gad-7' },
+          { name: 'EQ-5D-5L — Health Status (quality of life)', value: 'eq-5d' },
+        ],
+      });
+    }
+
+    if (qChoice === 'custom' || qChoice === 'both') {
+      const questionsInput = await input({
+        message: 'Enter your questions (separate with | or newline):',
+      });
+      customQuestions = questionsInput
+        .split(/[|\n]/)
+        .map((q: string) => q.trim())
+        .filter((q: string) => q.length > 0);
+    }
+  }
+
   // LLM provider selection (React Native only, when chat is enabled)
   let llmProviders: LLMProvider[] = [];
   if (platform.id === 'react-native' && features.includes('chat')) {
@@ -132,6 +168,8 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
       llmProviders,
       outputDir,
       envValues,
+      questionnaires,
+      customQuestions,
     },
     platformId: platform.id,
   };

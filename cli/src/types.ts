@@ -14,6 +14,10 @@ export interface ProjectOptions {
   outputDir: string;
   /** User-provided values for environment variables */
   envValues?: Record<string, string>;
+  /** Selected validated questionnaires (e.g., 'phq-9', 'gad-7') */
+  questionnaires?: string[];
+  /** Custom questionnaire questions */
+  customQuestions?: string[];
 }
 
 export interface SourcePaths {

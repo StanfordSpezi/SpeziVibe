@@ -11,27 +11,64 @@ import SpeziViews
 import SwiftUI
 
 
+/// Consent view with full signature support.
+///
+/// Displays a markdown consent document with:
+/// - First name and last name fields
+/// - Hand-drawn signature pad
+/// - Current date stamp
+/// - PDF export and sharing via toolbar button
+///
+/// The signed consent PDF is stored via the Standard.
+///
+/// - Note: The `OnboardingConsentView` exports the signed consent form as PDF
+///   to the Spezi `Standard`, necessitating the conformance of the `Standard`
+///   to the `OnboardingConstraint`.
 struct Consent: View {
     @Environment(ManagedNavigationStack.Path.self) private var path
+    @Environment({{ProjectName}}Standard.self) private var standard
+    @State private var consentDocument: ConsentDocument?
     @State private var viewState: ViewState = .idle
 
 
-    private var consentDocument: ConsentDocument? {
-        guard let url = Bundle.main.url(forResource: "ConsentDocument", withExtension: "md"),
-              let markdown = try? String(contentsOf: url, encoding: .utf8),
-              let doc = try? ConsentDocument(markdown: markdown) else {
-            return nil
-        }
-        return doc
-    }
-
-
     var body: some View {
-        OnboardingConsentView(
-            consentDocument: consentDocument,
-            viewState: $viewState
-        ) {
+        OnboardingConsentView(consentDocument: consentDocument, viewState: $viewState) {
+            guard let consentDocument else {
+                fatalError("Completing the consent document before loaded should not be possible.")
+            }
+
+            try await standard.store(consent: consentDocument)
             path.nextStep()
+        }
+        .viewStateAlert(state: $viewState)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                // Allow user to obtain a PDF version of the consent document they signed
+                ConsentShareButton(
+                    consentDocument: consentDocument,
+                    viewState: $viewState
+                )
+            }
+        }
+        .task {
+            guard let url = Bundle.main.url(forResource: "ConsentDocument", withExtension: "md") else {
+                viewState = .error(
+                    AnyLocalizedError(
+                        error: NSError(
+                            domain: "{{ProjectName}}",
+                            code: 1,
+                            userInfo: [NSLocalizedDescriptionKey: "Failed to load the consent document."]
+                        )
+                    )
+                )
+                return
+            }
+
+            do {
+                consentDocument = try ConsentDocument(contentsOf: url)
+            } catch {
+                viewState = .error(AnyLocalizedError(error: error))
+            }
         }
     }
 }
