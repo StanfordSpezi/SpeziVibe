@@ -42,6 +42,7 @@ struct {{ProjectName}}App: App {
             .sheet(isPresented: showOnboarding) {
                 OnboardingFlow()
             }
+            .tint(AppTheme.primaryColor)
             .spezi(appDelegate)
         }
     }
