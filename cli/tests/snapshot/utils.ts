@@ -13,8 +13,8 @@ async function getAllFiles(dir: string, baseDir: string = dir): Promise<string[]
     const fullPath = path.join(dir, entry.name);
     const relativePath = path.relative(baseDir, fullPath);
 
-    // Skip node_modules and .git
-    if (entry.name === 'node_modules' || entry.name === '.git') {
+    // Skip node_modules, .git, and build artifacts
+    if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === 'tsconfig.tsbuildinfo') {
       continue;
     }
 
