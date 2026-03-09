@@ -828,6 +828,21 @@ By signing below, you confirm that you have read and understood the above inform
         const bundleId = `com.spezivibe.${projectNameLower}`;
         content = content.replace(/\{\{bundleId\}\}/g, bundleId);
 
+        // Firebase config substitution (from user prompts or defaults)
+        const fbConfig = options?.firebaseConfig;
+        if (fbConfig) {
+          content = content.replace(/\{\{firebaseApiKey\}\}/g, fbConfig.apiKey);
+          content = content.replace(/\{\{firebaseGcmSenderId\}\}/g, fbConfig.gcmSenderId);
+          content = content.replace(/\{\{firebaseProjectId\}\}/g, fbConfig.projectId);
+          content = content.replace(/\{\{firebaseAppId\}\}/g, fbConfig.appId);
+        } else {
+          // Leave placeholders as TODO markers for manual configuration
+          content = content.replace(/\{\{firebaseApiKey\}\}/g, 'YOUR_FIREBASE_API_KEY');
+          content = content.replace(/\{\{firebaseGcmSenderId\}\}/g, 'YOUR_GCM_SENDER_ID');
+          content = content.replace(/\{\{firebaseProjectId\}\}/g, 'YOUR_PROJECT_ID');
+          content = content.replace(/\{\{firebaseAppId\}\}/g, 'YOUR_FIREBASE_APP_ID');
+        }
+
         // Primary color substitution
         content = content.replace(/\{\{primaryColor\}\}/g, primaryColor);
         content = content.replace(/\{\{primaryColorR\}\}/g, rgb.r);
