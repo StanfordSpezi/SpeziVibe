@@ -18,6 +18,10 @@ npx create-spezivibe-app
 
 The CLI will prompt you to choose:
 
+### Platform
+- **React Native (Expo)** - Cross-platform mobile app (default)
+- **iOS (Swift + Spezi)** - Native iOS app
+
 ### Backend
 - **Firebase** - Cloud storage with Firestore and Firebase Authentication
 - **Medplum** - FHIR R4-compliant healthcare backend with [Medplum](https://medplum.com)
@@ -39,7 +43,7 @@ When you select Medplum, configure your `.env` file with your Medplum project cr
 
 ## What You Get
 
-A customized Expo + React Native app with:
+When you select React Native (Expo), you get a customized app with:
 - Only the packages and features you selected
 - Pre-configured `.env.example` and `.env` files
 - Firebase Emulator configuration (if Firebase selected)
@@ -80,6 +84,7 @@ See [`@spezivibe/medplum`](../packages/medplum/README.md) for full documentation
 
 The CLI uses a **plugin-based architecture** with discoverable features:
 
+0. **Platform Generator** (`src/platforms/`) - Selects the target platform and runs its generator
 1. **Base Template** (`template/`) - Core app structure with injection markers
 2. **Feature Manifests** (`features/*/manifest.json`) - Declarative configuration for each feature
 3. **Backend Plugins** - Features with `category: "backend"` are auto-discovered as backend options
@@ -175,6 +180,7 @@ cli/
 │   ├── generator.ts    # Project generation orchestrator
 │   ├── prompts.ts      # Interactive prompts
 │   ├── config.ts       # Feature discovery and configuration
+│   ├── platforms/      # Platform generators (React Native, Swift)
 │   ├── types.ts        # TypeScript definitions
 │   └── utils.ts        # Dependency checking, verification
 └── tests/

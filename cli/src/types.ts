@@ -1,19 +1,61 @@
 // BackendType is dynamic - 'local' is the default, others are discovered from features
 export type BackendType = string;
 
-export type Feature = 'chat' | 'scheduler' | 'questionnaire' | 'healthkit';
+export type Feature = 'chat' | 'scheduler' | 'questionnaire' | 'healthkit' | 'account' | 'contacts' | 'notifications' | 'onboarding';
 
 export type LLMProvider = 'openai' | 'anthropic' | 'google';
+
+export interface SchedulerTask {
+  name: string;
+  frequency: 'daily' | 'weekly' | 'monthly';
+  time: string; // HH:MM
+}
+
+export interface ContactInfo {
+  name: string;
+  title?: string;
+  org?: string;
+  email?: string;
+  phone?: string;
+}
+
+export interface NotificationConfig {
+  permissionTiming: 'onboarding' | 'firstUse';
+  linkedTasks?: string[];
+}
 
 export interface ProjectOptions {
   projectName: string;
   displayName: string;
   backend: BackendType;
-  features: Feature[];
+  features: string[];
   llmProviders: LLMProvider[];
   outputDir: string;
   /** User-provided values for environment variables */
   envValues?: Record<string, string>;
+  /** Selected validated questionnaires (e.g., 'phq-9', 'gad-7') */
+  questionnaires?: string[];
+  /** Custom questionnaire questions */
+  customQuestions?: string[];
+  /** Primary brand color hex (e.g., '#0077B6') */
+  primaryColor?: string;
+  /** Optional app icon file path */
+  appIconPath?: string;
+  /** Selected HealthKit data types to collect */
+  healthKitTypes?: string[];
+  /** Configured scheduler tasks */
+  schedulerTasks?: SchedulerTask[];
+  /** Provider contacts */
+  contacts?: ContactInfo[];
+  /** Notification configuration */
+  notificationConfig?: NotificationConfig;
+  /** Firebase project configuration (for GoogleService-Info.plist) */
+  firebaseConfig?: {
+    apiKey: string;
+    gcmSenderId: string;
+    projectId: string;
+    appId: string;
+  };
 }
 
 export interface SourcePaths {

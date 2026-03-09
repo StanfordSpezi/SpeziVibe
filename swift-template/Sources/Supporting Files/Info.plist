@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>{{DisplayName}}</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>UILaunchScreen</key>
+	<dict/>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>This app uses the camera to capture photos for documenting health-related observations, such as wound healing progress or medication labels.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app uses the microphone to record voice input, allowing you to log health observations or complete assessments hands-free.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app accesses your photo library to import images for health records, such as uploading photos of medical documents or health progress.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>This app reads health data such as heart rate, activity levels, and workout history to provide personalized insights that help you monitor and improve your overall wellness.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>This app saves health data such as completed workouts and activity summaries to keep your health records current and help you track progress over time.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app uses your location to associate health activities with where they occurred, such as mapping a walking route or identifying nearby health resources.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app uses your location in the background to continuously track health-related activities, such as recording a walking or running route for your fitness log.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app uses your location in the background to continuously track health-related activities, such as recording a walking or running route for your fitness log.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This app accesses your calendar to schedule health-related reminders, such as medication times, upcoming appointments, or wellness check-ins.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app accesses your contacts to help you share health information with caregivers or emergency contacts when needed.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app uses the local network to communicate with nearby health devices and sensors for real-time data collection.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>This app uses Face ID to verify your identity and protect access to your personal health information.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app uses speech recognition to convert voice input into text, allowing you to log health observations or complete questionnaires hands-free.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>This app uses motion and fitness data to track your physical activity, such as counting steps and monitoring movement patterns, to help you stay active and meet your health goals.</string>
+	<!-- __INJECT_PLIST_ENTRIES__ -->
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+</dict>
+</plist>

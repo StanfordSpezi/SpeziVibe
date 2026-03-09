@@ -1,0 +1,38 @@
+{
+  "name": "Scheduler",
+  "category": "feature",
+  "platform": "swift",
+  "description": "Task scheduling and reminders via SpeziScheduler",
+  "spmPackages": {
+    "SpeziScheduler": {
+      "url": "https://github.com/StanfordSpezi/SpeziScheduler.git",
+      "from": "1.2.0",
+      "products": [
+        "SpeziScheduler",
+        "SpeziSchedulerUI"
+      ]
+    }
+  },
+  "targetDependencies": [
+    "SpeziScheduler",
+    "SpeziSchedulerUI"
+  ],
+  "copyFiles": [
+    "Schedule/ScheduleView.swift",
+    "Schedule/EventView.swift",
+    "Schedule/AppScheduler.swift"
+  ],
+  "delegateImports": [
+    "SpeziScheduler"
+  ],
+  "delegateModules": [
+    "{{ProjectName}}Scheduler()",
+    "Scheduler()"
+  ],
+  "tabs": {
+    "case": "schedule",
+    "label": "Schedule",
+    "icon": "list.clipboard",
+    "view": "ScheduleView(presentingAccount: $presentingAccount)"
+  }
+}

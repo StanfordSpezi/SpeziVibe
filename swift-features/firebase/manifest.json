@@ -1,0 +1,58 @@
+{
+  "name": "Firebase",
+  "category": "backend",
+  "platform": "swift",
+  "description": "Cloud storage and authentication via Firebase",
+  "spmPackages": {
+    "SpeziFirebase": {
+      "url": "https://github.com/StanfordSpezi/SpeziFirebase.git",
+      "from": "2.0.0",
+      "products": [
+        "SpeziFirebaseAccount",
+        "SpeziFirebaseAccountStorage",
+        "SpeziFirebaseStorage",
+        "SpeziFirestore"
+      ]
+    },
+    "FirebaseSDK": {
+      "url": "https://github.com/firebase/firebase-ios-sdk.git",
+      "from": "11.0.0",
+      "products": [
+        "FirebaseAuth",
+        "FirebaseFirestore",
+        "FirebaseStorage"
+      ]
+    }
+  },
+  "targetDependencies": [
+    "SpeziFirebaseAccount",
+    "SpeziFirebaseAccountStorage",
+    "SpeziFirebaseStorage",
+    "SpeziFirestore",
+    "FirebaseFirestore",
+    "FirebaseStorage"
+  ],
+  "autoIncludes": [
+    "account",
+    "onboarding"
+  ],
+  "copyFiles": [
+    "FirebaseConfiguration.swift"
+  ],
+  "replaceFiles": [
+    "Delegate.swift",
+    "Standard.swift"
+  ],
+  "resourceFiles": [
+    "GoogleService-Info.plist"
+  ],
+  "envVars": {
+    "FIREBASE_PROJECT_ID": "",
+    "FIREBASE_API_KEY": ""
+  },
+  "extraFiles": [
+    "firebase.json",
+    "firestore.rules",
+    ".firebaserc"
+  ]
+}

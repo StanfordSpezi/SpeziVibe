@@ -47,7 +47,7 @@ export function getRelativeDateLabel(date: Date): string {
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-  const diffDays = Math.floor(
+  const diffDays = Math.round(
     (targetDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
   );
 

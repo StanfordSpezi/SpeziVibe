@@ -4,6 +4,17 @@
 
 React Native 0.81, Expo 54, TypeScript 5.9, Expo Router, Formik + Yup, AsyncStorage, AI SDK
 
+## CLI Platform Abstraction
+
+The CLI (`create-spezivibe-app`) uses a platform generator interface to support multiple targets:
+
+- **Platform generators** live in `cli/src/platforms/` and implement `PlatformGenerator`
+- **React Native** is the default platform (Expo template + feature manifests)
+- **Swift (iOS)** is fully implemented, generating native Xcode projects with Spezi Swift modules
+
+The CLI first prompts for platform selection, then delegates backend/feature prompts and
+project generation to the selected platform implementation.
+
 ## The Standard Pattern
 
 Inspired by [Stanford Spezi](https://github.com/StanfordSpezi). The **Standard** is the central orchestrator that:

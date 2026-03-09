@@ -1,0 +1,69 @@
+name: "{{ProjectName}}"
+options:
+  bundleIdPrefix: com.spezivibe
+  deploymentTarget:
+    iOS: "18.0"
+  xcodeVersion: "16.0"
+  groupSortPosition: top
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: true
+
+packages:
+  Spezi:
+    url: https://github.com/StanfordSpezi/Spezi.git
+    from: "1.10.0"
+  SpeziViews:
+    url: https://github.com/StanfordSpezi/SpeziViews.git
+    from: "1.12.0"
+  SpeziOnboarding:
+    url: https://github.com/StanfordSpezi/SpeziOnboarding.git
+    from: "2.0.0"
+
+# __INJECT_SPM_PACKAGES__
+
+targets:
+  "{{ProjectName}}":
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+    resources:
+      - path: Sources/Resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.spezivibe.{{projectNameLower}}
+        INFOPLIST_FILE: "Sources/Supporting Files/Info.plist"
+        CODE_SIGN_ENTITLEMENTS: "Sources/Supporting Files/{{ProjectName}}.entitlements"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+    dependencies:
+      - package: Spezi
+      - package: SpeziViews
+      - package: SpeziOnboarding
+
+# __INJECT_TARGET_DEPENDENCIES__
+    scheme:
+      testTargets:
+        - "{{ProjectName}}Tests"
+        - "{{ProjectName}}UITests"
+
+  "{{ProjectName}}Tests":
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: "{{ProjectName}}"
+
+  "{{ProjectName}}UITests":
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: "{{ProjectName}}"

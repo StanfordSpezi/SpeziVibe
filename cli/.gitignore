@@ -3,6 +3,8 @@ node_modules/
 
 # Build output
 dist/
+swift-template/
+swift-features/
 
 # Test output
 coverage/

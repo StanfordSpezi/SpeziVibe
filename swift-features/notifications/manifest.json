@@ -1,0 +1,34 @@
+{
+  "name": "Notifications",
+  "category": "feature",
+  "platform": "swift",
+  "description": "Local notification management via SpeziNotifications (push requires additional APNs setup)",
+  "spmPackages": {
+    "SpeziNotifications": {
+      "url": "https://github.com/StanfordSpezi/SpeziNotifications.git",
+      "from": "1.0.0",
+      "products": [
+        "SpeziNotifications"
+      ]
+    }
+  },
+  "targetDependencies": [
+    "SpeziNotifications"
+  ],
+  "copyFiles": [
+    "NotificationPermissions.swift"
+  ],
+  "delegateImports": [
+    "SpeziNotifications"
+  ],
+  "delegateModules": [
+    "Notifications()"
+  ],
+  "onboardingSteps": [
+    "NotificationPermissions()"
+  ],
+  "onboardingImports": [
+    "SpeziNotifications"
+  ],
+  "entitlements": {}
+}

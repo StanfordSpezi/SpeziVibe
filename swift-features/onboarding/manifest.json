@@ -1,0 +1,30 @@
+{
+  "name": "Onboarding",
+  "category": "feature",
+  "platform": "swift",
+  "description": "Welcome flow and consent via SpeziOnboarding",
+  "spmPackages": {
+    "SpeziConsent": {
+      "url": "https://github.com/StanfordSpezi/SpeziConsent.git",
+      "from": "0.1.0",
+      "products": [
+        "SpeziConsent"
+      ]
+    }
+  },
+  "targetDependencies": [
+    "SpeziConsent"
+  ],
+  "copyFiles": [
+    "Consent.swift",
+    "InterestingModules.swift"
+  ],
+  "onboardingSteps": [
+    "InterestingModules()",
+    "Consent()"
+  ],
+  "standardImports": [
+    "SpeziConsent"
+  ],
+  "standardMethods": "/// Stores the signed consent PDF to the user's document directory.\n    func store(consent: ConsentDocument) async throws {\n        let formatter = DateFormatter()\n        formatter.dateFormat = \"yyyy-MM-dd_HHmmss\"\n        let dateString = formatter.string(from: Date())\n        let exportOptions = ConsentDocument.ExportConfiguration(paperSize: .usLetter)\n\n        guard let basePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {\n            logger.error(\"Could not create path for writing consent form to user document directory.\")\n            return\n        }\n\n        let filePath = basePath.appending(path: \"consentForm_\\(dateString).pdf\")\n        try await consent.export(using: exportOptions).pdf.write(to: filePath)\n    }"
+}
