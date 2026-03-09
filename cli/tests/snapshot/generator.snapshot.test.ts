@@ -38,6 +38,7 @@ describe('Generator Snapshots', () => {
         backend: 'local',
         features: [],
         llmProviders: [],
+        hipaaMode: false,
       });
     });
 
@@ -84,6 +85,7 @@ describe('Generator Snapshots', () => {
         backend: 'firebase',
         features: ['chat', 'scheduler', 'questionnaire'],  // onboarding is auto-added with Firebase
         llmProviders: ['openai', 'anthropic', 'google'],
+        hipaaMode: false,
       });
     });
 
@@ -137,6 +139,7 @@ describe('Generator Snapshots', () => {
         backend: 'firebase',
         features: [],  // onboarding is auto-added with Firebase
         llmProviders: [],
+        hipaaMode: false,
       });
     });
 
@@ -165,6 +168,7 @@ describe('Generator Snapshots', () => {
         backend: 'local',
         features: ['chat'],
         llmProviders: ['anthropic'],
+        hipaaMode: false,
       });
     });
 
@@ -198,6 +202,7 @@ describe('Generator Snapshots', () => {
         backend: 'local',
         features: ['healthkit'],
         llmProviders: [],
+        hipaaMode: false,
       });
     });
 
@@ -241,6 +246,7 @@ describe('Generator Snapshots', () => {
         backend: 'firebase',
         features: [],  // onboarding is auto-added with Firebase
         llmProviders: [],
+        hipaaMode: false,
       });
     });
 
@@ -271,6 +277,7 @@ describe('Generator Snapshots', () => {
         backend: 'firebase',
         features: ['scheduler', 'questionnaire'],
         llmProviders: [],
+        hipaaMode: false,
       });
     });
 
@@ -289,6 +296,101 @@ describe('Generator Snapshots', () => {
 
     it('should match tabs layout snapshot', () => {
       expect(snapshot.keyFiles['app/(tabs)/_layout.tsx']).toMatchSnapshot('tabs/_layout.tsx');
+    });
+  });
+
+  describe('Firebase + HIPAA', () => {
+    let snapshot: ProjectSnapshot;
+
+    beforeAll(async () => {
+      snapshot = await generateAndSnapshot({
+        projectName: 'hipaa-firebase-app',
+        displayName: 'HIPAA Firebase App',
+        backend: 'firebase',
+        features: [],
+        llmProviders: [],
+        hipaaMode: true,
+      });
+    });
+
+    it('should match file structure snapshot', () => {
+      expect(snapshot.files).toMatchSnapshot('files');
+    });
+
+    it('should include audit package', () => {
+      expect(snapshot.packages).toContain('audit');
+    });
+
+    it('should include firebase packages', () => {
+      expect(snapshot.packages).toContain('firebase');
+      expect(snapshot.packages).toContain('account');
+    });
+
+    it('should have HIPAA checklist', () => {
+      expect(snapshot.files).toContain('HIPAA_CHECKLIST.md');
+    });
+
+    it('should have HIPAA checklist with Firebase content', () => {
+      const checklist = snapshot.keyFiles['HIPAA_CHECKLIST.md'];
+      expect(checklist).toContain('Firebase');
+      expect(checklist).toContain('Google-managed encryption');
+      expect(checklist).toContain('BAA');
+    });
+
+    it('should have HIPAA-enhanced firestore rules', () => {
+      const rules = snapshot.keyFiles['firestore.rules'];
+      expect(rules).toContain('audit_log');
+      expect(rules).toContain('isAdmin');
+      expect(rules).toContain('hasRole');
+    });
+
+    it('should have storage HIPAA rules', () => {
+      expect(snapshot.files).toContain('storage.rules');
+    });
+
+    it('should match package.json snapshot', () => {
+      expect(snapshot.keyFiles['package.json']).toMatchSnapshot('package.json');
+    });
+  });
+
+  describe('Local + HIPAA', () => {
+    let snapshot: ProjectSnapshot;
+
+    beforeAll(async () => {
+      snapshot = await generateAndSnapshot({
+        projectName: 'hipaa-local-app',
+        displayName: 'HIPAA Local App',
+        backend: 'local',
+        features: [],
+        llmProviders: [],
+        hipaaMode: true,
+      });
+    });
+
+    it('should match file structure snapshot', () => {
+      expect(snapshot.files).toMatchSnapshot('files');
+    });
+
+    it('should include audit package', () => {
+      expect(snapshot.packages).toContain('audit');
+    });
+
+    it('should have HIPAA checklist', () => {
+      expect(snapshot.files).toContain('HIPAA_CHECKLIST.md');
+    });
+
+    it('should have HIPAA checklist with local content', () => {
+      const checklist = snapshot.keyFiles['HIPAA_CHECKLIST.md'];
+      expect(checklist).toContain('Local');
+      expect(checklist).toContain('iOS Data Protection');
+    });
+
+    it('should NOT have firestore rules', () => {
+      expect(snapshot.files).not.toContain('firestore.rules');
+    });
+
+    it('should match package.json snapshot', () => {
+      expect(snapshot.keyFiles['package.json']).toMatchSnapshot('package.json');
     });
   });
 });

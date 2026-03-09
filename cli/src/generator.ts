@@ -125,6 +125,13 @@ export async function generateProject(options: ProjectOptions): Promise<{ durati
     await generateGettingStarted(ctx);
     spinner.succeed('Generated GETTING_STARTED.md');
 
+    // Step 8b: HIPAA-specific generation
+    if (options.hipaaMode) {
+      spinner = spin('Applying HIPAA safeguards...');
+      await applyHipaaSafeguards(ctx);
+      spinner.succeed('Applied HIPAA safeguards');
+    }
+
     // Step 9: Initialize git
     spinner = spin('Initializing git repository...');
     const gitResult = await initGit(tempDir);
@@ -145,6 +152,11 @@ export async function generateProject(options: ProjectOptions): Promise<{ durati
     hr();
     p(pc.green(pc.bold('Done!')) + pc.dim(` in ${formatDuration(duration)}`));
     hr();
+
+    // Print BAA reminder for HIPAA mode
+    if (options.hipaaMode) {
+      printBaaReminder(options.backend);
+    }
 
     return { duration };
   } catch (err) {
@@ -195,6 +207,11 @@ async function collectFeatures(ctx: TransformContext): Promise<string[]> {
     if (!features.includes(feature)) {
       features.push(feature);
     }
+  }
+
+  // Auto-include HIPAA feature when hipaaMode is enabled
+  if (options.hipaaMode && !features.includes('hipaa')) {
+    features.push('hipaa');
   }
 
   return features;
@@ -875,6 +892,137 @@ async function initGit(projectDir: string): Promise<GitResult> {
       warning: 'Git commit failed. You can commit manually later.',
     };
   }
+}
+
+// ============================================================================
+// HIPAA Safeguards
+// ============================================================================
+
+/**
+ * Apply HIPAA-specific safeguards to the generated project:
+ * - Generate HIPAA_CHECKLIST.md with backend-specific content
+ * - Copy HIPAA-enhanced security rules for Firebase
+ */
+async function applyHipaaSafeguards(ctx: TransformContext): Promise<void> {
+  const { options, projectDir, source } = ctx;
+
+  // Generate HIPAA checklist
+  await generateHipaaChecklist(ctx);
+
+  // Copy backend-specific HIPAA rules
+  if (options.backend === 'firebase') {
+    const hipaaRulesDir = path.join(source.featuresDir, 'firebase', 'hipaa');
+    if (await fs.pathExists(hipaaRulesDir)) {
+      // Replace standard firestore.rules with HIPAA-enhanced version
+      const hipaaFirestoreRules = path.join(hipaaRulesDir, 'firestore-hipaa.rules');
+      if (await fs.pathExists(hipaaFirestoreRules)) {
+        await fs.copy(hipaaFirestoreRules, path.join(projectDir, 'firestore.rules'));
+      }
+
+      // Copy storage HIPAA rules
+      const hipaaStorageRules = path.join(hipaaRulesDir, 'storage-hipaa.rules');
+      if (await fs.pathExists(hipaaStorageRules)) {
+        await fs.copy(hipaaStorageRules, path.join(projectDir, 'storage.rules'));
+      }
+    }
+  }
+}
+
+/**
+ * Generate HIPAA_CHECKLIST.md from template with backend-specific content
+ */
+async function generateHipaaChecklist(ctx: TransformContext): Promise<void> {
+  const { options, projectDir, source } = ctx;
+
+  // Read the template
+  const templatePath = path.join(source.featuresDir, 'hipaa', 'HIPAA_CHECKLIST.md');
+  let content = await fs.readFile(templatePath, 'utf-8');
+
+  // Backend-specific values
+  const backendName = options.backend.charAt(0).toUpperCase() + options.backend.slice(1);
+  const today = new Date().toISOString().split('T')[0];
+
+  const backendConfig: Record<string, { encryptionAtRest: string; dataIsolation: string; baaProvider: string; resources: string }> = {
+    firebase: {
+      encryptionAtRest: 'Google-managed encryption keys (AES-256)',
+      dataIsolation: 'Firestore rules with per-user + role-based access',
+      baaProvider: 'Google Cloud / Firebase',
+      resources: [
+        '- [Firebase BAA](https://cloud.google.com/terms/hipaa-baa)',
+        '- [Firebase Security Rules](https://firebase.google.com/docs/rules)',
+        '- [HHS HIPAA Security Rule](https://www.hhs.gov/hipaa/for-professionals/security/index.html)',
+      ].join('\n'),
+    },
+    supabase: {
+      encryptionAtRest: 'PostgreSQL with pgsodium column-level encryption',
+      dataIsolation: 'Row Level Security (RLS) policies on all tables',
+      baaProvider: 'Supabase',
+      resources: [
+        '- [Supabase BAA](https://supabase.com/docs/guides/platform/hipaa)',
+        '- [Supabase RLS](https://supabase.com/docs/guides/auth/row-level-security)',
+        '- [HHS HIPAA Security Rule](https://www.hhs.gov/hipaa/for-professionals/security/index.html)',
+      ].join('\n'),
+    },
+    medplum: {
+      encryptionAtRest: 'Medplum managed encryption (AWS infrastructure)',
+      dataIsolation: 'SMART on FHIR scopes + AccessPolicy resources',
+      baaProvider: 'Medplum',
+      resources: [
+        '- [Medplum Compliance](https://www.medplum.com/docs/compliance)',
+        '- [SMART on FHIR](https://smarthealthit.org/)',
+        '- [HHS HIPAA Security Rule](https://www.hhs.gov/hipaa/for-professionals/security/index.html)',
+      ].join('\n'),
+    },
+    local: {
+      encryptionAtRest: 'iOS Data Protection (hardware-backed AES-256)',
+      dataIsolation: 'On-device only, single user',
+      baaProvider: 'N/A (no cloud provider)',
+      resources: [
+        '- [Apple Data Protection](https://support.apple.com/guide/security/data-protection-classes-secb010e978a/web)',
+        '- [expo-secure-store](https://docs.expo.dev/versions/latest/sdk/securestore/)',
+        '- [HHS HIPAA Security Rule](https://www.hhs.gov/hipaa/for-professionals/security/index.html)',
+      ].join('\n'),
+    },
+  };
+
+  const config = backendConfig[options.backend] || backendConfig['local'];
+
+  // Replace template variables
+  content = content.replace(/\{\{displayName\}\}/g, options.displayName);
+  content = content.replace(/\{\{date\}\}/g, today);
+  content = content.replace(/\{\{backend\}\}/g, backendName);
+  content = content.replace(/\{\{encryptionAtRest\}\}/g, config.encryptionAtRest);
+  content = content.replace(/\{\{dataIsolation\}\}/g, config.dataIsolation);
+  content = content.replace(/\{\{baaProvider\}\}/g, config.baaProvider);
+  content = content.replace(/\{\{resources\}\}/g, config.resources);
+
+  await fs.writeFile(path.join(projectDir, 'HIPAA_CHECKLIST.md'), content);
+}
+
+/**
+ * Print BAA reminder after project generation
+ */
+function printBaaReminder(backend: string): void {
+  blank();
+  p(pc.yellow(pc.bold('\u26a0\ufe0f  HIPAA REMINDER:')));
+  p(pc.yellow('Before deploying to production with PHI, ensure you have'));
+  p(pc.yellow('a signed Business Associate Agreement (BAA) with your backend provider.'));
+  blank();
+
+  const baaLinks: Record<string, string> = {
+    firebase: 'Firebase: https://cloud.google.com/terms/hipaa-baa',
+    supabase: 'Supabase: https://supabase.com/docs/guides/platform/hipaa',
+    medplum: 'Medplum: https://www.medplum.com/docs/compliance',
+  };
+
+  if (baaLinks[backend]) {
+    note(baaLinks[backend]);
+  }
+
+  blank();
+  p(pc.yellow('Without a BAA, you are NOT HIPAA-compliant regardless of technical safeguards.'));
+  note('See HIPAA_CHECKLIST.md for the full compliance checklist.');
+  blank();
 }
 
 // ============================================================================

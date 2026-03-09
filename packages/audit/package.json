@@ -1,0 +1,31 @@
+{
+  "name": "@spezivibe/audit",
+  "version": "1.0.0",
+  "description": "HIPAA audit logging, session monitoring, and PHI sanitization for SpeziVibe apps",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist *.tsbuildinfo",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "react-native",
+    "hipaa",
+    "audit",
+    "compliance",
+    "spezi",
+    "health",
+    "phi"
+  ],
+  "author": "SpeziVibe",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.70.0"
+  }
+}

@@ -88,7 +88,11 @@ async function promptForEnvVars(backendManifest: FeatureManifest): Promise<Recor
   return envValues;
 }
 
-export async function runPrompts(projectName?: string): Promise<ProjectOptions> {
+export interface PromptFlags {
+  hipaaFlag?: boolean;
+}
+
+export async function runPrompts(projectName?: string, flags: PromptFlags = {}): Promise<ProjectOptions> {
   // Project name
   const name = projectName || await input({
     message: 'What is your project name?',
@@ -143,6 +147,24 @@ export async function runPrompts(projectName?: string): Promise<ProjectOptions> 
     envValues = await promptForEnvVars(selectedBackend);
   }
 
+  // HIPAA mode (from flag or prompt)
+  let hipaaMode = flags.hipaaFlag || false;
+  if (!hipaaMode) {
+    hipaaMode = await confirm({
+      message: 'Will this app handle Protected Health Information (PHI)?',
+      default: false,
+    });
+  }
+
+  if (hipaaMode && backend === 'local') {
+    console.log('');
+    console.log(pc.yellow('  \u26a0\ufe0f  Local-only backend stores data on-device without cloud sync.'));
+    console.log(pc.yellow('     On-device data is encrypted by iOS (Data Protection). HIPAA mode will'));
+    console.log(pc.yellow('     add audit logging and consent tracking, but a cloud backend is'));
+    console.log(pc.yellow('     recommended for full HIPAA compliance.'));
+    console.log('');
+  }
+
   // Feature selection (from config)
   const features = await checkbox<Feature>({
     message: 'Which features do you want to include?',
@@ -185,6 +207,7 @@ export async function runPrompts(projectName?: string): Promise<ProjectOptions> 
     llmProviders,
     outputDir,
     envValues,
+    hipaaMode,
   };
 }
 

@@ -14,6 +14,8 @@ export interface ProjectOptions {
   outputDir: string;
   /** User-provided values for environment variables */
   envValues?: Record<string, string>;
+  /** Enable HIPAA-compliant defaults (audit logging, session timeout, etc.) */
+  hipaaMode: boolean;
 }
 
 export interface SourcePaths {

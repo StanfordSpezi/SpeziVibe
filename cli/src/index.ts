@@ -34,6 +34,9 @@ async function main(): Promise<void> {
   // Check for skip-install flag
   const skipInstall = args.includes('--skip-install');
 
+  // Check for HIPAA flag
+  const hipaaFlag = args.includes('--hipaa');
+
   // Check dependencies first
   if (!checkDependencies()) {
     process.exit(1);
@@ -41,7 +44,7 @@ async function main(): Promise<void> {
 
   try {
     // Run interactive prompts
-    const options = await runPrompts(projectName);
+    const options = await runPrompts(projectName, { hipaaFlag });
 
     // Generate project
     await generateProject(options);
@@ -129,10 +132,12 @@ ${pc.bold('Usage:')}
 ${pc.bold('Options:')}
   -h, --help        Show this help message
   --skip-install    Skip automatic dependency installation
+  --hipaa           Enable HIPAA-compliant defaults (audit logging, session timeout, etc.)
 
 ${pc.bold('Examples:')}
   npx create-spezivibe-app my-health-app
   npx create-spezivibe-app my-health-app --skip-install
+  npx create-spezivibe-app my-health-app --hipaa
   npx create-spezivibe-app
 
 ${pc.bold('Features:')}

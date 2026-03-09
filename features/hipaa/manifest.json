@@ -1,0 +1,7 @@
+{
+  "name": "hipaa",
+  "description": "HIPAA-compliant defaults with audit logging, session security, and PHI safeguards",
+  "dependencies": {
+    "@spezivibe/audit": "*"
+  }
+}
