@@ -20,7 +20,7 @@ The CLI will prompt you to choose:
 
 ### Platform
 - **React Native (Expo)** - Cross-platform mobile app (default)
-- **iOS (Swift + Spezi)** - Native iOS app (coming soon)
+- **iOS (Swift + Spezi)** - Native iOS app
 
 ### Backend
 - **Firebase** - Cloud storage with Firestore and Firebase Authentication

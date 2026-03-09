@@ -46,65 +46,72 @@ async function main(): Promise<void> {
     // Generate project using selected platform
     await generateProject(options, platformId);
 
-    // Ask to install dependencies (unless skipped via flag)
-    const projectDir = path.resolve(options.outputDir);
-    let dependenciesInstalled = false;
-    if (!skipInstall) {
-      const shouldInstall = await askInstallDependencies();
-      if (shouldInstall) {
-        dependenciesInstalled = await runNpmInstall(projectDir);
+    // Post-generation flow: npm install, verification, and Expo launch/build
+    // only apply to React Native projects
+    if (platformId === 'react-native') {
+      // Ask to install dependencies (unless skipped via flag)
+      const projectDir = path.resolve(options.outputDir);
+      let dependenciesInstalled = false;
+      if (!skipInstall) {
+        const shouldInstall = await askInstallDependencies();
+        if (shouldInstall) {
+          dependenciesInstalled = await runNpmInstall(projectDir);
 
-        // Verify project compiles after npm install
-        if (dependenciesInstalled) {
-          const spinner = spin('Verifying project...');
-          const verification = await verifyProject(projectDir);
-          if (verification.success) {
-            spinner.succeed('Project compiles successfully');
-          } else {
-            spinner.warn('TypeScript verification had issues');
-            for (const err of verification.errors.slice(0, 5)) {
-              note(err);
-            }
-            if (verification.errors.length > 5) {
-              note(`... and ${verification.errors.length - 5} more`);
+          // Verify project compiles after npm install
+          if (dependenciesInstalled) {
+            const spinner = spin('Verifying project...');
+            const verification = await verifyProject(projectDir);
+            if (verification.success) {
+              spinner.succeed('Project compiles successfully');
+            } else {
+              spinner.warn('TypeScript verification had issues');
+              for (const err of verification.errors.slice(0, 5)) {
+                note(err);
+              }
+              if (verification.errors.length > 5) {
+                note(`... and ${verification.errors.length - 5} more`);
+              }
             }
           }
         }
       }
-    }
 
-    // Check if HealthKit was selected - offer to build for iOS
-    const hasHealthKit = options.features.includes('healthkit');
-    let iOSBuildStarted = false;
+      // Check if HealthKit was selected - offer to build for iOS
+      const hasHealthKit = options.features.includes('healthkit');
+      let iOSBuildStarted = false;
 
-    if (hasHealthKit && dependenciesInstalled) {
-      blank();
-      note('HealthKit requires a custom iOS build (it won\'t work in Expo Go)');
+      if (hasHealthKit && dependenciesInstalled) {
+        blank();
+        note('HealthKit requires a custom iOS build (it won\'t work in Expo Go)');
 
-      const buildChoice = await askBuildForIOS();
-      if (buildChoice !== 'skip') {
-        iOSBuildStarted = true;
-        await buildIOSApp(projectDir, buildChoice);
-        // After iOS build, we're done - the app should be running
-        return;
-      }
-    }
-
-    // Ask to launch app (only if dependencies were installed and not building iOS)
-    if (dependenciesInstalled && !iOSBuildStarted) {
-      const shouldLaunch = await askLaunchApp();
-      if (shouldLaunch) {
-        if (hasHealthKit) {
-          // Warn that Expo Go won't work with HealthKit
-          note('Note: HealthKit won\'t work in Expo Go. Use "npx expo run:ios" for HealthKit testing.');
+        const buildChoice = await askBuildForIOS();
+        if (buildChoice !== 'skip') {
+          iOSBuildStarted = true;
+          await buildIOSApp(projectDir, buildChoice);
+          // After iOS build, we're done - the app should be running
+          return;
         }
-        launchApp(projectDir);
-        return; // Don't print next steps, we're launching
       }
-    }
 
-    // Print next steps
-    printNextSteps(options, dependenciesInstalled, platformId);
+      // Ask to launch app (only if dependencies were installed and not building iOS)
+      if (dependenciesInstalled && !iOSBuildStarted) {
+        const shouldLaunch = await askLaunchApp();
+        if (shouldLaunch) {
+          if (hasHealthKit) {
+            // Warn that Expo Go won't work with HealthKit
+            note('Note: HealthKit won\'t work in Expo Go. Use "npx expo run:ios" for HealthKit testing.');
+          }
+          launchApp(projectDir);
+          return; // Don't print next steps, we're launching
+        }
+      }
+
+      // Print next steps
+      printNextSteps(options, dependenciesInstalled, platformId);
+    } else {
+      // Non-React-Native platforms (e.g., Swift): skip straight to next steps
+      printNextSteps(options, false, platformId);
+    }
   } catch (err) {
     if (err instanceof Error) {
       // Handle user cancellation (Ctrl+C)
@@ -136,7 +143,7 @@ ${pc.bold('Examples:')}
   npx create-spezivibe-app
 
 ${pc.bold('Features:')}
-  - Select platform: React Native (Expo), iOS (Swift + Spezi, coming soon)
+  - Select platform: React Native (Expo), iOS (Swift + Spezi)
   - Choose your backend (Firebase, Medplum, or Local AsyncStorage)
   - Select features: Chat, Scheduler, Questionnaires, HealthKit
   - Pick LLM providers: OpenAI, Anthropic, Google

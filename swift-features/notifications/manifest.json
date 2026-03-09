@@ -2,7 +2,7 @@
   "name": "Notifications",
   "category": "feature",
   "platform": "swift",
-  "description": "Local and push notification management via SpeziNotifications",
+  "description": "Local notification management via SpeziNotifications (push requires additional APNs setup)",
   "spmPackages": {
     "SpeziNotifications": {
       "url": "https://github.com/StanfordSpezi/SpeziNotifications.git",
