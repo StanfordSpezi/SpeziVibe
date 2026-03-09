@@ -10,7 +10,7 @@ The CLI (`create-spezivibe-app`) uses a platform generator interface to support 
 
 - **Platform generators** live in `cli/src/platforms/` and implement `PlatformGenerator`
 - **React Native** is the default platform (Expo template + feature manifests)
-- **Swift (iOS)** is a stub today and documents the mapping to Spezi Swift modules
+- **Swift (iOS)** is fully implemented, generating native Xcode projects with Spezi Swift modules
 
 The CLI first prompts for platform selection, then delegates backend/feature prompts and
 project generation to the selected platform implementation.

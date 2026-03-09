@@ -32,7 +32,7 @@ struct NotificationPermissions: View {
                     let center = UNUserNotificationCenter.current()
                     try await center.requestAuthorization(options: [.alert, .badge, .sound])
                 } catch {
-                    // User denied, continue anyway
+                    print("Notification authorization failed: \(error)")
                 }
                 path.nextStep()
             }

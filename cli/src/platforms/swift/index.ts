@@ -142,7 +142,7 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
       // 1. Copy base template
       let spinner = spin('Copying base template...');
       await fs.copy(templateDir, tempDir, {
-        filter: (src) => !path.basename(src).startsWith('.git'),
+        filter: (src) => path.basename(src) !== '.git',
       });
       spinner.succeed('Base template copied');
 

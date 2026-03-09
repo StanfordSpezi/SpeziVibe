@@ -10,14 +10,6 @@ import SwiftUI
 
 
 struct AccountSheet: View {
-    let dismissAfterSignIn: Bool
-
-
-    init(dismissAfterSignIn: Bool = true) {
-        self.dismissAfterSignIn = dismissAfterSignIn
-    }
-
-
     var body: some View {
         NavigationStack {
             AccountOverview(close: .showCloseButton)

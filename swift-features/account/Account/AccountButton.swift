@@ -39,5 +39,6 @@ struct AccountButton: View {
         Button(action: { effectiveBinding.wrappedValue = true }) {
             Image(systemName: "person.circle")
         }
+        .accessibilityLabel("Account")
     }
 }
