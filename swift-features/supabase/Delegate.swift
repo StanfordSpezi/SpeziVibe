@@ -14,7 +14,7 @@ import SwiftUI
 class {{ProjectName}}Delegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration(standard: {{ProjectName}}Standard()) {
-            if !FeatureFlags.disableFirebase {
+            if !FeatureFlags.disableBackend {
                 AccountConfiguration(
                     service: SupabaseAccountService(),
                     configuration: [

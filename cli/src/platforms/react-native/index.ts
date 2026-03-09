@@ -187,8 +187,15 @@ export class ReactNativePlatformGenerator implements PlatformGenerator {
     const steps: string[] = [
       `cd ${options.outputDir}`,
       'npm install',
-      'npm start',
     ];
+
+    if (options.features.includes('healthkit')) {
+      steps.push('npx expo prebuild --platform ios');
+      steps.push('npx expo run:ios');
+    } else {
+      steps.push('npm start');
+    }
+
     return steps;
   }
 
@@ -228,6 +235,18 @@ export class ReactNativePlatformGenerator implements PlatformGenerator {
     for (const feature of options.features) {
       if (!features.includes(feature)) {
         features.push(feature);
+      }
+      // Expand autoIncludes for feature manifests too
+      const featureManifestPath = path.join(source.featuresDir, feature, 'manifest.json');
+      if (await fs.pathExists(featureManifestPath)) {
+        const featureManifest = await fs.readJson(featureManifestPath);
+        if (featureManifest.autoIncludes) {
+          for (const included of featureManifest.autoIncludes) {
+            if (!features.includes(included)) {
+              features.push(included);
+            }
+          }
+        }
       }
     }
 
@@ -374,7 +393,7 @@ export class ReactNativePlatformGenerator implements PlatformGenerator {
 
     const appConfigPath = path.join(projectDir, 'app.config.js');
     let appConfig = await fs.readFile(appConfigPath, 'utf-8');
-    appConfig = appConfig.replace(/name: "SpeziVibe"/, `name: "${options.displayName}"`);
+    appConfig = appConfig.replace(/name: "SpeziVibe"/, `name: ${JSON.stringify(options.displayName)}`);
     appConfig = appConfig.replace(/slug: "spezivibe-app"/, `slug: "${options.projectName}"`);
     appConfig = appConfig.replace(/scheme: "spezivibe-app"/, `scheme: "${options.projectName}"`);
     await fs.writeFile(appConfigPath, appConfig);
@@ -531,8 +550,7 @@ export class ReactNativePlatformGenerator implements PlatformGenerator {
     lines.push('# Install dependencies');
     lines.push('npm install');
     lines.push('');
-    lines.push('# Copy environment file and add your keys');
-    lines.push('cp .env.example .env');
+    lines.push('# Edit .env to add your API keys (file already created by generator)');
     lines.push('');
     lines.push('# Start the development server');
     lines.push('npm start');
@@ -541,7 +559,7 @@ export class ReactNativePlatformGenerator implements PlatformGenerator {
 
     lines.push('## Environment Setup');
     lines.push('');
-    lines.push('Copy `.env.example` to `.env` and fill in the required values:');
+    lines.push('Your `.env` file was created during project generation. Edit it to fill in any missing values:');
     lines.push('');
 
     const hasCloudBackend = options.backend !== 'local';

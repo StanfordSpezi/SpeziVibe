@@ -121,7 +121,7 @@ rm -f "$STRINGS_FILE"
 # List all declared privacy keys (informational)
 echo ""
 echo "All declared privacy keys:"
-/usr/libexec/PlistBuddy -c "Print" "$PLIST" 2>/dev/null | grep -oE "NS[A-Za-z]*UsageDescription" | sort -u | while read key; do
+/usr/libexec/PlistBuddy -c "Print" "$PLIST" 2>/dev/null | { grep -oE "NS[A-Za-z]*UsageDescription" || true; } | sort -u | while read key; do
   echo -e "  ${YELLOW}ℹ${NC}  $key"
 done
 

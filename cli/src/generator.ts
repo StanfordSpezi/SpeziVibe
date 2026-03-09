@@ -28,15 +28,7 @@ export async function generateProject(
     throw new Error(`Unknown platform: ${platformId}`);
   }
 
-  const result = await platform.generate({
-    projectName: options.projectName,
-    displayName: options.displayName,
-    backend: options.backend,
-    features: options.features,
-    llmProviders: options.llmProviders,
-    outputDir: options.outputDir,
-    envValues: options.envValues,
-  });
+  const result = await platform.generate(options);
 
   return { duration: result.duration };
 }
@@ -65,15 +57,7 @@ export function printNextSteps(
   blank();
 
   const platform = getPlatformGenerator(platformId);
-  let steps = platform.getNextSteps({
-    projectName: options.projectName,
-    displayName: options.displayName,
-    backend: options.backend,
-    features: options.features,
-    llmProviders: options.llmProviders,
-    outputDir: options.outputDir,
-    envValues: options.envValues,
-  });
+  let steps = platform.getNextSteps(options);
 
   if (dependenciesInstalled) {
     steps = steps.filter((step) => step !== 'npm install');

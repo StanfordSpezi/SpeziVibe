@@ -1,3 +1,7 @@
+<!-- IMPORTANT: This is a template consent document. You MUST customize it
+     before shipping your app to reflect your specific data practices, legal
+     requirements, and institutional review board (IRB) requirements. -->
+
 # Consent Form
 
 ## Purpose

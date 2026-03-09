@@ -87,9 +87,12 @@ async function main(): Promise<void> {
         const buildChoice = await askBuildForIOS();
         if (buildChoice !== 'skip') {
           iOSBuildStarted = true;
-          await buildIOSApp(projectDir, buildChoice);
-          // After iOS build, we're done - the app should be running
-          return;
+          const buildSuccess = await buildIOSApp(projectDir, buildChoice);
+          if (buildSuccess) {
+            // After successful iOS build, the app should be running
+            return;
+          }
+          // Build failed — fall through to print next steps
         }
       }
 

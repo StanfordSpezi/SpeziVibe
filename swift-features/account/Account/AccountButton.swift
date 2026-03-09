@@ -40,5 +40,8 @@ struct AccountButton: View {
             Image(systemName: "person.circle")
         }
         .accessibilityLabel("Account")
+        .sheet(isPresented: effectiveBinding) {
+            AccountSheet()
+        }
     }
 }

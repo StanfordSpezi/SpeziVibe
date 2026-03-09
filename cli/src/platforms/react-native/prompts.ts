@@ -4,7 +4,7 @@
  * Handles LLM provider selection, API key input, and backend env var configuration.
  */
 
-import { input, checkbox } from '@inquirer/prompts';
+import { input, password, checkbox } from '@inquirer/prompts';
 import pc from 'picocolors';
 import type { LLMProvider, FeatureManifest } from '../../types.js';
 import { LLM_PROVIDERS, getProviderConfig } from './config.js';
@@ -41,9 +41,9 @@ export async function promptForLLMKeys(providers: LLMProvider[]): Promise<Record
     const config = getProviderConfig(provider);
     if (config) {
       console.log(pc.dim(`  Get your key at: ${config.setupUrl}`));
-      const value = await input({
+      const value = await password({
         message: `  ${config.name} API Key:`,
-        default: '',
+        mask: '*',
       });
       envValues[config.envVar] = value;
     }

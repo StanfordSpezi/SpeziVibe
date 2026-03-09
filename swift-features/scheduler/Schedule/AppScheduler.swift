@@ -22,6 +22,7 @@ final class {{ProjectName}}Scheduler: Module, DefaultInitializable, EnvironmentA
 
 
     /// Add or update the current list of tasks upon app startup.
+    @MainActor
     func configure() {
         do {
             try scheduler.createOrUpdateTask(

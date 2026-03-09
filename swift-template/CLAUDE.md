@@ -54,7 +54,7 @@ Before building for the first time:
    - Create Firestore database
    - Ensure the `BUNDLE_ID` in the plist matches `PRODUCT_BUNDLE_IDENTIFIER` in `project.yml`
 
-2. **Code Signing** — Set your `DEVELOPMENT_TEAM` in `project.yml` (currently `Q922968VSH`)
+2. **Code Signing** — Set your `DEVELOPMENT_TEAM` in `project.yml` (currently `YOUR_TEAM_ID`)
 
 ## Pre-Deploy Testing
 
@@ -116,7 +116,7 @@ xcodebuild archive \
   -allowProvisioningUpdates \
   -skipMacroValidation \
   CODE_SIGN_STYLE=Automatic \
-  DEVELOPMENT_TEAM=Q922968VSH
+  DEVELOPMENT_TEAM=YOUR_TEAM_ID
 
 # Export + upload
 xcodebuild -exportArchive \
@@ -124,9 +124,9 @@ xcodebuild -exportArchive \
   -exportOptionsPlist export-options.plist \
   -exportPath /tmp/{{ProjectName}}-export \
   -allowProvisioningUpdates \
-  -authenticationKeyPath ~/Downloads/AuthKey_S8RY46W528.p8 \
-  -authenticationKeyID S8RY46W528 \
-  -authenticationKeyIssuerID 493bc6bd-8a12-42a0-9faa-08dab2890fc5
+  -authenticationKeyPath ~/Downloads/AuthKey_YOUR_API_KEY_ID.p8 \
+  -authenticationKeyID YOUR_API_KEY_ID \
+  -authenticationKeyIssuerID YOUR_API_KEY_ISSUER
 ```
 
 ## Critical Rules

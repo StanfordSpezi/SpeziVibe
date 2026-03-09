@@ -34,7 +34,16 @@ struct Consent: View {
     var body: some View {
         OnboardingConsentView(consentDocument: consentDocument, viewState: $viewState) {
             guard let consentDocument else {
-                fatalError("Completing the consent document before loaded should not be possible.")
+                viewState = .error(
+                    AnyLocalizedError(
+                        error: NSError(
+                            domain: "{{ProjectName}}",
+                            code: 2,
+                            userInfo: [NSLocalizedDescriptionKey: "Consent document is not loaded yet."]
+                        )
+                    )
+                )
+                return
             }
 
             try await standard.store(consent: consentDocument)

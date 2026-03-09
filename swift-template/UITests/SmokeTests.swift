@@ -24,6 +24,7 @@ final class SmokeTests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments += ["--resetTestState"]
     }
 
     // ─── TEST 1: App launches without crashing ───

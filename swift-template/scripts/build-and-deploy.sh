@@ -16,9 +16,9 @@ set -euo pipefail
 # ─── CONFIGURATION ───
 PROJECT_NAME="{{ProjectName}}"
 SCHEME="{{ProjectName}}"
-TEAM_ID="${TEAM_ID:-Q922968VSH}"
-API_KEY_ID="${API_KEY_ID:-S8RY46W528}"
-API_KEY_ISSUER="${API_KEY_ISSUER:-493bc6bd-8a12-42a0-9faa-08dab2890fc5}"
+TEAM_ID="${TEAM_ID:?Set TEAM_ID to your Apple Developer Team ID}"
+API_KEY_ID="${API_KEY_ID:?Set API_KEY_ID to your App Store Connect API key ID}"
+API_KEY_ISSUER="${API_KEY_ISSUER:?Set API_KEY_ISSUER to your API key issuer ID}"
 API_KEY_PATH="${API_KEY_PATH:-$HOME/Downloads/AuthKey_${API_KEY_ID}.p8}"
 
 # ─── DERIVED PATHS ───
@@ -47,26 +47,29 @@ fi
 # ─── SMOKE TESTS ───
 if [[ "${1:-}" != "--skip-tests" ]]; then
     echo "🧪 Running smoke tests..."
-    TEST_RESULT=$(xcodebuild test \
+    # Dynamically select the latest available iPhone simulator
+    SIMULATOR=$(xcrun simctl list devices available -j 2>/dev/null \
+        | python3 -c "import sys,json; devs=json.load(sys.stdin)['devices']; phones=[d['name'] for r in devs for d in devs[r] if 'iPhone' in d['name'] and d['isAvailable']]; print(phones[-1] if phones else 'iPhone 16')" 2>/dev/null \
+        || echo "iPhone 16")
+
+    if xcodebuild test \
         -project "${PROJECT_NAME}.xcodeproj" \
         -scheme "$SCHEME" \
-        -destination "platform=iOS Simulator,name=iPhone 16" \
+        -destination "platform=iOS Simulator,name=${SIMULATOR}" \
         -testPlan "SmokeTests" \
         -only-testing:"${PROJECT_NAME}UITests/SmokeTests" \
         -skipMacroValidation \
         CODE_SIGN_STYLE=Automatic \
         DEVELOPMENT_TEAM="$TEAM_ID" \
-        2>&1 | tail -20)
-
-    if echo "$TEST_RESULT" | grep -q "TEST FAILED\|BUILD FAILED"; then
+        2>&1 | tail -20; then
+        echo "✅ All smoke tests passed"
+    else
         echo "❌ Smoke tests FAILED! Not deploying."
-        echo "$TEST_RESULT"
         echo ""
         echo "Fix the issues above, then run again."
         echo "To skip tests (not recommended): ./scripts/build-and-deploy.sh --skip-tests"
         exit 1
     fi
-    echo "✅ All smoke tests passed"
 else
     echo "⚠️  Skipping tests (--skip-tests flag)"
 fi
@@ -131,7 +134,7 @@ echo "✅ Export succeeded"
 
 # ─── UPLOAD ───
 echo "🚀 Uploading to App Store Connect..."
-xcrun altool --upload-app \
+xcrun altool --upload-package \
     -f "${EXPORT_PATH}/${PROJECT_NAME}.ipa" \
     --type ios \
     --apiKey "$API_KEY_ID" \

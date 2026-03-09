@@ -27,8 +27,8 @@ final class SupabaseConfig {
               let url = URL(string: urlString),
               let anonKey = plist["SUPABASE_ANON_KEY"], !anonKey.isEmpty else {
 
-            // Fallback for testing / --disableFirebase mode
-            if FeatureFlags.disableFirebase {
+            // Fallback for testing / --disableBackend mode
+            if FeatureFlags.disableBackend {
                 self.client = SupabaseClient(
                     supabaseURL: URL(string: "https://placeholder.supabase.co")!,
                     supabaseKey: "placeholder"

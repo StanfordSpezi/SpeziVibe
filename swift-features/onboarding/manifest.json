@@ -17,7 +17,8 @@
   ],
   "copyFiles": [
     "Consent.swift",
-    "InterestingModules.swift"
+    "InterestingModules.swift",
+    "Resources/ConsentDocument.md"
   ],
   "onboardingSteps": [
     "InterestingModules()",
@@ -26,5 +27,5 @@
   "standardImports": [
     "SpeziConsent"
   ],
-  "standardMethods": "/// Stores the signed consent PDF to the user's document directory.\n    func store(consent: ConsentDocument) async throws {\n        let formatter = DateFormatter()\n        formatter.dateFormat = \"yyyy-MM-dd_HHmmss\"\n        let dateString = formatter.string(from: Date())\n        let exportOptions = ConsentDocument.ExportConfiguration(paperSize: .usLetter)\n\n        guard let basePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {\n            logger.error(\"Could not create path for writing consent form to user document directory.\")\n            return\n        }\n\n        let filePath = basePath.appending(path: \"consentForm_\\(dateString).pdf\")\n        try await consent.export(using: exportOptions).pdf.write(to: filePath)\n    }"
+  "standardMethods": "/// Stores the signed consent PDF to the user's document directory.\n    func store(consent: ConsentDocument) async throws {\n        let formatter = DateFormatter()\n        formatter.dateFormat = \"yyyy-MM-dd_HHmmss\"\n        let dateString = formatter.string(from: Date())\n        let exportOptions = ConsentDocument.ExportConfiguration(paperSize: .usLetter)\n\n        guard let basePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {\n            throw NSError(domain: \"{{ProjectName}}\", code: 3, userInfo: [NSLocalizedDescriptionKey: \"Could not access the document directory to store the consent form.\"])\n        }\n\n        let filePath = basePath.appending(path: \"consentForm_\\(dateString).pdf\")\n        try await consent.export(using: exportOptions).pdf.write(to: filePath)\n    }"
 }

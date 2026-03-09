@@ -12,8 +12,11 @@ import Foundation
 ///
 /// Set these via Xcode scheme arguments or environment variables.
 enum FeatureFlags {
-    /// Disables Firebase (uses local-only mode).
-    static let disableFirebase = CommandLine.arguments.contains("--disableFirebase")
+    /// Disables the backend (uses local-only mode). Accepts both --disableBackend and legacy --disableFirebase.
+    static let disableBackend = CommandLine.arguments.contains("--disableBackend") || CommandLine.arguments.contains("--disableFirebase")
+
+    /// Legacy alias for disableBackend.
+    static let disableFirebase = disableBackend
 
     /// Connects to Firebase Emulator instead of production.
     static let useFirebaseEmulator = CommandLine.arguments.contains("--useFirebaseEmulator")

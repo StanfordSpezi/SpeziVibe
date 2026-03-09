@@ -10,11 +10,20 @@ import SwiftUI
 
 
 struct AccountSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(Account.self) private var account: Account?
+
+    /// When true, the sheet auto-dismisses after the user signs in.
     var dismissAfterSignIn = false
 
     var body: some View {
         NavigationStack {
             AccountOverview(close: .showCloseButton)
+        }
+        .onChange(of: account?.signedIn) {
+            if dismissAfterSignIn, account?.signedIn == true {
+                dismiss()
+            }
         }
     }
 }

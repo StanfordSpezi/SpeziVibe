@@ -43,22 +43,26 @@ export async function discoverBackends(): Promise<FeatureManifest[]> {
   const featuresDir = path.join(__dirname, '../../features');
   const backends: FeatureManifest[] = [];
 
-  try {
-    const entries = await fs.readdir(featuresDir, { withFileTypes: true });
+  if (!(await fs.pathExists(featuresDir))) {
+    return backends;
+  }
 
-    for (const entry of entries) {
-      if (entry.isDirectory()) {
-        const manifestPath = path.join(featuresDir, entry.name, 'manifest.json');
-        if (await fs.pathExists(manifestPath)) {
+  const entries = await fs.readdir(featuresDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const manifestPath = path.join(featuresDir, entry.name, 'manifest.json');
+      if (await fs.pathExists(manifestPath)) {
+        try {
           const manifest = await fs.readJson(manifestPath);
           if (manifest.category === 'backend') {
             backends.push(manifest);
           }
+        } catch {
+          // Skip invalid manifest for this feature
         }
       }
     }
-  } catch {
-    // Features directory doesn't exist or can't be read
   }
 
   return backends;
@@ -78,6 +82,7 @@ export interface MarkerConfig {
 }
 
 export const MARKERS: MarkerConfig[] = [
+  // React Native markers
   {
     name: '__INJECT_TABS__',
     file: 'app/(tabs)/_layout.tsx',
@@ -87,6 +92,42 @@ export const MARKERS: MarkerConfig[] = [
     name: '__INJECT_STACK_SCREENS__',
     file: 'app/_layout.tsx',
     description: 'Stack screen entries for root navigation',
+  },
+  // Swift markers
+  {
+    name: '__INJECT_DELEGATE_IMPORTS__',
+    file: 'Sources/Delegate.swift',
+    description: 'Import statements for the Spezi delegate',
+  },
+  {
+    name: '__INJECT_DELEGATE_MODULES__',
+    file: 'Sources/Delegate.swift',
+    description: 'Spezi module configuration entries',
+  },
+  {
+    name: '__INJECT_STANDARD_IMPORTS__',
+    file: 'Sources/Standard.swift',
+    description: 'Import statements for the Standard',
+  },
+  {
+    name: '__INJECT_STANDARD_CONFORMANCES__',
+    file: 'Sources/Standard.swift',
+    description: 'Protocol conformances for the Standard',
+  },
+  {
+    name: '__INJECT_STANDARD_METHODS__',
+    file: 'Sources/Standard.swift',
+    description: 'Method implementations for the Standard',
+  },
+  {
+    name: '__INJECT_ONBOARDING_STEPS__',
+    file: 'Sources/OnboardingFlow.swift',
+    description: 'Onboarding flow step views',
+  },
+  {
+    name: '__INJECT_TABS__',
+    file: 'Sources/HomeView.swift',
+    description: 'Tab views for home screen',
   },
 ];
 

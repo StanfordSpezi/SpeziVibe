@@ -254,7 +254,8 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
               scheduleLine = `.weekly(weekday: .monday, hour: ${hour}, minute: ${minute}, startingAt: .today)`;
               break;
             case 'monthly':
-              scheduleLine = `.daily(hour: ${hour}, minute: ${minute}, startingAt: .today)`; // SpeziScheduler doesn't have monthly, use daily
+              note(`Warning: SpeziScheduler does not support monthly frequency. "${task.name}" will use daily instead.`);
+              scheduleLine = `.daily(hour: ${hour}, minute: ${minute}, startingAt: .today)`;
               break;
             default:
               scheduleLine = `.daily(hour: ${hour}, minute: ${minute}, startingAt: .today)`;
@@ -291,6 +292,7 @@ export class SwiftPlatformGenerator implements PlatformGenerator {
             `    @MainActor var viewState: ViewState = .idle\n\n\n` +
             `    init() {}\n\n\n` +
             `    /// Add or update the current list of tasks upon app startup.\n` +
+            `    @MainActor\n` +
             `    func configure() {\n` +
             `        do {\n` +
             taskDefs + '\n' +

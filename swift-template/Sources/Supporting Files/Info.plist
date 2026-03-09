@@ -26,7 +26,7 @@
 	<dict/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
+		<string>arm64</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>This app uses the camera to capture photos for documenting health-related observations, such as wound healing progress or medication labels.</string>

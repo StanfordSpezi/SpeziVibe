@@ -150,7 +150,7 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
   // Questionnaire selection (Swift only, when questionnaire feature is enabled)
   let questionnaires: string[] = [];
   let customQuestions: string[] = [];
-  if (features.includes('questionnaire')) {
+  if (platform.id === 'swift' && features.includes('questionnaire')) {
     const qChoice = await select<string>({
       message: 'How would you like to set up questionnaires?',
       choices: [
@@ -232,9 +232,9 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
     }
   }
 
-  // ── HealthKit Data Types ──
+  // ── HealthKit Data Types (Swift only) ──
   let healthKitTypes: string[] = [];
-  if (features.includes('healthkit')) {
+  if (platform.id === 'swift' && features.includes('healthkit')) {
     healthKitTypes = await checkbox<string>({
       message: '🩺 What health data do you want to collect?',
       choices: [
@@ -253,9 +253,9 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
     });
   }
 
-  // ── Scheduler Tasks ──
+  // ── Scheduler Tasks (Swift only) ──
   let schedulerTasks: SchedulerTask[] = [];
-  if (features.includes('scheduler')) {
+  if (platform.id === 'swift' && features.includes('scheduler')) {
     let addMore = true;
     while (addMore) {
       const taskName = await input({
@@ -292,9 +292,9 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
     }
   }
 
-  // ── Contacts Builder ──
+  // ── Contacts Builder (Swift only) ──
   let contacts: ContactInfo[] = [];
-  if (features.includes('contacts')) {
+  if (platform.id === 'swift' && features.includes('contacts')) {
     let addMore = true;
     while (addMore) {
       const cName = await input({
@@ -333,9 +333,9 @@ export async function runPrompts(projectName?: string): Promise<{ options: Proje
     }
   }
 
-  // ── Notification Configuration ──
+  // ── Notification Configuration (Swift only) ──
   let notificationConfig: NotificationConfig | undefined;
-  if (features.includes('notifications')) {
+  if (platform.id === 'swift' && features.includes('notifications')) {
     const permissionTiming = await select<'onboarding' | 'firstUse'>({
       message: '🔔 When should the app request notification permissions?',
       choices: [
