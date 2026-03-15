@@ -110,7 +110,7 @@ For every coded field in the model, identify the correct terminology system. Nev
 | SNOMED CT | `http://snomed.info/sct` | https://browser.ihtsdotools.org/ |
 | RxNorm | `http://www.nlm.nih.gov/research/umls/rxnorm` | https://mor.nlm.nih.gov/RxNav/ |
 | ICD-10-CM | `http://hl7.org/fhir/sid/icd-10-cm` | https://clinicaltables.nlm.nih.gov/apidoc/icd10cm/v3/doc.html |
-| CPT | `http://www.ama-assn.org/go/cpt` | https://www.ama-assn.org/practice-management/cpt/cpt-code-database |
+| CPT | `http://www.ama-assn.org/go/cpt` | https://www.cms.gov/medicare/coding-billing/healthcare-common-procedure-system/level-i-current-procedural-terminology-cpt-4 |
 | NCI Thesaurus | `http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl` | https://ncit.nci.nih.gov/ncitbrowser/ |
 | UCUM | `http://unitsofmeasure.org` | https://ucum.org/ucum |
 | HL7 Observation Category | `http://terminology.hl7.org/CodeSystem/observation-category` | https://terminology.hl7.org/CodeSystem-observation-category.html |
@@ -259,7 +259,7 @@ After completing steps 1–5, output the following document in its entirety. Thi
 }
 ```
 
-**FHIR R4 spec:** https://hl7.org/fhir/R4/[resourcetype].html
+**FHIR R4 spec:** Start from https://hl7.org/fhir/R4/resourcelist.html and open the relevant resource page for the chosen resource type.
 
 ---
 
