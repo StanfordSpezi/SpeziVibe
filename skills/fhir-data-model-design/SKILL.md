@@ -110,7 +110,7 @@ For every coded field in the model, identify the correct terminology system. Nev
 | SNOMED CT | `http://snomed.info/sct` | https://browser.ihtsdotools.org/ |
 | RxNorm | `http://www.nlm.nih.gov/research/umls/rxnorm` | https://mor.nlm.nih.gov/RxNav/ |
 | ICD-10-CM | `http://hl7.org/fhir/sid/icd-10-cm` | https://clinicaltables.nlm.nih.gov/apidoc/icd10cm/v3/doc.html |
-| CPT | `http://www.ama-assn.org/go/cpt` | https://www.cms.gov/medicare/coding-billing/healthcare-common-procedure-system/level-i-current-procedural-terminology-cpt-4 |
+| CPT | `http://www.ama-assn.org/go/cpt` | https://www.cms.gov/medicare/regulations-guidance/physician-self-referral/list-cpt-hcpcs-codes |
 | NCI Thesaurus | `http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl` | https://ncit.nci.nih.gov/ncitbrowser/ |
 | UCUM | `http://unitsofmeasure.org` | https://ucum.org/ucum |
 | HL7 Observation Category | `http://terminology.hl7.org/CodeSystem/observation-category` | https://terminology.hl7.org/CodeSystem-observation-category.html |
