@@ -1,0 +1,26 @@
+#
+# This source file is part of the Stanford Spezi open source project
+#
+# SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+#
+# SPDX-License-Identifier: MIT
+# 
+
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Ravi"
+  given-names: "Vishnu"
+  orcid: "https://orcid.org/0000-0003-0359-1275"
+- family-names: "Aalami"
+  given-names: "Oliver"
+  orcid: "https://orcid.org/0000-0002-7799-2429"
+- family-names: "Aydin"
+  given-names: "Zahedivash"
+  orcid: "https://orcid.org/0000-0001-6835-1139"
+- family-names: "Schmiedmayer"
+  given-names: "Paul"
+  orcid: "https://orcid.org/0000-0002-8607-9148"
+title: "SpeziVibe"
+doi: ...
+url: "https://github.com/StanfordSpezi/SpeziVibe"
