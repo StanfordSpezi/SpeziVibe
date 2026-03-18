@@ -1,1 +1,0 @@
-export { ConsentService } from './ConsentService';
