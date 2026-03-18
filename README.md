@@ -16,6 +16,22 @@ The goal is simple: make digital health development more accessible by packaging
 
 This work supports the broader [Spezi](https://github.com/StanfordSpezi) mission of lowering the barrier to building thoughtful, high-quality digital health experiences.
 
+## Quick Start
+
+Install all skills into your coding agent with a single command:
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --all
+```
+
+Or list them first to see what is available:
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --list
+```
+
+> **Need `npx`?** Install [Node.js](https://nodejs.org/) — `npm` and `npx` are included. Then confirm with `node -v && npx -v`.
+
 ## New To Vibe Coding?
 
 Vibe coding is a practical way of building software with an AI coding partner. Instead of starting from a blank page, you work in natural language: you describe the app, workflow, research plan, or technical constraint, and the agent helps you explore the codebase, make changes, draft plans, and explain tradeoffs.
@@ -32,7 +48,7 @@ If you prefer a more guided starting point, Claude and Codex also have desktop a
 2. choose whether you want to work in a desktop app or in the CLI
 3. create or sign in to your account and then follow the instructions below to install `npx` and the Spezi Vibe skills
 
-## Install `npx`
+### Install `npx`
 
 The easiest way to get `npx` is to install [Node.js](https://nodejs.org/). `npm` and `npx` are included with standard Node.js installations.
 
@@ -47,15 +63,9 @@ npx -v
 
 3. Use `npx skills` to install Spezi Vibe into your coding agent.
 
-## Install All Skills
+### Install Skills
 
 We use the [skills](https://github.com/vercel-labs/skills) tool for installing and sharing reusable skills across supported agents.
-
-List the available skills first:
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --list
-```
 
 Install every skill from this repository:
 
@@ -67,122 +77,6 @@ If you want to target a specific agent, add `-a claude-code`, `-a codex`, or ano
 
 ```bash
 npx skills add StanfordSpezi/SpeziVibe --skill '*' -a claude-code
-```
-
-## Skill Catalog
-
-This repository is organized for `npx skills`, with one skill per folder under `skills/`.
-
-### `spezi-platform-selection`
-
-**Headline:** Choose the right app foundation
-
-**What it does:** Helps you decide whether a project is better served by the React Native Template App or the Spezi Template Application for Apple Platforms, then points the coding agent at the right next steps.
-
-**Install with `npx`:**
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --skill spezi-platform-selection
-```
-
-### `biodesign-needs-finding`
-
-**Headline:** Turn an idea into a real clinical need
-
-**What it does:** Guides a team through a Stanford Biodesign-style needs-finding process so they define the problem well before jumping to a solution.
-
-**Install with `npx`:**
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --skill biodesign-needs-finding
-```
-
-### `digital-health-study-planning`
-
-**Headline:** Plan a study around the app
-
-**What it does:** Helps shape a digital health study or research workflow, including recruitment, consent, assessments, schedules, and outcome measures.
-
-**Install with `npx`:**
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --skill digital-health-study-planning
-```
-
-### `digital-health-compliance-planning`
-
-**Headline:** Think through privacy and regulatory risk early
-
-**What it does:** Helps teams reason about HIPAA, IRB, FDA, GDPR, and adjacent compliance questions before implementation gets too far ahead.
-
-**Install with `npx`:**
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --skill digital-health-compliance-planning
-```
-
-### `health-data-model-planning`
-
-**Headline:** Shape the app's health data backbone
-
-**What it does:** Helps define core health concepts, entities, relationships, lifecycle states, and interoperability needs before implementation begins.
-
-**Install with `npx`:**
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --skill health-data-model-planning
-```
-
-If you are working inside the React Native Template App, the repo-local `data-model` skill carries the implementation-focused guidance for app entities, FHIR mappings, storage, and sync behavior.
-
-### `digital-health-ux-planning`
-
-**Headline:** Design a patient- and clinician-friendly experience
-
-**What it does:** Helps plan onboarding, core journeys, engagement loops, and day-to-day workflows for digital health products.
-
-**Install with `npx`:**
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --skill digital-health-ux-planning
-```
-
-### `fhir-data-model-design`
-
-**Headline:** Map clinical concepts to FHIR
-
-**What it does:** Translates clinical requirements into a FHIR R4-oriented data model with concrete resources, relationships, and implementation guidance.
-
-**Install with `npx`:**
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --skill fhir-data-model-design
-```
-
-FHIR implementation review is now part of the React Native Template App's repo-local `fhir` skill, where it can stay aligned with the actual app mappings and services.
-
-### `keep-a-changelog-generator`
-
-**Headline:** Draft changelogs people can actually read
-
-**What it does:** Turns git history into structured changelog entries using the Keep a Changelog format and clearer user-facing language.
-
-**Install with `npx`:**
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --skill keep-a-changelog-generator
-```
-
-### `release-notes-generator`
-
-**Headline:** Summarize a release clearly
-
-**What it does:** Helps generate release notes that explain features, fixes, and migration concerns in a concise way for real users and collaborators.
-
-**Install with `npx`:**
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --skill release-notes-generator
 ```
 
 ## Where To Start
@@ -228,6 +122,134 @@ Use:
 ### 5. Move Into Implementation
 
 After the need, solution direction, and core structures are clear, move into the template repository you selected and use its repo-local skills for implementation, testing, and release work.
+
+## Skill Catalog
+
+This repository is organized for `npx skills`, with one skill per folder under `skills/`.
+
+| Skill | What it does |
+|-------|-------------|
+| `spezi-platform-selection` | Choose the right app foundation — React Native or Apple-native |
+| `biodesign-needs-finding` | Turn an idea into a real clinical need |
+| `digital-health-study-planning` | Plan a study around the app |
+| `digital-health-compliance-planning` | Think through privacy and regulatory risk early |
+| `health-data-model-planning` | Shape the app's health data backbone |
+| `digital-health-ux-planning` | Design a patient- and clinician-friendly experience |
+| `fhir-data-model-design` | Map clinical concepts to FHIR |
+| `keep-a-changelog-generator` | Draft changelogs people can actually read |
+| `release-notes-generator` | Summarize a release clearly |
+
+### `spezi-platform-selection`
+
+Choose the right app foundation — helps you decide whether a project is better served by the React Native Template App or the Spezi Template Application for Apple Platforms, then points the coding agent at the right next steps.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill spezi-platform-selection
+```
+
+</details>
+
+### `biodesign-needs-finding`
+
+Turn an idea into a real clinical need — guides a team through a Stanford Biodesign-style needs-finding process so they define the problem well before jumping to a solution.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill biodesign-needs-finding
+```
+
+</details>
+
+### `digital-health-study-planning`
+
+Plan a study around the app — helps shape a digital health study or research workflow, including recruitment, consent, assessments, schedules, and outcome measures.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill digital-health-study-planning
+```
+
+</details>
+
+### `digital-health-compliance-planning`
+
+Think through privacy and regulatory risk early — helps teams reason about HIPAA, IRB, FDA, GDPR, and adjacent compliance questions before implementation gets too far ahead.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill digital-health-compliance-planning
+```
+
+</details>
+
+### `health-data-model-planning`
+
+Shape the app's health data backbone — helps define core health concepts, entities, relationships, lifecycle states, and interoperability needs before implementation begins.
+
+If you are working inside the React Native Template App, the repo-local `data-model` skill carries the implementation-focused guidance for app entities, FHIR mappings, storage, and sync behavior.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill health-data-model-planning
+```
+
+</details>
+
+### `digital-health-ux-planning`
+
+Design a patient- and clinician-friendly experience — helps plan onboarding, core journeys, engagement loops, and day-to-day workflows for digital health products.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill digital-health-ux-planning
+```
+
+</details>
+
+### `fhir-data-model-design`
+
+Map clinical concepts to FHIR — translates clinical requirements into a FHIR R4-oriented data model with concrete resources, relationships, and implementation guidance.
+
+FHIR implementation review is now part of the React Native Template App's repo-local `fhir` skill, where it can stay aligned with the actual app mappings and services.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill fhir-data-model-design
+```
+
+</details>
+
+### `keep-a-changelog-generator`
+
+Draft changelogs people can actually read — turns git history into structured changelog entries using the Keep a Changelog format and clearer user-facing language.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill keep-a-changelog-generator
+```
+
+</details>
+
+### `release-notes-generator`
+
+Summarize a release clearly — helps generate release notes that explain features, fixes, and migration concerns in a concise way for real users and collaborators.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill release-notes-generator
+```
+
+</details>
 
 ## Philosophy
 
