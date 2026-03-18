@@ -4,6 +4,10 @@ SPDX-FileCopyrightText: 2026 Stanford University and the project authors (see CO
 SPDX-License-Identifier: MIT
 -->
 
+<p align="center">
+  <img src="assets/rocket-logo.png" alt="Spezi Vibe Logo" width="200"/>
+</p>
+
 # Spezi Vibe
 
 Spezi Vibe is a collection of installable skills for people building digital health software with modern AI coding tools.
