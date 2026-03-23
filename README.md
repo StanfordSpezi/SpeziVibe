@@ -81,47 +81,39 @@ npx skills add StanfordSpezi/SpeziVibe --skill '*' -a claude-code
 
 ## Where To Start
 
-These skills fit best when used as part of a Biodesign-style process rather than as isolated prompts.
+The fastest way to get started is to run `build-an-app`. It asks a few questions about your idea, decides which planning skills you need, walks you through each one, and hands off to implementation. You do not need to know the individual skills or their order — the orchestrator handles that for you.
 
-### 1. Explore the Problem Space
+If you prefer to run skills individually, here is the process they follow. Not every project needs every skill — use what fits and skip what does not.
 
-Start by understanding the clinical or operational problem before deciding on a product.
+### 1. Define the Need
 
-Use:
+Understand the clinical or operational problem before deciding on a product. Investigate the problem space, identify affected stakeholders, and refine a need statement until it is specific, evidence-grounded, and free of embedded solutions.
 
-- `biodesign-needs-finding` to investigate the problem, affected stakeholders, and desired outcomes
+Use: `biodesign-needs-finding`
 
-### 2. Define and Filter the Need
+### 2. Choose a Platform
 
-Refine the need statement until it is specific, evidence-grounded, and free of embedded solutions. From there, compare possible need directions and decide which are compelling enough to pursue.
+Decide whether the project is better suited to the React Native Template App or the Spezi Template Application for Apple Platforms, then clone the selected template.
 
-Use:
+Use: `spezi-platform-selection`
 
-- `biodesign-needs-finding` to define the problem, population, and outcome clearly
+### 3. Plan the Product
 
-### 3. Explore Solutions
+Design the user experience, data model, and compliance posture. Run whichever skills are relevant — not all are required for every project.
 
-Once the need is well defined, begin exploring solution directions and delivery models.
+- `digital-health-ux-planning` — user journeys, onboarding, engagement, and day-to-day workflows
+- `health-data-model-planning` — core entities, relationships, and FHIR-oriented data structures
+- `fhir-data-model-design` — map clinical concepts into interoperable FHIR resources and terminology
+- `digital-health-compliance-planning` — privacy, regulatory, and governance expectations
+- `digital-health-study-planning` — study protocol, consent, and data collection (only if tied to a research study)
 
-Use:
+### 4. Plan the Build
 
-- `spezi-platform-selection` to decide whether the project is better suited to the React Native Template App or the Spezi Template Application for Apple Platforms
-- `digital-health-ux-planning` to reason about user journeys, onboarding, engagement, and workflow design
-- `digital-health-study-planning` when the product is tied to a research or study workflow
+Feed your planning outputs into `app-build-planner` to get a sequenced implementation plan. The output is a structured document (`docs/implementation-plan.md`) saved in your cloned template repository.
 
-### 4. Structure the Prototype Well
+### 5. Build the App
 
-Before implementing deeply, make sure the prototype is grounded in durable structures for health data, interoperability, privacy, and governance.
-
-Use:
-
-- `health-data-model-planning` to define the core entities, relationships, and FHIR-oriented data structures
-- `fhir-data-model-design` to map clinical concepts into interoperable FHIR resources and terminology
-- `digital-health-compliance-planning` to think through privacy, research, and regulatory expectations early
-
-### 5. Move Into Implementation
-
-After the need, solution direction, and core structures are clear, move into the template repository you selected and use its repo-local skills for implementation, testing, and release work.
+Open the template repository you cloned in step 2 and work through `docs/implementation-plan.md` milestone by milestone with your coding agent. Build each one, verify it works, then move to the next.
 
 ## Skill Catalog
 
@@ -129,6 +121,7 @@ This repository is organized for `npx skills`, with one skill per folder under `
 
 | Skill | What it does |
 |-------|-------------|
+| `build-an-app` | Walk through the full process — from idea to running code |
 | `spezi-platform-selection` | Choose the right app foundation — React Native or Apple-native |
 | `biodesign-needs-finding` | Turn an idea into a real clinical need |
 | `digital-health-study-planning` | Plan a study around the app |
@@ -136,8 +129,21 @@ This repository is organized for `npx skills`, with one skill per folder under `
 | `health-data-model-planning` | Shape the app's health data backbone |
 | `digital-health-ux-planning` | Design a patient- and clinician-friendly experience |
 | `fhir-data-model-design` | Map clinical concepts to FHIR |
+| `app-build-planner` | Turn planning outputs into a milestone-based build plan |
 | `keep-a-changelog-generator` | Draft changelogs people can actually read |
 | `release-notes-generator` | Summarize a release clearly |
+
+### `build-an-app`
+
+Walk through the full process of building a digital health app — asks about your idea, decides which planning skills you need, runs them in order, and hands off to implementation. Start here if you are unsure where to begin.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill build-an-app
+```
+
+</details>
 
 ### `spezi-platform-selection`
 
@@ -223,6 +229,18 @@ FHIR implementation review is now part of the React Native Template App's repo-l
 
 ```bash
 npx skills add StanfordSpezi/SpeziVibe --skill fhir-data-model-design
+```
+
+</details>
+
+### `app-build-planner`
+
+Turn planning outputs into a milestone-based build plan — extracts features from your UX, data model, compliance, and study planning work, maps them to available packages or framework modules, and sequences everything into milestones you can build and review one at a time.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill app-build-planner
 ```
 
 </details>

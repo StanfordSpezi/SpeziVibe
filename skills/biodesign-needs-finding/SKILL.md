@@ -215,6 +215,10 @@ Throughout the process, help surface an **insight** — a short observation expl
 
 The insight is what sets a truly innovative project apart.
 
+## Save the Output
+
+Save the final need statement and supporting material as `docs/planning/need-statement.md` in the project repository.
+
 ## Session Checklist
 
 By the end, the user should have:
