@@ -81,6 +81,8 @@ npx skills add StanfordSpezi/SpeziVibe --skill '*' -a claude-code
 
 ## Where To Start
 
+The fastest way to get started is to run `build-an-app` — it asks a few questions about your idea, decides which planning skills you need, walks you through each one, and hands off to implementation. You can also run any skill individually if you know what you need.
+
 These skills fit best when used as part of a Biodesign-style process rather than as isolated prompts.
 
 ### 1. Explore the Problem Space
@@ -137,6 +139,7 @@ This repository is organized for `npx skills`, with one skill per folder under `
 
 | Skill | What it does |
 |-------|-------------|
+| `build-an-app` | Walk through the full process — from idea to running code |
 | `spezi-platform-selection` | Choose the right app foundation — React Native or Apple-native |
 | `biodesign-needs-finding` | Turn an idea into a real clinical need |
 | `digital-health-study-planning` | Plan a study around the app |
@@ -147,6 +150,18 @@ This repository is organized for `npx skills`, with one skill per folder under `
 | `app-build-planner` | Turn planning outputs into a milestone-based build plan |
 | `keep-a-changelog-generator` | Draft changelogs people can actually read |
 | `release-notes-generator` | Summarize a release clearly |
+
+### `build-an-app`
+
+Walk through the full process of building a digital health app — asks about your idea, decides which planning skills you need, runs them in order, and hands off to implementation. Start here if you are unsure where to begin.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill build-an-app
+```
+
+</details>
 
 ### `spezi-platform-selection`
 
