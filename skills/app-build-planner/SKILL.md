@@ -44,23 +44,24 @@ You are a directive implementation planner. You synthesize planning outputs and 
 
 ## Step 1: Gather Planning Inputs
 
-Look for outputs from upstream planning skills. Ask the user to share any planning documents they have completed. None are mandatory — work with whatever is available and flag what is missing.
+Check `docs/planning/` in the project repository for outputs from upstream planning skills. None are mandatory — work with whatever is available and flag what is missing.
 
-| Upstream Skill | What to Look For |
-|----------------|-----------------|
-| `biodesign-needs-finding` | Need statement: problem, population, and outcome |
-| `digital-health-ux-planning` | UX brief: user segments, core journeys, onboarding strategy, day-to-day workflows |
-| `digital-health-study-planning` | Study brief: enrollment flow, assessment schedule, data collection matrix |
-| `health-data-model-planning` | Data model brief: core entities, relationships, lifecycle states, FHIR recommendations |
-| `fhir-data-model-design` | FHIR spec: concrete resources, terminology bindings, resource relationships |
-| `digital-health-compliance-planning` | Compliance brief: privacy domains, consent requirements, audit controls |
+| Upstream Skill | Expected File | What to Look For |
+|----------------|---------------|-----------------|
+| `biodesign-needs-finding` | `docs/planning/need-statement.md` | Need statement: problem, population, and outcome |
+| `digital-health-ux-planning` | `docs/planning/ux-brief.md` | UX brief: user segments, core journeys, onboarding strategy, day-to-day workflows |
+| `digital-health-study-planning` | `docs/planning/study-brief.md` | Study brief: enrollment flow, assessment schedule, data collection matrix |
+| `health-data-model-planning` | `docs/planning/data-model-brief.md` | Data model brief: core entities, relationships, lifecycle states, FHIR recommendations |
+| `fhir-data-model-design` | `docs/planning/fhir-data-model.md` | FHIR spec: concrete resources, terminology bindings, resource relationships |
+| `digital-health-compliance-planning` | `docs/planning/compliance-brief.md` | Compliance brief: privacy domains, consent requirements, audit controls |
 
-Ask:
+Read each file that exists. For any that are missing, note the gap and move on.
 
-1. "Which planning documents have you completed? Share them or point me to where they are saved."
-2. "Is there anything about the app that is not captured in the planning documents — features you have added, constraints that changed, or scope that was cut?"
+Then ask:
 
-If no planning documents are available, ask the user to describe the app's core features, user types, and data needs so you can extract features directly.
+1. "Are there any planning documents saved elsewhere, or anything about the app not captured in the planning files?"
+
+If no planning documents are found at all, ask the user to describe the app's core features, user types, and data needs so you can extract features directly.
 
 ---
 

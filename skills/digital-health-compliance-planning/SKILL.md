@@ -93,7 +93,7 @@ If EU or UK users may be involved, review:
 
 ## Planning Outputs
 
-Produce a brief with these sections:
+Produce a brief with these sections and save it as `docs/planning/compliance-brief.md` in the project repository:
 
 ### 1. Scope Summary
 

@@ -110,6 +110,8 @@ Produce a concise UX planning brief with:
 - accessibility and inclusion notes
 - unresolved risks or UX questions
 
+Save the brief as `docs/planning/ux-brief.md` in the project repository.
+
 ## Guardrails
 
 - Do not assume mobile tabs, specific screens, or platform conventions unless implementation context requires it.

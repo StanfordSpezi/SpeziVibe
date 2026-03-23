@@ -120,6 +120,8 @@ Produce a concise study planning brief with:
 - outcome measures
 - operational risks and open questions
 
+Save the brief as `docs/planning/study-brief.md` in the project repository.
+
 ## Guardrails
 
 - Keep the plan platform-agnostic unless the user explicitly wants implementation advice.

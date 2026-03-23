@@ -152,6 +152,8 @@ Produce a concise data model planning brief with:
 - governance and data-quality notes
 - unresolved modeling questions
 
+Save the brief as `docs/planning/data-model-brief.md` in the project repository.
+
 ## Guardrails
 
 - Do not assume a specific database, TypeScript model, or mobile framework.
