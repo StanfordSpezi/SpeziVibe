@@ -81,57 +81,39 @@ npx skills add StanfordSpezi/SpeziVibe --skill '*' -a claude-code
 
 ## Where To Start
 
-The fastest way to get started is to run `build-an-app` — it asks a few questions about your idea, decides which planning skills you need, walks you through each one, and hands off to implementation. You can also run any skill individually if you know what you need.
+The fastest way to get started is to run `build-an-app`. It asks a few questions about your idea, decides which planning skills you need, walks you through each one, and hands off to implementation. You do not need to know the individual skills or their order — the orchestrator handles that for you.
 
-These skills fit best when used as part of a Biodesign-style process rather than as isolated prompts.
+If you prefer to run skills individually, here is the process they follow. Not every project needs every skill — use what fits and skip what does not.
 
-### 1. Explore the Problem Space
+### 1. Define the Need
 
-Start by understanding the clinical or operational problem before deciding on a product.
+Understand the clinical or operational problem before deciding on a product. Investigate the problem space, identify affected stakeholders, and refine a need statement until it is specific, evidence-grounded, and free of embedded solutions.
 
-Use:
+Use: `biodesign-needs-finding`
 
-- `biodesign-needs-finding` to investigate the problem, affected stakeholders, and desired outcomes
+### 2. Choose a Platform
 
-### 2. Define and Filter the Need
+Decide whether the project is better suited to the React Native Template App or the Spezi Template Application for Apple Platforms, then clone the selected template.
 
-Refine the need statement until it is specific, evidence-grounded, and free of embedded solutions. From there, compare possible need directions and decide which are compelling enough to pursue.
+Use: `spezi-platform-selection`
 
-Use:
+### 3. Plan the Product
 
-- `biodesign-needs-finding` to define the problem, population, and outcome clearly
+Design the user experience, data model, and compliance posture. Run whichever skills are relevant — not all are required for every project.
 
-### 3. Explore Solutions
+- `digital-health-ux-planning` — user journeys, onboarding, engagement, and day-to-day workflows
+- `health-data-model-planning` — core entities, relationships, and FHIR-oriented data structures
+- `fhir-data-model-design` — map clinical concepts into interoperable FHIR resources and terminology
+- `digital-health-compliance-planning` — privacy, regulatory, and governance expectations
+- `digital-health-study-planning` — study protocol, consent, and data collection (only if tied to a research study)
 
-Once the need is well defined, begin exploring solution directions and delivery models.
+### 4. Plan the Build
 
-Use:
+Feed your planning outputs into `app-build-planner` to get a sequenced implementation plan. The output is a structured document (`docs/implementation-plan.md`) saved in your cloned template repository.
 
-- `spezi-platform-selection` to decide whether the project is better suited to the React Native Template App or the Spezi Template Application for Apple Platforms
-- `digital-health-ux-planning` to reason about user journeys, onboarding, engagement, and workflow design
-- `digital-health-study-planning` when the product is tied to a research or study workflow
+### 5. Build the App
 
-### 4. Structure the Prototype Well
-
-Before implementing deeply, make sure the prototype is grounded in durable structures for health data, interoperability, privacy, and governance.
-
-Use:
-
-- `health-data-model-planning` to define the core entities, relationships, and FHIR-oriented data structures
-- `fhir-data-model-design` to map clinical concepts into interoperable FHIR resources and terminology
-- `digital-health-compliance-planning` to think through privacy, research, and regulatory expectations early
-
-### 5. Plan the Build
-
-Before jumping into code, feed your planning outputs into `app-build-planner` to get a sequenced implementation plan. The output is a structured document (`docs/implementation-plan.md`) that you save in your cloned template repository.
-
-Use:
-
-- `app-build-planner` to extract features from your planning work, map them to available packages or modules, and sequence everything into milestones you can build one at a time
-
-### 6. Move Into Implementation
-
-After the need, solution direction, and core structures are clear, move into the template repository you selected and use `docs/implementation-plan.md` as your guide. Work through the milestones with your coding agent and use the template's repo-local skills for implementation-specific guidance.
+Open the template repository you cloned in step 2 and work through `docs/implementation-plan.md` milestone by milestone with your coding agent. Build each one, verify it works, then move to the next.
 
 ## Skill Catalog
 
