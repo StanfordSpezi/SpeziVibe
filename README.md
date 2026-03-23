@@ -119,9 +119,17 @@ Use:
 - `fhir-data-model-design` to map clinical concepts into interoperable FHIR resources and terminology
 - `digital-health-compliance-planning` to think through privacy, research, and regulatory expectations early
 
-### 5. Move Into Implementation
+### 5. Plan the Build
 
-After the need, solution direction, and core structures are clear, move into the template repository you selected and use its repo-local skills for implementation, testing, and release work.
+Before jumping into code, feed your planning outputs into `app-build-planner` to get a sequenced implementation plan. The output is a structured document (`docs/implementation-plan.md`) that you save in your cloned template repository.
+
+Use:
+
+- `app-build-planner` to extract features from your planning work, map them to available packages or modules, and sequence everything into milestones you can build one at a time
+
+### 6. Move Into Implementation
+
+After the need, solution direction, and core structures are clear, move into the template repository you selected and use `docs/implementation-plan.md` as your guide. Work through the milestones with your coding agent and use the template's repo-local skills for implementation-specific guidance.
 
 ## Skill Catalog
 
@@ -136,6 +144,7 @@ This repository is organized for `npx skills`, with one skill per folder under `
 | `health-data-model-planning` | Shape the app's health data backbone |
 | `digital-health-ux-planning` | Design a patient- and clinician-friendly experience |
 | `fhir-data-model-design` | Map clinical concepts to FHIR |
+| `app-build-planner` | Turn planning outputs into a milestone-based build plan |
 | `keep-a-changelog-generator` | Draft changelogs people can actually read |
 | `release-notes-generator` | Summarize a release clearly |
 
@@ -223,6 +232,18 @@ FHIR implementation review is now part of the React Native Template App's repo-l
 
 ```bash
 npx skills add StanfordSpezi/SpeziVibe --skill fhir-data-model-design
+```
+
+</details>
+
+### `app-build-planner`
+
+Turn planning outputs into a milestone-based build plan — extracts features from your UX, data model, compliance, and study planning work, maps them to available packages or framework modules, and sequences everything into milestones you can build and review one at a time.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill app-build-planner
 ```
 
 </details>
