@@ -10,19 +10,9 @@ SPDX-License-Identifier: MIT
 
 <h1 align="center">SpeziVibe</h1>
 
-<p align="center">
-  <strong>Installable skills for building digital health software with AI coding tools.</strong>
-</p>
+Spezi Vibe is a collection of installable skills for people building digital health software with modern AI coding tools.
 
-<p align="center">
-  <a href="https://github.com/StanfordSpezi/SpeziVibe/releases"><img src="https://img.shields.io/github/v/release/StanfordSpezi/SpeziVibe?label=latest%20release&style=flat-square" alt="Latest Release"/></a>
-  <a href="LICENSE.md"><img src="https://img.shields.io/github/license/StanfordSpezi/SpeziVibe?style=flat-square" alt="MIT License"/></a>
-  <a href="https://github.com/StanfordSpezi/SpeziVibe/stargazers"><img src="https://img.shields.io/github/stars/StanfordSpezi/SpeziVibe?style=flat-square" alt="Stars"/></a>
-</p>
-
----
-
-Spezi Vibe packages reusable product, clinical, regulatory, interoperability, and platform guidance into skills that can be installed in minutes and used directly in real projects.
+The goal is simple: make digital health development more accessible by packaging reusable product, clinical, regulatory, interoperability, and platform guidance into skills that can be installed in minutes and used directly in real projects.
 
 This work supports the broader [Spezi](https://github.com/StanfordSpezi) mission of lowering the barrier to building thoughtful, high-quality digital health experiences.
 
@@ -95,58 +85,55 @@ npx skills add StanfordSpezi/SpeziVibe --skill '*' -a claude-code
 
 ## Where To Start
 
-The fastest way to get started is to run `build-an-app`. It walks you through the full pipeline automatically — you don't need to know the individual skills or their order.
+The fastest way to get started is to run `build-an-app`. It asks a few questions about your idea, decides which planning skills you need, walks you through each one, and hands off to implementation. You do not need to know the individual skills or their order — the orchestrator handles that for you.
 
-If you prefer to run skills individually, here is the process they follow. Not every project needs every step — use what fits and skip what doesn't.
+If you prefer to run skills individually, here is the process they follow. Not every project needs every skill — use what fits and skip what does not.
 
-```mermaid
-flowchart LR
-    A["Define Need"] --> B["Choose Platform"]
-    B --> C["Plan Product"]
-    C --> D["Plan Build"]
-    D --> E["Build App"]
-```
+### 1. Define the Need
 
-| Step | What happens | Skill(s) |
-|------|-------------|----------|
-| **Define Need** | Investigate the problem space and refine a need statement | `biodesign-needs-finding` |
-| **Choose Platform** | Pick React Native or Apple-native and clone the template | `spezi-platform-selection` |
-| **Plan Product** | Design UX, data model, compliance, and study protocol | `digital-health-ux-planning` `health-data-model-planning` `fhir-data-model-design` `digital-health-compliance-planning` `digital-health-study-planning` |
-| **Plan Build** | Sequence features into milestones mapped to packages | `app-build-planner` |
-| **Build App** | Work through milestones with your coding agent | *(your repo's local skills)* |
+Understand the clinical or operational problem before deciding on a product. Investigate the problem space, identify affected stakeholders, and refine a need statement until it is specific, evidence-grounded, and free of embedded solutions.
+
+Use: `biodesign-needs-finding`
+
+### 2. Choose a Platform
+
+Decide whether the project is better suited to the React Native Template App or the Spezi Template Application for Apple Platforms, then clone the selected template.
+
+Use: `spezi-platform-selection`
+
+### 3. Plan the Product
+
+Design the user experience, data model, and compliance posture. Run whichever skills are relevant — not all are required for every project.
+
+- `digital-health-ux-planning` — user journeys, onboarding, engagement, and day-to-day workflows
+- `health-data-model-planning` — core entities, relationships, and FHIR-oriented data structures
+- `fhir-data-model-design` — map clinical concepts into interoperable FHIR resources and terminology
+- `digital-health-compliance-planning` — privacy, regulatory, and governance expectations
+- `digital-health-study-planning` — study protocol, consent, and data collection (only if tied to a research study)
+
+### 4. Plan the Build
+
+Feed your planning outputs into `app-build-planner` to get a sequenced implementation plan. The output is a structured document (`docs/implementation-plan.md`) saved in your cloned template repository.
+
+### 5. Build the App
+
+Open the template repository you cloned in step 2 and work through `docs/implementation-plan.md` milestone by milestone with your coding agent. Build each one, verify it works, then move to the next.
 
 ## Skill Catalog
 
-One skill per folder under `skills/`. Install individually or all at once.
-
-#### Orchestration
+This repository is organized for `npx skills`, with one skill per folder under `skills/`.
 
 | Skill | What it does |
 |-------|-------------|
 | `build-an-app` | Walk through the full process — from idea to running code |
-
-#### Discovery & Platform
-
-| Skill | What it does |
-|-------|-------------|
-| `biodesign-needs-finding` | Turn an idea into a real clinical need |
 | `spezi-platform-selection` | Choose the right app foundation — React Native or Apple-native |
-
-#### Planning
-
-| Skill | What it does |
-|-------|-------------|
-| `digital-health-ux-planning` | Design a patient- and clinician-friendly experience |
-| `health-data-model-planning` | Shape the app's health data backbone |
-| `fhir-data-model-design` | Map clinical concepts to FHIR |
-| `digital-health-compliance-planning` | Think through privacy and regulatory risk early |
+| `biodesign-needs-finding` | Turn an idea into a real clinical need |
 | `digital-health-study-planning` | Plan a study around the app |
+| `digital-health-compliance-planning` | Think through privacy and regulatory risk early |
+| `health-data-model-planning` | Shape the app's health data backbone |
+| `digital-health-ux-planning` | Design a patient- and clinician-friendly experience |
+| `fhir-data-model-design` | Map clinical concepts to FHIR |
 | `app-build-planner` | Turn planning outputs into a milestone-based build plan |
-
-#### Release
-
-| Skill | What it does |
-|-------|-------------|
 | `keep-a-changelog-generator` | Draft changelogs people can actually read |
 | `release-notes-generator` | Summarize a release clearly |
 
@@ -288,10 +275,12 @@ npx skills add StanfordSpezi/SpeziVibe --skill release-notes-generator
 
 ## Philosophy
 
-> **Practical** — support real implementation decisions, not hypothetical ones.
-> **Reusable** — work across multiple digital health projects.
-> **Approachable** — accessible to teams new to AI coding workflows.
-> **Shareable** — structured for standard skills tooling so anyone can install and contribute.
+These skills are meant to be:
+
+- practical enough to support real implementation decisions
+- reusable across multiple digital health projects
+- approachable for teams that are new to AI coding workflows
+- structured cleanly enough to install and share with standard skills tooling
 
 ## License
 
