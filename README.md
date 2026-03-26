@@ -10,9 +10,19 @@ SPDX-License-Identifier: MIT
 
 <h1 align="center">SpeziVibe</h1>
 
-Spezi Vibe is a collection of installable skills for people building digital health software with modern AI coding tools.
+<p align="center">
+  <strong>Installable skills for building digital health software with AI coding tools.</strong>
+</p>
 
-The goal is simple: make digital health development more accessible by packaging reusable product, clinical, regulatory, interoperability, and platform guidance into skills that can be installed in minutes and used directly in real projects.
+<p align="center">
+  <a href="https://github.com/StanfordSpezi/SpeziVibe/actions/workflows/static-analysis.yml"><img src="https://img.shields.io/github/actions/workflow/status/StanfordSpezi/SpeziVibe/static-analysis.yml?style=flat-square&label=build" alt="Build Status"/></a>
+  <a href="https://github.com/StanfordSpezi/SpeziVibe/releases"><img src="https://img.shields.io/github/v/release/StanfordSpezi/SpeziVibe?label=latest%20release&style=flat-square" alt="Latest Release"/></a>
+  <a href="LICENSE.md"><img src="https://img.shields.io/github/license/StanfordSpezi/SpeziVibe?style=flat-square" alt="MIT License"/></a>
+</p>
+
+---
+
+Spezi Vibe packages reusable product, clinical, regulatory, interoperability, and platform guidance into skills that can be installed in minutes and used directly in real projects.
 
 This work supports the broader [Spezi](https://github.com/StanfordSpezi) mission of lowering the barrier to building thoughtful, high-quality digital health experiences.
 
