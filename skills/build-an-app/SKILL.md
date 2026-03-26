@@ -1,6 +1,6 @@
 ---
 name: build-an-app
-description: Walk through the full process of building a digital health app — from defining the need through planning to implementation.
+description: Walk through the full process of building a digital health app — from planning to implementation.
 ---
 
 <!--
@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 
 # Build an App
 
-Walk a user through building a digital health app from start to finish. This skill orchestrates the other skills in this repository — it asks a few questions, decides which planning skills are needed, runs them in order, and hands off to implementation.
+Walk a user through building a digital health app from start to finish. This skill orchestrates the other skills in this repository — it figures out what the user needs, runs the right planning skills, and hands off to implementation.
 
 ## When to Use
 
@@ -25,98 +25,109 @@ Do not use this skill if the user wants to run a specific skill directly (e.g., 
 
 ## Working Style
 
-You are a conversational guide. Explain what each step does and why before running it. Ask focused questions. Let the user review and adjust after each step. Move at their pace — do not rush through planning.
+You are a conversational guide. Keep it lightweight — don't front-load questions. Listen to what the user says, infer what you can, and only ask about what you can't figure out. Move at their pace.
 
 ---
 
-## Step 1: Understand the Idea
+## Step 1: Listen
 
-Ask these questions to understand what the user wants to build:
+Start with one open question:
 
-1. "What health problem are you trying to solve, and for whom?"
-2. "Is this tied to a research study, or is it a standalone product?"
-3. "Does the app need to work on both iOS and Android, or is Apple-only fine?"
-4. "Will it collect health data from the phone (like HealthKit, step counts, heart rate)?"
-5. "How far along are you — just an idea, have detailed requirements, or ready to start coding?"
+> "What do you want to build?"
 
-If the user already has a clear problem statement, skip question 1 and use what they gave you.
+Let the user describe their idea naturally. They might give you one sentence or three paragraphs — either is fine.
+
+From their answer, look for signals about:
+
+| Signal | What it tells you |
+|--------|------------------|
+| Mentions a specific disease, condition, or clinical workflow | Health data and possibly FHIR are involved |
+| Mentions a research study, trial, or enrollment | Study planning is needed |
+| Mentions patient data, PHI, HIPAA, or regulatory concerns | Compliance planning is needed |
+| Mentions HealthKit, vitals, wearables, or sensor data | Health data modeling is needed |
+| Mentions EHR, Epic, SMART on FHIR, or interoperability | FHIR data model design is needed |
+| Mentions they already have a repo or project | Skip platform selection |
+| Mentions they already have designs or wireframes | UX planning may be lighter or skippable |
+| Says "I don't know where to start" or describes a vague idea | Needs-finding would help |
+
+If you can't tell whether the app involves health data, connects to clinical systems, or is part of a study, ask **one** follow-up question that covers the gaps. For example:
+
+> "Will this app collect or store any health data, and is it tied to a research study?"
+
+Do not ask more than one follow-up. If something is still ambiguous, include the relevant skill in your proposed plan — the user can remove it.
 
 ---
 
-## Step 2: Decide What's Needed
+## Step 2: Propose a Plan
 
-Based on the answers, select which skills to run. Not every project needs every skill.
+Based on what you heard, assemble a plan from the available skills. Every skill is conditional — include only what the user's situation calls for.
 
-**Always include:**
+### Skill selection guide
 
-- `biodesign-needs-finding` — define the problem clearly before building
-- `spezi-platform-selection` — choose the right template and clone it
-- `digital-health-ux-planning` — design the user experience
-- `app-build-planner` — turn plans into a milestone-based build sequence
+| Skill | Include when |
+|-------|-------------|
+| `biodesign-needs-finding` | User is unsure about the problem, has a vague idea, or asks for help scoping |
+| `spezi-platform-selection` | User does not already have a project repo — helps choose React Native or Apple-native and clones the template |
+| `digital-health-ux-planning` | User does not already have designs or wireframes |
+| `health-data-model-planning` | App stores or processes health data (vitals, assessments, patient records) |
+| `fhir-data-model-design` | App needs FHIR interoperability or connects to EHRs |
+| `digital-health-compliance-planning` | App handles PHI or has regulatory concerns |
+| `digital-health-study-planning` | App is part of a research study with enrollment and assessments |
+| `app-build-planner` | Always — produces the implementation plan that drives the build |
 
-**Include when relevant:**
+Present the plan as a short numbered list with one line per skill explaining what it does. Then ask:
 
-| Condition | Skill | Why |
-|-----------|-------|-----|
-| App stores health data (vitals, assessments, patient records) | `health-data-model-planning` | Defines entities, relationships, and FHIR mappings |
-| App needs FHIR interoperability or connects to EHRs | `fhir-data-model-design` | Maps clinical concepts to concrete FHIR resources |
-| App handles PHI, needs HIPAA review, or has regulatory concerns | `digital-health-compliance-planning` | Identifies privacy, regulatory, and governance requirements |
-| App is part of a research study with enrollment and assessments | `digital-health-study-planning` | Plans the study protocol, consent, and data collection |
+> "Does this look right, or would you add or remove anything?"
 
-Present the selected skills to the user with a brief explanation of each. Let them add or remove any before proceeding.
+Let the user adjust before proceeding.
 
-**If the user says they already have requirements or just want to code:**
+### Picking up where they left off
 
-Check if planning documents already exist in `docs/planning/` in their project. If some are there, skip those skills and pick up where they left off. If they have an `implementation-plan.md`, skip straight to building.
+If the user already has a project, check for existing planning documents in `docs/planning/`. Skip any skill whose output already exists. If they already have `docs/implementation-plan.md`, skip straight to building.
 
 ---
 
 ## Step 3: Run Each Skill
 
-Work through the selected skills in this order. For each one:
+Work through the selected skills in the order below. For each one:
 
 1. Tell the user what the skill does and what it will produce (one sentence)
 2. Read the skill's SKILL.md and follow its instructions
 3. After completion, verify the output was saved to the correct path
-4. Briefly summarize what was produced before moving to the next skill
+4. Briefly summarize what was produced before moving on
 
-### Order and output paths
+### Execution order and output paths
 
-| # | Skill | Output Path | What it Produces |
-|---|-------|-------------|-----------------|
-| 1 | `biodesign-needs-finding` | `docs/planning/need-statement.md` | Need statement: problem, population, outcome |
-| 2 | `spezi-platform-selection` | Cloned template repository | Working project directory with template code |
-| 3 | `digital-health-ux-planning` | `docs/planning/ux-brief.md` | User journeys, onboarding, workflows |
-| 4 | `digital-health-study-planning` | `docs/planning/study-brief.md` | Study protocol, enrollment, assessments |
-| 5 | `health-data-model-planning` | `docs/planning/data-model-brief.md` | Entities, relationships, FHIR recommendations |
-| 6 | `fhir-data-model-design` | `docs/planning/fhir-data-model.md` | FHIR resources, terminology, relationships |
-| 7 | `digital-health-compliance-planning` | `docs/planning/compliance-brief.md` | Privacy domains, controls, required decisions |
-| 8 | `app-build-planner` | `docs/implementation-plan.md` | Milestone-based build sequence |
+Run skills in this order (skipping any that were not selected):
 
-Skills marked as not needed in Step 2 are skipped.
+| Skill | Output Path | What it Produces |
+|-------|-------------|-----------------|
+| `biodesign-needs-finding` | `docs/planning/need-statement.md` | Need statement: problem, population, outcome |
+| `spezi-platform-selection` | Cloned template repository | Working project directory with template code |
+| `digital-health-ux-planning` | `docs/planning/ux-brief.md` | User journeys, onboarding, workflows |
+| `digital-health-study-planning` | `docs/planning/study-brief.md` | Study protocol, enrollment, assessments |
+| `health-data-model-planning` | `docs/planning/data-model-brief.md` | Entities, relationships, FHIR recommendations |
+| `fhir-data-model-design` | `docs/planning/fhir-data-model.md` | FHIR resources, terminology, relationships |
+| `digital-health-compliance-planning` | `docs/planning/compliance-brief.md` | Privacy domains, controls, required decisions |
+| `app-build-planner` | `docs/implementation-plan.md` | Milestone-based build sequence |
 
-After running `spezi-platform-selection` (skill 2), all subsequent outputs are saved inside the cloned template repository.
+After running `spezi-platform-selection`, all subsequent outputs are saved inside the cloned template repository.
 
-Between each skill, ask: "Ready to move on to the next step, or do you want to adjust anything?"
+Between each skill, ask: "Ready to move on, or do you want to adjust anything?"
 
 ---
 
 ## Step 4: Start Building
 
-After `app-build-planner` saves `docs/implementation-plan.md`, summarize everything that was produced:
+After `app-build-planner` saves `docs/implementation-plan.md`, summarize everything that was produced — only list documents that were actually created:
 
 ```
-Here's what we built:
+Here's what we have:
 
 Project: [cloned template path]
 
 Planning documents:
-  docs/planning/need-statement.md
-  docs/planning/ux-brief.md
-  docs/planning/data-model-brief.md    (if created)
-  docs/planning/fhir-data-model.md     (if created)
-  docs/planning/compliance-brief.md    (if created)
-  docs/planning/study-brief.md         (if created)
+  [list only the docs that were created]
 
 Implementation plan:
   docs/implementation-plan.md
@@ -131,9 +142,9 @@ If the user says yes, read `docs/implementation-plan.md`, find Milestone 1, and 
 
 ## Guardrails
 
-- **Do not skip needs-finding** unless the user explicitly has a well-defined need statement already.
-- **Do not skip platform selection** unless the user has already cloned a template repository.
+- **Every skill is optional except `app-build-planner`.** Include skills based on what the user described, not a fixed checklist.
+- **Do not front-load questions.** Start with "What do you want to build?" and ask at most one follow-up.
+- **When in doubt, include it in the plan.** If you're not sure whether a skill is needed, propose it and let the user remove it. It's easier to drop a step than to discover you missed one.
 - **Respect the user's pace.** Let them review and adjust after each skill completes. Do not auto-advance without checking.
-- **Do not force unnecessary planning.** If a simple app does not handle PHI, do not run compliance planning. If it does not use FHIR, do not run FHIR data model design.
-- **Handle the "skip to coding" case.** If the user already has planning docs in `docs/planning/`, acknowledge them and pick up from wherever they left off. If they have an implementation plan, skip straight to building.
+- **Handle the "skip to coding" case.** If planning docs already exist, acknowledge them and pick up where they left off.
 - **Each skill is interactive.** When you read a skill's SKILL.md and follow its instructions, the user should participate — answer questions, review outputs, provide input. Do not simulate their answers.
