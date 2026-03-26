@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
   <img src="assets/rocket-logo.png" alt="Spezi Vibe Logo" width="200"/>
 </p>
 
-# Spezi Vibe
+<h1 align="center">SpeziVibe</h1>
 
 Spezi Vibe is a collection of installable skills for people building digital health software with modern AI coding tools.
 
@@ -31,6 +31,10 @@ npx skills add StanfordSpezi/SpeziVibe --list
 ```
 
 > **Need `npx`?** Install [Node.js](https://nodejs.org/) — `npm` and `npx` are included. Then confirm with `node -v && npx -v`.
+
+### Manual Install
+
+If you prefer not to use `npx`, download the latest `spezivibe-skills.zip` from [Releases](https://github.com/StanfordSpezi/SpeziVibe/releases), unzip it, and copy the skill folders into your coding tool's skills directory (e.g., `.claude/skills/` for Claude Code).
 
 ## New To Vibe Coding?
 
