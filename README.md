@@ -24,7 +24,7 @@ SPDX-License-Identifier: MIT
 
 Spezi Vibe packages reusable product, clinical, regulatory, interoperability, and platform guidance into skills that can be installed in minutes and used directly in real projects.
 
-This work supports the broader [Spezi](https://github.com/StanfordSpezi) mission of lowering the barrier to building thoughtful, high-quality digital health experiences.
+This work supports the broader [Stanford Spezi](https://github.com/StanfordSpezi) mission of lowering the barrier to building thoughtful, high-quality digital health experiences.
 
 ## Quick Start
 
