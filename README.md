@@ -95,7 +95,7 @@ npx skills add StanfordSpezi/SpeziVibe --skill '*' -a claude-code
 
 ## Where To Start
 
-The fastest way to get started is to run `build-an-app`. It asks a few questions about your idea, decides which planning skills you need, walks you through each one, and hands off to implementation. You do not need to know the individual skills or their order — the orchestrator handles that for you.
+The fastest way to get started is to run `build-an-app`. Describe what you want to build and it figures out which planning skills you need, runs them in order, and hands off to implementation. You do not need to know the individual skills or their order — the orchestrator handles that for you.
 
 If you prefer to run skills individually, here is the process they follow. Not every project needs every skill — use what fits and skip what does not.
 
@@ -149,7 +149,7 @@ This repository is organized for `npx skills`, with one skill per folder under `
 
 ### `build-an-app`
 
-Walk through the full process of building a digital health app — asks about your idea, decides which planning skills you need, runs them in order, and hands off to implementation. Start here if you are unsure where to begin.
+Walk through the full process of building a digital health app — describe what you want to build and it figures out which planning skills you need, runs them in order, and hands off to implementation. Start here if you are unsure where to begin.
 
 <details><summary>Install</summary>
 
