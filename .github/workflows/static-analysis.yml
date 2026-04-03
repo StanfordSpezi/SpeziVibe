@@ -20,11 +20,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  reuse_action:
-    name: REUSE Compliance Check
-    uses: StanfordSpezi/.github/.github/workflows/reuse.yml@v2
-    permissions:
-      contents: read
   markdown_link_check:
     name: Markdown Link Check
     uses: StanfordBDHG/.github/.github/workflows/markdown-link-check.yml@v2
