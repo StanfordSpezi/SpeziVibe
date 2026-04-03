@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpeziVibe — Vibe Code Digital Health Apps</title>
+  <meta name="description" content="AI coding skills for building digital health software. From Stanford Spezi. Install in minutes, ship what matters.">
+  <meta property="og:title" content="SpeziVibe — Vibe Code Digital Health Apps">
+  <meta property="og:description" content="AI coding skills for building digital health software. From Stanford Spezi.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://spezivibe.com">
+  <meta property="og:image" content="https://raw.githubusercontent.com/StanfordSpezi/SpeziVibe/main/assets/rocket-logo.png">
+  <link rel="icon" href="https://raw.githubusercontent.com/StanfordSpezi/SpeziVibe/main/assets/rocket-logo.png" type="image/png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0a0a0c;
+      --surface: #111113;
+      --panel: #151518;
+      --border: #1e1e26;
+      --border-subtle: rgba(255,255,255,0.05);
+      --text: #e8e8ed;
+      --text-muted: #8888a0;
+      --text-dim: rgba(255,255,255,0.4);
+      --accent: #e8511a;
+      --accent-glow: rgba(232, 81, 26, 0.15);
+      --accent-light: #ff7a45;
+      --accent-warm: #ffb194;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    ::selection {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    /* ---- Custom Scrollbar ---- */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+    /* ---- Environmental Layers ---- */
+    .aurora-base {
+      position: fixed;
+      top: -20vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80vw;
+      height: 60vh;
+      background: radial-gradient(circle, rgba(232, 81, 26, 0.12) 0%, transparent 70%);
+      filter: blur(120px);
+      z-index: 0;
+      pointer-events: none;
+      animation: breathe 8s ease-in-out infinite alternate;
+    }
+
+    .aurora-accent {
+      position: fixed;
+      top: 30vh;
+      right: 10%;
+      width: 30vw;
+      height: 30vh;
+      background: radial-gradient(circle, rgba(232, 81, 26, 0.06) 0%, transparent 70%);
+      filter: blur(100px);
+      z-index: 0;
+      pointer-events: none;
+      animation: float-drift 12s ease-in-out infinite alternate-reverse;
+    }
+
+    .grid-pattern {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 0;
+      pointer-events: none;
+      mask-image: linear-gradient(to bottom, black 20%, transparent 80%);
+      -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 80%);
+    }
+
+    /* ---- Particle canvas ---- */
+    #particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes breathe {
+      0% { transform: translateX(-50%) scale(1); opacity: 0.7; }
+      100% { transform: translateX(-50%) scale(1.15); opacity: 1; }
+    }
+
+    @keyframes float-drift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(40px, -40px); }
+    }
+
+    @keyframes rocket-hover {
+      0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 20px rgba(232,81,26,0.3)); }
+      50% { transform: translateY(-12px); filter: drop-shadow(0 20px 40px rgba(232,81,26,0.6)); }
+    }
+
+    @keyframes pulse-ring {
+      0% { transform: scale(0.8); opacity: 0.6; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    @keyframes scanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- Scroll Reveal ---- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* ---- Glass Card ---- */
+    .glass-card {
+      background: rgba(21, 21, 24, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      padding: 1px;
+      background: linear-gradient(to bottom right, rgba(255,255,255,0.08), transparent, rgba(232,81,26,0.0));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      transition: all 0.4s ease;
+    }
+
+    .glass-card:hover {
+      transform: translateY(-2px);
+      background: rgba(25, 25, 28, 0.6);
+      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5), inset 0 0 20px rgba(232,81,26,0.05);
+    }
+
+    .glass-card:hover::before {
+      background: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(232,81,26,0.25), rgba(232,81,26,0.08));
+    }
+
+    /* ---- Nav ---- */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: center;
+      z-index: 100;
+      transform: translateY(12px);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 960px;
+      background: rgba(21, 21, 24, 0.5);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 100px;
+      padding: 0.6rem 0.6rem 0.6rem 1.4rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    nav .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: var(--text);
+    }
+
+    nav .logo img {
+      width: 26px;
+      height: 26px;
+    }
+
+    nav .logo span {
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-links .cta-btn {
+      position: relative;
+      overflow: hidden;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      padding: 0.5rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .nav-links .cta-btn:hover {
+      border-color: rgba(232, 81, 26, 0.5);
+      color: var(--accent-light);
+    }
+
+    .nav-links .cta-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(232,81,26,0.1), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.7s ease-in-out;
+    }
+
+    .nav-links .cta-btn:hover::after {
+      transform: translateX(100%);
+    }
+
+    /* ---- Hero ---- */
+    .hero {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 10rem 2rem 6rem;
+      min-height: 100vh;
+      justify-content: center;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      margin-bottom: 2rem;
+      border-radius: 100px;
+      border: 1px solid rgba(232, 81, 26, 0.3);
+      background: rgba(232, 81, 26, 0.05);
+      color: var(--accent);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      animation: fade-in-up 0.8s ease-out;
+    }
+
+    .hero-badge .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-ring 2s ease-in-out infinite;
+      position: relative;
+    }
+
+    .hero-badge .pulse-dot::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .hero-rocket-wrapper {
+      position: relative;
+      margin-bottom: 2rem;
+      animation: fade-in-up 0.8s ease-out 0.15s both;
+    }
+
+    .hero-rocket {
+      width: 120px;
+      height: 120px;
+      animation: rocket-hover 3s ease-in-out infinite;
+    }
+
+    .rocket-glow-ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 200px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,81,26,0.15) 0%, transparent 70%);
+      animation: pulse-ring 3s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 0.95;
+      max-width: 750px;
+      animation: fade-in-up 0.8s ease-out 0.3s both;
+      background: linear-gradient(to bottom right, #fff, rgba(255,255,255,0.9), rgba(255,255,255,0.4));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      padding-bottom: 0.1em;
+    }
+
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 50%, var(--accent-warm) 100%);
+      background-size: 200% 200%;
+      animation: gradient-shift 4s ease infinite;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero .subtitle {
+      margin-top: 1.5rem;
+      font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+      color: var(--text-dim);
+      max-width: 560px;
+      line-height: 1.7;
+      font-weight: 300;
+      animation: fade-in-up 0.8s ease-out 0.45s both;
+    }
+
+    /* ---- Terminal Install Block ---- */
+    .install-block {
+      margin-top: 3rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      animation: fade-in-up 0.8s ease-out 0.6s both;
+    }
+
+    .install-cmd-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .install-cmd-wrapper .glow-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(232,81,26,0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.5s;
+      border-radius: 14px;
+      filter: blur(8px);
+    }
+
+    .install-cmd-wrapper:hover .glow-bg {
+      opacity: 1;
+    }
+
+    .install-cmd {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.1rem 1.5rem;
+      font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    .install-cmd:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent), 0 0 40px var(--accent-glow);
+    }
+
+    .install-cmd .scanline {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent, rgba(232,81,26,0.06), transparent);
+      opacity: 0.6;
+      pointer-events: none;
+      animation: scanline 4s linear infinite;
+    }
+
+    .install-cmd .prompt {
+      color: var(--accent);
+      user-select: none;
+      font-weight: 600;
+    }
+
+    .install-cmd .cmd-text {
+      flex: 1;
+      color: rgba(255,255,255,0.9);
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+
+    .install-cmd .copy-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+      position: relative;
+      z-index: 2;
+    }
+
+    .install-cmd .copy-btn:hover {
+      color: var(--text);
+    }
+
+    .install-hint {
+      font-size: 0.78rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    .install-hint .copied-msg {
+      opacity: 0;
+      color: var(--accent-light);
+      transition: opacity 0.3s;
+    }
+
+    .install-hint .copied-msg.show {
+      opacity: 1;
+    }
+
+    /* ---- Scroll indicator ---- */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0.4;
+      animation: fade-in-up 1s ease-out 1s both;
+    }
+
+    .scroll-indicator span {
+      font-size: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--text-muted);
+    }
+
+    .scroll-indicator .line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--text-muted), transparent);
+    }
+
+    /* ---- Section shared ---- */
+    section {
+      position: relative;
+      z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 7rem 2rem;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+      max-width: 600px;
+    }
+
+    .section-desc {
+      margin-top: 1rem;
+      color: var(--text-dim);
+      font-size: 1.05rem;
+      max-width: 520px;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ---- What is SpeziVibe ---- */
+    .what {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    .what-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .skill-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      background: rgba(21, 21, 24, 0.4);
+      border: 1px solid var(--border-subtle);
+      cursor: default;
+    }
+
+    .skill-pill:hover {
+      border-color: var(--accent);
+      transform: translateX(6px);
+      background: rgba(232, 81, 26, 0.05);
+      box-shadow: 0 0 30px rgba(232, 81, 26, 0.08);
+    }
+
+    .skill-pill .pill-icon {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 8px;
+      background: rgba(232, 81, 26, 0.08);
+      border: 1px solid rgba(232, 81, 26, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .skill-pill:hover .pill-icon {
+      background: rgba(232, 81, 26, 0.15);
+      border-color: rgba(232, 81, 26, 0.3);
+    }
+
+    .skill-pill .pill-name {
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .skill-pill .pill-desc {
+      color: var(--text-muted);
+      margin-left: auto;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    /* ---- How it works ---- */
+    .how-steps {
+      margin-top: 3.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .step-card-wrapper {
+      position: relative;
+    }
+
+    .step-num-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+      position: relative;
+      z-index: 2;
+      transition: all 0.3s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+    }
+
+    .step-card-wrapper:hover .step-num-circle {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .step-card {
+      padding: 2rem 1.5rem;
+      border-top: 3px solid transparent;
+      transition: border-color 0.3s;
+    }
+
+    .step-card-wrapper:hover .step-card {
+      border-top-color: var(--accent);
+    }
+
+    .step-card h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.6rem;
+    }
+
+    .step-card p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+
+    /* Step connector line */
+    .step-connector {
+      position: absolute;
+      top: 24px;
+      left: calc(50% + 24px);
+      width: calc(100% - 48px);
+      height: 2px;
+      background: linear-gradient(90deg, var(--border) 0%, var(--border) 60%, transparent 100%);
+      z-index: 1;
+    }
+
+    /* ---- Skills Bento Grid ---- */
+    .skills-section {
+      text-align: center;
+    }
+
+    .skills-section .section-title,
+    .skills-section .section-desc {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .skills-grid {
+      margin-top: 3rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: auto;
+      gap: 0.75rem;
+    }
+
+    .skill-card {
+      padding: 1.5rem;
+      text-align: left;
+    }
+
+    .skill-card .skill-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 10px;
+      background: rgba(232, 81, 26, 0.08);
+      border: 1px solid rgba(232, 81, 26, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s;
+    }
+
+    .glass-card:hover .skill-icon {
+      background: rgba(232, 81, 26, 0.15);
+      border-color: rgba(232, 81, 26, 0.3);
+      filter: drop-shadow(0 0 8px rgba(232,81,26,0.4));
+    }
+
+    .skill-card h3 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--accent-light);
+      letter-spacing: -0.01em;
+    }
+
+    .skill-card p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+
+    /* Card span variants */
+    .skill-card-hero {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+
+    .skill-card-wide {
+      grid-column: span 2;
+    }
+
+    .skill-card-full {
+      grid-column: span 4;
+    }
+
+    /* Special hero skill card interior */
+    .skill-card-hero .skill-card-visual {
+      margin-top: 1.5rem;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      overflow: hidden;
+    }
+
+    .skill-card-hero .skill-card-visual .kw {
+      color: #c084fc;
+    }
+
+    .skill-card-hero .skill-card-visual .str {
+      color: var(--accent-light);
+    }
+
+    .skill-card-hero .skill-card-visual .cmt {
+      color: rgba(255,255,255,0.25);
+    }
+
+    /* Live status badge for a special card */
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .live-badge .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      animation: pulse-ring 2s ease-in-out infinite;
+    }
+
+    .live-badge span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #4ade80;
+    }
+
+    /* ---- Compatible tools ---- */
+    .compat {
+      text-align: center;
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+      border-top: 1px solid rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      background: rgba(17, 17, 19, 0.3);
+    }
+
+    .compat-section-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    .compat-logos {
+      margin-top: 2.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      flex-wrap: wrap;
+    }
+
+    .compat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.3s;
+      cursor: default;
+      opacity: 0.6;
+    }
+
+    .compat-item:hover {
+      opacity: 1;
+    }
+
+    .compat-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+      transition: all 0.3s;
+    }
+
+    .compat-item:hover .compat-icon {
+      border-color: var(--accent);
+      box-shadow: 0 0 30px var(--accent-glow);
+      transform: scale(1.05);
+    }
+
+    /* ---- Bottom CTA ---- */
+    .bottom-cta {
+      text-align: center;
+      padding: 8rem 2rem 8rem;
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .bottom-cta .cta-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(232,81,26,0.1) 0%, transparent 70%);
+      pointer-events: none;
+      filter: blur(80px);
+    }
+
+    .bottom-cta h2 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+      position: relative;
+    }
+
+    .bottom-cta .subtitle {
+      margin-top: 1.2rem;
+      color: var(--text-dim);
+      font-size: 1.15rem;
+      font-weight: 300;
+      position: relative;
+    }
+
+    .bottom-cta .install-block {
+      margin-top: 2.5rem;
+      position: relative;
+    }
+
+    .bottom-cta .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+      position: relative;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #fff;
+      color: #000;
+      padding: 0.85rem 2rem;
+      border-radius: 100px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 0 40px rgba(255,255,255,0.08);
+    }
+
+    .btn-primary:hover {
+      background: #e8e8ed;
+      transform: translateY(-1px);
+      box-shadow: 0 0 60px rgba(255,255,255,0.12);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(21, 21, 24, 0.4);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      color: rgba(255,255,255,0.8);
+      padding: 0.85rem 2rem;
+      border-radius: 100px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+      color: #fff;
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-1px);
+    }
+
+    /* ---- Footer ---- */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg);
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer a:hover {
+      color: var(--accent);
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 1024px) {
+      .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .skill-card-hero {
+        grid-column: span 2;
+        grid-row: span 1;
+      }
+
+      .skill-card-wide {
+        grid-column: span 2;
+      }
+
+      .skill-card-full {
+        grid-column: span 2;
+      }
+
+      .step-connector {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .what {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .how-steps {
+        grid-template-columns: 1fr;
+      }
+
+      .skills-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .skill-card-hero,
+      .skill-card-wide,
+      .skill-card-full {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
+
+      .hero-rocket {
+        width: 100px;
+        height: 100px;
+      }
+
+      .skill-pill .pill-desc {
+        display: none;
+      }
+
+      .compat-logos {
+        gap: 2rem;
+      }
+
+      .bottom-cta .action-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .hero {
+        padding: 8rem 1.5rem 5rem;
+      }
+
+      .scroll-indicator {
+        display: none;
+      }
+
+      .step-connector {
+        display: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      nav {
+        padding: 0.75rem;
+        transform: translateY(6px);
+      }
+
+      .nav-inner {
+        padding: 0.5rem 0.5rem 0.5rem 1rem;
+      }
+
+      .nav-links a:not(.cta-btn) {
+        display: none;
+      }
+
+      .install-cmd {
+        font-size: 0.78rem;
+        padding: 0.9rem 1rem;
+      }
+
+      .install-cmd .cmd-text {
+        font-size: 0.72rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Environmental Layers -->
+  <div class="aurora-base"></div>
+  <div class="aurora-accent"></div>
+  <div class="grid-pattern"></div>
+  <canvas id="particles"></canvas>
+
+  <!-- Nav -->
+  <nav>
+    <div class="nav-inner">
+      <a href="/" class="logo">
+        <img src="https://raw.githubusercontent.com/StanfordSpezi/SpeziVibe/main/assets/rocket-logo.png" alt="SpeziVibe rocket logo">
+        <span>SpeziVibe</span>
+      </a>
+      <div class="nav-links">
+        <a href="#skills">Skills</a>
+        <a href="#how">How it works</a>
+        <a href="https://github.com/StanfordSpezi/SpeziVibe" class="cta-btn" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">
+      <div class="pulse-dot"></div>
+      From Stanford Spezi
+    </div>
+
+    <div class="hero-rocket-wrapper">
+      <div class="rocket-glow-ring"></div>
+      <img
+        src="https://raw.githubusercontent.com/StanfordSpezi/SpeziVibe/main/assets/rocket-logo.png"
+        alt="SpeziVibe rocket logo"
+        class="hero-rocket"
+      >
+    </div>
+
+    <h1>Vibe code<br><span class="highlight">digital health</span></h1>
+
+    <p class="subtitle">
+      AI coding skills that bring clinical rigor, regulatory know-how, and Stanford Biodesign thinking straight into your editor. Install in seconds. Ship what matters.
+    </p>
+
+    <div class="install-block">
+      <div class="install-cmd-wrapper">
+        <div class="glow-bg"></div>
+        <div class="install-cmd" onclick="copyCommand(this)" role="button" tabindex="0" aria-label="Copy install command">
+          <div class="scanline"></div>
+          <span class="prompt">$</span>
+          <span class="cmd-text">npx skills add StanfordSpezi/SpeziVibe --all</span>
+          <button class="copy-btn" aria-label="Copy to clipboard">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <p class="install-hint">Click to copy &middot; <span class="copied-msg" id="copied-msg">Copied!</span></p>
+    </div>
+
+    <div class="scroll-indicator">
+      <span>Scroll to explore</span>
+      <div class="line"></div>
+    </div>
+  </section>
+
+  <!-- What is SpeziVibe -->
+  <section class="what" id="about">
+    <div class="reveal">
+      <p class="section-label">What is SpeziVibe</p>
+      <h2 class="section-title">Skills your AI coder didn't know it needed</h2>
+      <p class="section-desc">
+        SpeziVibe is a collection of installable skills for AI coding tools. Each one packages real product, clinical, regulatory, and platform guidance into something your AI assistant can actually use &mdash; so you spend less time prompt-wrangling and more time building.
+      </p>
+      <p class="section-desc" style="margin-top: 0.8rem;">
+        From Stanford's Spezi initiative, built to lower the barrier to high-quality digital health experiences.
+      </p>
+    </div>
+    <div class="what-visual">
+      <div class="skill-pill reveal reveal-delay-1">
+        <div class="pill-icon">&#9734;</div>
+        <span class="pill-name">build-an-app</span>
+        <span class="pill-desc">Idea to running code</span>
+      </div>
+      <div class="skill-pill reveal reveal-delay-1">
+        <div class="pill-icon">&#9881;</div>
+        <span class="pill-name">spezi-platform-selection</span>
+        <span class="pill-desc">React Native or native</span>
+      </div>
+      <div class="skill-pill reveal reveal-delay-2">
+        <div class="pill-icon">&#9829;</div>
+        <span class="pill-name">biodesign-needs-finding</span>
+        <span class="pill-desc">Stanford Biodesign</span>
+      </div>
+      <div class="skill-pill reveal reveal-delay-2">
+        <div class="pill-icon">&#128203;</div>
+        <span class="pill-name">digital-health-compliance</span>
+        <span class="pill-desc">HIPAA, IRB, FDA, GDPR</span>
+      </div>
+      <div class="skill-pill reveal reveal-delay-3">
+        <div class="pill-icon">&#128200;</div>
+        <span class="pill-name">fhir-data-model-design</span>
+        <span class="pill-desc">FHIR R4 standards</span>
+      </div>
+      <div class="skill-pill reveal reveal-delay-3">
+        <div class="pill-icon">&#128241;</div>
+        <span class="pill-name">digital-health-ux-planning</span>
+        <span class="pill-desc">Patient &amp; clinician UX</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how">
+    <div class="reveal">
+      <p class="section-label">How it works</p>
+      <h2 class="section-title">Three steps. Zero boilerplate.</h2>
+    </div>
+    <div class="how-steps">
+      <div class="step-card-wrapper reveal reveal-delay-1" style="position:relative;">
+        <div class="step-num-circle">01</div>
+        <div class="step-connector"></div>
+        <div class="step-card glass-card">
+          <h3>Install the skills</h3>
+          <p>One command adds every skill to your AI coding tool. Works with Claude Code, OpenAI Codex, and Gemini CLI.</p>
+        </div>
+      </div>
+      <div class="step-card-wrapper reveal reveal-delay-2" style="position:relative;">
+        <div class="step-num-circle">02</div>
+        <div class="step-connector"></div>
+        <div class="step-card glass-card">
+          <h3>Describe your app</h3>
+          <p>Tell your AI what you want to build. SpeziVibe skills automatically guide it through clinical, regulatory, and technical decisions.</p>
+        </div>
+      </div>
+      <div class="step-card-wrapper reveal reveal-delay-3" style="position:relative;">
+        <div class="step-num-circle">03</div>
+        <div class="step-card glass-card">
+          <h3>Ship with confidence</h3>
+          <p>Get structured outputs &mdash; data models, compliance plans, UX flows, and implementation milestones &mdash; not just raw code.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- All 11 skills -->
+  <section class="skills-section" id="skills">
+    <div class="reveal">
+      <p class="section-label">11 Skills</p>
+      <h2 class="section-title">Everything you need, nothing you don't</h2>
+      <p class="section-desc">Each skill is focused, composable, and grounded in real-world digital health workflows.</p>
+    </div>
+    <div class="skills-grid">
+
+      <!-- Hero card: build-an-app (2x2) -->
+      <div class="glass-card skill-card skill-card-hero reveal">
+        <div class="skill-icon">&#9734;</div>
+        <h3>build-an-app</h3>
+        <p>Walk through the full process of building a digital health app &mdash; describe what you want to build and it figures out which planning skills you need, runs them in order, and hands off to implementation.</p>
+        <div class="skill-card-visual">
+          <span class="cmt">// Describe your app, SpeziVibe runs the right skills</span><br>
+          <span class="kw">import</span> { buildApp } <span class="kw">from</span> <span class="str">'spezivibe'</span>;<br><br>
+          <span class="kw">await</span> buildApp({<br>
+          &nbsp;&nbsp;needs: <span class="str">'biodesign-analysis'</span>,<br>
+          &nbsp;&nbsp;compliance: <span class="str">'HIPAA + FDA'</span>,<br>
+          &nbsp;&nbsp;data: <span class="str">'FHIR R4'</span>,<br>
+          &nbsp;&nbsp;ux: <span class="str">'patient-journey'</span>,<br>
+          });
+        </div>
+      </div>
+
+      <!-- spezi-platform-selection -->
+      <div class="glass-card skill-card reveal reveal-delay-1">
+        <div class="skill-icon">&#9881;</div>
+        <h3>spezi-platform-selection</h3>
+        <p>Choose the right app foundation &mdash; helps you decide whether a project is better served by the React Native Template App or the Spezi Template Application for Apple Platforms.</p>
+      </div>
+
+      <!-- biodesign-needs-finding -->
+      <div class="glass-card skill-card reveal reveal-delay-2">
+        <div class="skill-icon">&#9829;</div>
+        <h3>biodesign-needs-finding</h3>
+        <p>Turn an idea into a real clinical need &mdash; guides a team through a Stanford Biodesign-style needs-finding process so they define the problem well before jumping to a solution.</p>
+      </div>
+
+      <!-- digital-health-study-planning (wide) -->
+      <div class="glass-card skill-card skill-card-wide reveal">
+        <div class="skill-icon">&#128218;</div>
+        <h3>digital-health-study-planning</h3>
+        <p>Plan a study around the app &mdash; helps shape a digital health study or research workflow, including recruitment, consent, assessments, schedules, and outcome measures.</p>
+      </div>
+
+      <!-- digital-health-compliance-planning (wide, highlighted) -->
+      <div class="glass-card skill-card skill-card-wide reveal" style="background: rgba(232, 81, 26, 0.04); border-color: rgba(232, 81, 26, 0.12);">
+        <div class="live-badge">
+          <div class="dot"></div>
+          <span>Critical Path</span>
+        </div>
+        <h3>digital-health-compliance-planning</h3>
+        <p>Think through privacy and regulatory risk early &mdash; helps teams reason about HIPAA, IRB, FDA, GDPR, and adjacent compliance questions before implementation gets too far ahead.</p>
+      </div>
+
+      <!-- health-data-model-planning -->
+      <div class="glass-card skill-card reveal reveal-delay-1">
+        <div class="skill-icon">&#128202;</div>
+        <h3>health-data-model-planning</h3>
+        <p>Shape the app's health data backbone &mdash; helps define core health concepts, entities, relationships, lifecycle states, and interoperability needs before implementation begins.</p>
+      </div>
+
+      <!-- digital-health-ux-planning -->
+      <div class="glass-card skill-card reveal reveal-delay-2">
+        <div class="skill-icon">&#128241;</div>
+        <h3>digital-health-ux-planning</h3>
+        <p>Design a patient- and clinician-friendly experience &mdash; helps plan onboarding, core journeys, engagement loops, and day-to-day workflows for digital health products.</p>
+      </div>
+
+      <!-- fhir-data-model-design -->
+      <div class="glass-card skill-card reveal reveal-delay-1">
+        <div class="skill-icon">&#128200;</div>
+        <h3>fhir-data-model-design</h3>
+        <p>Map clinical concepts to FHIR &mdash; translates clinical requirements into a FHIR R4-oriented data model with concrete resources, relationships, and implementation guidance.</p>
+      </div>
+
+      <!-- app-build-planner -->
+      <div class="glass-card skill-card reveal reveal-delay-2">
+        <div class="skill-icon">&#128203;</div>
+        <h3>app-build-planner</h3>
+        <p>Turn planning outputs into a milestone-based build plan &mdash; extracts features from your UX, data model, compliance, and study planning work, and sequences everything into milestones you can build and review one at a time.</p>
+      </div>
+
+      <!-- Bottom banner: last two skills -->
+      <div class="glass-card skill-card skill-card-wide reveal">
+        <div class="skill-icon">&#128196;</div>
+        <h3>keep-a-changelog-generator</h3>
+        <p>Draft changelogs people can actually read &mdash; turns git history into structured changelog entries using the Keep a Changelog format and clearer user-facing language.</p>
+      </div>
+
+      <div class="glass-card skill-card skill-card-wide reveal">
+        <div class="skill-icon">&#128172;</div>
+        <h3>release-notes-generator</h3>
+        <p>Summarize a release clearly &mdash; helps generate release notes that explain features, fixes, and migration concerns in a concise way for real users and collaborators.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Compatible tools -->
+  <section class="compat" style="max-width: 100%; padding-left: 0; padding-right: 0;">
+    <div class="compat-section-inner reveal">
+      <p class="section-label">Compatible with</p>
+      <h2 class="section-title" style="margin: 0 auto;">Your favorite AI coding tools</h2>
+      <div class="compat-logos">
+        <div class="compat-item">
+          <div class="compat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+          Claude Code
+        </div>
+        <div class="compat-item">
+          <div class="compat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+              <circle cx="12" cy="12" r="3" fill="currentColor"/>
+            </svg>
+          </div>
+          OpenAI Codex
+        </div>
+        <div class="compat-item">
+          <div class="compat-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </div>
+          Gemini CLI
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom CTA -->
+  <section class="bottom-cta">
+    <div class="cta-glow"></div>
+    <div class="reveal">
+      <h2>Ready to vibe?</h2>
+      <p class="subtitle">One command. Eleven skills. Infinite possibilities.</p>
+      <div class="install-block">
+        <div class="install-cmd-wrapper">
+          <div class="glow-bg"></div>
+          <div class="install-cmd" onclick="copyCommand(this)" role="button" tabindex="0" aria-label="Copy install command">
+            <div class="scanline"></div>
+            <span class="prompt">$</span>
+            <span class="cmd-text">npx skills add StanfordSpezi/SpeziVibe --all</span>
+            <button class="copy-btn" aria-label="Copy to clipboard">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <p class="install-hint">Click to copy &middot; <span class="copied-msg" id="copied-msg-2">Copied!</span></p>
+      </div>
+      <div class="action-buttons">
+        <a href="https://github.com/StanfordSpezi/SpeziVibe" target="_blank" rel="noopener" class="btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          View on GitHub
+        </a>
+        <a href="https://github.com/StanfordSpezi/SpeziVibe#readme" target="_blank" rel="noopener" class="btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+          Read Documentation
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>
+      Built by <a href="https://biodesign.stanford.edu" target="_blank" rel="noopener">Stanford Mussallem Center for Biodesign</a>
+      &nbsp;&middot;&nbsp;
+      <a href="https://github.com/StanfordSpezi/SpeziVibe" target="_blank" rel="noopener">GitHub</a>
+      &nbsp;&middot;&nbsp;
+      MIT License
+    </p>
+  </footer>
+
+  <script>
+    // ---- Copy to clipboard ----
+    function copyCommand(el) {
+      const text = el.querySelector('.cmd-text').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const hint = el.closest('.install-block').querySelector('.install-hint .copied-msg');
+        hint.classList.add('show');
+        setTimeout(() => hint.classList.remove('show'), 2000);
+      });
+    }
+
+    // Keyboard support for install command blocks
+    document.querySelectorAll('.install-cmd').forEach(el => {
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          copyCommand(el);
+        }
+      });
+    });
+
+    // ---- Particle field ----
+    (function() {
+      const canvas = document.getElementById('particles');
+      const ctx = canvas.getContext('2d');
+      let particles = [];
+      let w, h;
+      const PARTICLE_COUNT = 60;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+
+      function createParticles() {
+        particles = [];
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          particles.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            r: Math.random() * 1.5 + 0.5,
+            opacity: Math.random() * 0.4 + 0.1,
+          });
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (const p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < 0) p.x = w;
+          if (p.x > w) p.x = 0;
+          if (p.y < 0) p.y = h;
+          if (p.y > h) p.y = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(232, 81, 26, ${p.opacity})`;
+          ctx.fill();
+        }
+
+        // Draw connections
+        for (let i = 0; i < particles.length; i++) {
+          for (let j = i + 1; j < particles.length; j++) {
+            const dx = particles[i].x - particles[j].x;
+            const dy = particles[i].y - particles[j].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 150) {
+              ctx.beginPath();
+              ctx.moveTo(particles[i].x, particles[i].y);
+              ctx.lineTo(particles[j].x, particles[j].y);
+              ctx.strokeStyle = `rgba(232, 81, 26, ${0.04 * (1 - dist / 150)})`;
+              ctx.lineWidth = 0.5;
+              ctx.stroke();
+            }
+          }
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      resize();
+      createParticles();
+      draw();
+
+      window.addEventListener('resize', () => {
+        resize();
+        createParticles();
+      });
+    })();
+
+    // ---- Scroll reveal (Intersection Observer) ----
+    document.addEventListener('DOMContentLoaded', () => {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+      });
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    });
+
+    // ---- Mouse-follow aurora ----
+    window.addEventListener('mousemove', e => {
+      const aurora = document.querySelector('.aurora-base');
+      const x = (e.clientX / window.innerWidth - 0.5) * 80;
+      const y = (e.clientY / window.innerHeight - 0.5) * 40;
+      aurora.style.transform = `translate(calc(-50% + ${x}px), ${y}px)`;
+    });
+
+    // ---- Nav background on scroll ----
+    const navInner = document.querySelector('.nav-inner');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 100) {
+        navInner.style.background = 'rgba(10, 10, 12, 0.85)';
+        navInner.style.borderColor = 'rgba(255,255,255,0.08)';
+      } else {
+        navInner.style.background = 'rgba(21, 21, 24, 0.5)';
+        navInner.style.borderColor = 'rgba(255,255,255,0.05)';
+      }
+    });
+  </script>
+
+</body>
+</html>
