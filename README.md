@@ -129,6 +129,12 @@ Feed your planning outputs into `app-build-planner` to get a sequenced implement
 
 Open the template repository you cloned in step 2 and work through `docs/implementation-plan.md` milestone by milestone with your coding agent. Build each one, verify it works, then move to the next.
 
+### 6. Keep Learning (Optional)
+
+Set up a project wiki to accumulate knowledge as you build. Every interview, paper, clinical observation, and competitive finding gets ingested into a persistent, AI-maintained knowledge base that compounds over the life of the project. Planning documents from earlier steps seed the wiki automatically.
+
+Use: `project-wiki`
+
 ## Skill Catalog
 
 This repository is organized for `npx skills`, with one skill per folder under `skills/`.
@@ -144,6 +150,7 @@ This repository is organized for `npx skills`, with one skill per folder under `
 | `digital-health-ux-planning` | Design a patient- and clinician-friendly experience |
 | `fhir-data-model-design` | Map clinical concepts to FHIR |
 | `app-build-planner` | Turn planning outputs into a milestone-based build plan |
+| `project-wiki` | Turn your project into a compounding, AI-maintained knowledge base |
 | `keep-a-changelog-generator` | Draft changelogs people can actually read |
 | `release-notes-generator` | Summarize a release clearly |
 
@@ -255,6 +262,18 @@ Turn planning outputs into a milestone-based build plan — extracts features fr
 
 ```bash
 npx skills add StanfordSpezi/SpeziVibe --skill app-build-planner
+```
+
+</details>
+
+### `project-wiki`
+
+Turn your project into a compounding knowledge base — set up a persistent, AI-maintained wiki that grows with every interview, paper, clinical observation, and competitive finding. Inspired by Karpathy's [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) pattern, adapted for the Stanford Biodesign innovation process. Seeds automatically from other SpeziVibe planning documents.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill project-wiki
 ```
 
 </details>
