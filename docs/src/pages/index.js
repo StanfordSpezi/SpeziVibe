@@ -247,13 +247,17 @@ export default function Home() {
         <h1>Vibe code<br /><span className="highlight">digital health</span></h1>
 
         <p className="subtitle">
-          Installable skills that help AI coding tools guide you through clinical, regulatory, and technical planning for digital health apps.
+          Installable skills that help AI coding tools plan, build, and ship digital health apps.
         </p>
 
         <InstallBlock />
-        <p className="alt-install">
-          or <a href="https://github.com/StanfordSpezi/SpeziVibe/releases/latest/download/spezivibe-skills.zip">download as zip</a>
-        </p>
+        <div className="install-or" style={{animation: 'fade-in-up 0.8s ease-out 0.7s both'}}>
+          <span className="or-divider">or</span>
+          <a href="https://github.com/StanfordSpezi/SpeziVibe/releases/latest/download/spezivibe-skills.zip" className="btn-zip">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Download as zip
+          </a>
+        </div>
 
         <div className="scroll-indicator">
           <span>Scroll to explore</span>
@@ -265,9 +269,9 @@ export default function Home() {
       <section className="landing-section what" id="about">
         <div className="reveal">
           <p className="section-label">What is SpeziVibe</p>
-          <h2 className="section-title">Guided planning for digital health apps</h2>
+          <h2 className="section-title">Plan and build digital health apps</h2>
           <p className="section-desc">
-            SpeziVibe is a collection of installable skills for AI coding tools. Each skill walks you through a specific planning area &mdash; needs analysis, compliance, data modeling, UX, study design &mdash; and produces a structured document you can build from.
+            SpeziVibe is a collection of installable skills for AI coding tools. Skills guide you from needs analysis and compliance through data modeling and UX &mdash; then help you build with Spezi templates, pre-built modules, and a living project knowledge base.
           </p>
           <p className="section-desc" style={{marginTop: '0.8rem'}}>
             From Stanford's Spezi initiative, built to lower the barrier to high-quality digital health experiences.
@@ -287,13 +291,13 @@ export default function Home() {
       <section className="landing-section" id="how">
         <div className="reveal">
           <p className="section-label">How it works</p>
-          <h2 className="section-title">Four steps. From idea to app.</h2>
+          <h2 className="section-title">From idea to app.</h2>
         </div>
         <div className="how-steps">
-          <StepCard num="01" title="Install the skills" description="One command adds every skill to your AI coding tool. Works with any tool that supports installable skills or custom instructions." showConnector delayClass="reveal-delay-1" />
-          <StepCard num="02" title="Describe your app" description="Tell your AI what you want to build. The build-an-app skill figures out which planning steps apply and walks you through each one interactively." showConnector delayClass="reveal-delay-2" />
-          <StepCard num="03" title="Get planning docs" description="Each skill produces a structured markdown document &mdash; need statements, compliance briefs, data models, UX briefs, and implementation plans." showConnector delayClass="reveal-delay-3" />
-          <StepCard num="04" title="Build your app" description="Start from a Spezi template app and add pre-built modules for your use case. Your planning docs guide the AI as it wires everything together." delayClass="reveal-delay-4" />
+          <StepCard num="01" title="Install" description="One command adds every skill to your AI coding tool. Works with anything that supports installable skills or custom instructions." showConnector delayClass="reveal-delay-1" />
+          <StepCard num="02" title="Plan" description="Describe what you want to build. Skills walk you through needs analysis, compliance, data modeling, UX, and study design &mdash; producing structured docs along the way." showConnector delayClass="reveal-delay-2" />
+          <StepCard num="03" title="Build" description="Start from a Spezi template app and add pre-built modules. Your planning docs guide the AI as it wires everything together." showConnector delayClass="reveal-delay-3" />
+          <StepCard num="04" title="Ship" description="Generate changelogs, release notes, and maintain a living project wiki that keeps your team's knowledge organized as you iterate." delayClass="reveal-delay-4" />
         </div>
       </section>
 
@@ -301,15 +305,15 @@ export default function Home() {
       <section className="landing-section skills-section" id="skills">
         <div className="reveal">
           <p className="section-label">Skills</p>
-          <h2 className="section-title">One skill per planning area</h2>
-          <p className="section-desc">Each skill covers a specific aspect of digital health planning and produces a structured output document.</p>
+          <h2 className="section-title">One skill per area</h2>
+          <p className="section-desc">Each skill covers a specific aspect of digital health development &mdash; from planning through building and maintenance.</p>
         </div>
         <div className="skills-grid">
           {/* Hero card */}
           <div className="glass-card skill-card skill-card-hero reveal">
             <div className="skill-icon">&#9734;</div>
             <h3>build-an-app</h3>
-            <p>Describe what you want to build. This skill figures out which planning steps apply, walks you through each one, and produces structured docs you can hand off to implementation.</p>
+            <p>Describe what you want to build. This skill figures out which steps apply, walks you through planning, and sets you up to build with the right template and modules.</p>
             <div className="skill-card-visual">
               <span className="cmt"># Example conversation</span><br /><br />
               <span className="str">&gt; I want to build a medication tracking app</span><br />
@@ -382,11 +386,15 @@ export default function Home() {
         <div className="cta-glow"></div>
         <div className="reveal">
           <h2>Get started</h2>
-          <p className="subtitle">One command. Every skill. Structured planning for digital health.</p>
+          <p className="subtitle">One command. Every skill. Plan, build, and ship digital health apps.</p>
           <InstallBlock />
-          <p className="alt-install">
-            or <a href="https://github.com/StanfordSpezi/SpeziVibe/releases/latest/download/spezivibe-skills.zip">download as zip</a>
-          </p>
+          <div className="install-or">
+            <span className="or-divider">or</span>
+            <a href="https://github.com/StanfordSpezi/SpeziVibe/releases/latest/download/spezivibe-skills.zip" className="btn-zip">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Download as zip
+            </a>
+          </div>
           <div className="action-buttons">
             <a href="https://github.com/StanfordSpezi/SpeziVibe" target="_blank" rel="noopener noreferrer" className="btn-primary">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>

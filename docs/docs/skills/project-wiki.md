@@ -28,6 +28,32 @@ When you add a source, the AI reads it, discusses key takeaways with you, and in
 
 If your project has planning documents from other SpeziVibe skills, the wiki seeds from them automatically — need statements become project overviews, UX briefs become user journey pages, compliance briefs become regulatory landscape pages.
 
+## Example
+
+```
+You:  Add this to my wiki — [pastes patient interview transcript]
+
+AI:   I've saved it as wiki/raw/interviews/2026-04-05-patient-03-
+      cardiac-rehab.md.
+
+      Key takeaways:
+      — Patient stopped exercising after week 2 due to fatigue
+      — Caregiver wasn't aware of the exercise schedule
+      — Patient preferred text reminders over app notifications
+
+      This contradicts our earlier assumption that app-based
+      reminders are preferred — I've flagged that on the
+      evidence/adherence-barriers.md page.
+
+      Updated pages:
+      — stakeholders/patients.md (added fatigue as barrier)
+      — stakeholders/caregivers.md (new page — caregiver role)
+      — evidence/adherence-barriers.md (added contradiction flag)
+      — questions/open-questions.md (added: "Should we include
+        caregiver-facing features?")
+      — log.md (appended ingest entry)
+```
+
 ## Output
 
 Creates a `wiki/` directory with the full three-layer structure and a schema section in your project's `AGENTS.md` or `CLAUDE.md`.

@@ -5,7 +5,7 @@ slug: /skills
 
 # Skills Overview
 
-Each skill covers a specific area of digital health planning and produces a structured markdown document. Use them individually or let **build-an-app** orchestrate them based on what you describe.
+Each skill covers a specific area of digital health development &mdash; from planning through building and maintenance. Use them individually or let **build-an-app** orchestrate them based on what you describe.
 
 ## Planning Skills
 
