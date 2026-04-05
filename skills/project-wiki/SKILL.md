@@ -137,14 +137,19 @@ Do not duplicate content — extract key facts, relationships, and open question
 
 ### 4. Write the Schema
 
-Generate an `AGENTS.md` (or `CLAUDE.md`) file at the project root that describes:
+Check whether an `AGENTS.md` or `CLAUDE.md` already exists at the project root.
+
+- **If one exists:** append a clearly scoped `## Project Wiki Schema` section to the existing file. Do not overwrite or remove any existing content — the file may contain instructions for other tools or skills.
+- **If neither exists:** create a new `AGENTS.md` at the project root.
+
+The Project Wiki Schema section should describe:
 
 - the wiki directory structure and conventions
 - the project domain and key terminology
 - page naming conventions
 - how to handle ingestion, queries, and maintenance
 - which Biodesign stage the project is in and what that means for page priorities
-- cross-referencing conventions (use standard markdown links)
+- cross-referencing conventions (use standard Markdown links)
 
 Tailor the schema to the specific project. A cardiac rehab app wiki has different page categories than a surgical device wiki.
 
@@ -278,7 +283,7 @@ If the user accepts, hand off to this skill.
 
 - **Raw sources are immutable.** Never modify anything in `wiki/raw/`. The AI reads from raw sources but only writes to `wiki/pages/`.
 - **Flag contradictions, don't hide them.** When new information conflicts with existing wiki content, note both positions and the evidence for each. Let the user decide what to believe.
-- **Cite everything.** Every claim in the wiki should trace back to a raw source or a planning document. Use markdown links.
+- **Cite everything.** Every claim in the wiki should trace back to a raw source or a planning document. Use Markdown links.
 - **Keep pages concise.** A wiki page should be readable in 2–3 minutes. Split long pages into focused sub-pages.
 - **Don't fabricate evidence.** If the wiki has gaps, say so. Add the gap to `questions/open-questions.md` rather than filling it with speculation.
 - **Respect the user's domain expertise.** The AI maintains the wiki; the user directs the analysis. Ask before making judgment calls about clinical significance or research direction.

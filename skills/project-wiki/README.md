@@ -77,13 +77,13 @@ If your project already has planning documents from other SpeziVibe skills, the 
 
 | Planning Document | What It Becomes |
 |---|---|
-| `need-statement.md` | Project overview, initial stakeholder pages, open questions |
-| `ux-brief.md` | User journey and onboarding pages |
-| `data-model-brief.md` | Data model design page |
-| `compliance-brief.md` | Compliance landscape and open regulatory decisions |
-| `study-brief.md` | Study protocol page, participant stakeholder page |
-| `fhir-data-model.md` | FHIR mappings page |
-| `implementation-plan.md` | Implementation roadmap page |
+| `docs/planning/need-statement.md` | Project overview, initial stakeholder pages, open questions |
+| `docs/planning/ux-brief.md` | User journey and onboarding pages |
+| `docs/planning/data-model-brief.md` | Data model design page |
+| `docs/planning/compliance-brief.md` | Compliance landscape and open regulatory decisions |
+| `docs/planning/study-brief.md` | Study protocol page, participant stakeholder page |
+| `docs/planning/fhir-data-model.md` | FHIR mappings page |
+| `docs/implementation-plan.md` | Implementation roadmap page |
 
 You start with structure, not a blank page.
 
