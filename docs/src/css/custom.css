@@ -438,6 +438,23 @@
   opacity: 1;
 }
 
+.alt-install {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+}
+
+.alt-install a {
+  color: var(--accent-light);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(232, 81, 26, 0.3);
+  transition: border-color 0.2s;
+}
+
+.alt-install a:hover {
+  border-color: var(--accent-light);
+}
+
 /* -- Scroll Indicator -- */
 .scroll-indicator {
   position: absolute;

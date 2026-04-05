@@ -22,6 +22,13 @@ const sidebars = {
     },
     {
       type: 'category',
+      label: 'Knowledge Management Skills',
+      items: [
+        'skills/project-wiki',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Release Skills',
       items: [
         'skills/keep-a-changelog-generator',

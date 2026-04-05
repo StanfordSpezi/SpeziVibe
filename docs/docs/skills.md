@@ -21,6 +21,12 @@ Each skill covers a specific area of digital health planning and produces a stru
 | [fhir-data-model-design](skills/fhir-data-model-design) | Map clinical data to FHIR R4 resources and terminology | `fhir-data-model.md` |
 | [app-build-planner](skills/app-build-planner) | Produce milestone-based implementation plan from planning docs | `implementation-plan.md` |
 
+## Knowledge Management Skills
+
+| Skill | What it does | Output |
+|-------|-------------|--------|
+| [project-wiki](skills/project-wiki) | Set up and maintain an AI-managed knowledge base that compounds over time | `wiki/` directory + schema |
+
 ## Release Skills
 
 | Skill | What it does | Output |
