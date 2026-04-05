@@ -287,12 +287,13 @@ export default function Home() {
       <section className="landing-section" id="how">
         <div className="reveal">
           <p className="section-label">How it works</p>
-          <h2 className="section-title">Three steps. Zero boilerplate.</h2>
+          <h2 className="section-title">Four steps. From idea to app.</h2>
         </div>
         <div className="how-steps">
           <StepCard num="01" title="Install the skills" description="One command adds every skill to your AI coding tool. Works with any tool that supports installable skills or custom instructions." showConnector delayClass="reveal-delay-1" />
           <StepCard num="02" title="Describe your app" description="Tell your AI what you want to build. The build-an-app skill figures out which planning steps apply and walks you through each one interactively." showConnector delayClass="reveal-delay-2" />
-          <StepCard num="03" title="Get planning docs" description="Each skill produces a structured markdown document &mdash; need statements, compliance briefs, data models, UX briefs, and implementation plans." delayClass="reveal-delay-3" />
+          <StepCard num="03" title="Get planning docs" description="Each skill produces a structured markdown document &mdash; need statements, compliance briefs, data models, UX briefs, and implementation plans." showConnector delayClass="reveal-delay-3" />
+          <StepCard num="04" title="Build your app" description="Start from a Spezi template app and add pre-built modules for your use case. Your planning docs guide the AI as it wires everything together." delayClass="reveal-delay-4" />
         </div>
       </section>
 

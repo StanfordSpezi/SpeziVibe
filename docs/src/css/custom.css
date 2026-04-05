@@ -442,6 +442,8 @@
   font-size: 0.82rem;
   color: var(--text-muted);
   margin-top: 0.5rem;
+  text-align: center;
+  width: 100%;
 }
 
 .alt-install a {
