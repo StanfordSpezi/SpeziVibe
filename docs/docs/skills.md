@@ -5,7 +5,7 @@ slug: /skills
 
 # Skills Overview
 
-Each skill covers a specific area of digital health planning and produces a structured markdown document. Use them individually or let **build-an-app** orchestrate them based on what you describe.
+Each skill covers a specific area of digital health development &mdash; from planning through building and maintenance. Use them individually or let **build-an-app** orchestrate them based on what you describe.
 
 ## Planning Skills
 
@@ -20,6 +20,12 @@ Each skill covers a specific area of digital health planning and produces a stru
 | [digital-health-ux-planning](skills/digital-health-ux-planning) | Plan user journeys and workflows (no wireframes) | `ux-brief.md` |
 | [fhir-data-model-design](skills/fhir-data-model-design) | Map clinical data to FHIR R4 resources and terminology | `fhir-data-model.md` |
 | [app-build-planner](skills/app-build-planner) | Produce milestone-based implementation plan from planning docs | `implementation-plan.md` |
+
+## Knowledge Management Skills
+
+| Skill | What it does | Output |
+|-------|-------------|--------|
+| [project-wiki](skills/project-wiki) | Set up and maintain an AI-managed knowledge base that compounds over time | `wiki/` directory + schema |
 
 ## Release Skills
 

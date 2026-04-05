@@ -13,6 +13,25 @@ Generates changelog entries from git history in the [Keep a Changelog](https://k
 3. Translates technical commit messages into user-facing language
 4. Flags breaking changes
 
+## Example Output
+
+```markdown
+## [1.2.0] - 2026-04-05
+
+### Added
+- Health data visualization screen with weekly and monthly trend views
+- Apple HealthKit integration for step count and heart rate
+- Export health data summary to PDF
+
+### Changed
+- Improved task scheduling performance for large medication lists
+- Updated questionnaire UI to support branching logic
+
+### Fixed
+- Fixed race condition in account state initialization (#45)
+- Resolved infinite loop when no scheduled tasks exist (#52)
+```
+
 ## Limitations
 
 - Quality depends on commit message quality — vague messages produce vague entries

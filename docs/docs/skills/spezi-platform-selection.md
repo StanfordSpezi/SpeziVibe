@@ -22,6 +22,28 @@ Helps you choose between two template applications, sets up your development mac
 
 A cloned template repository with working navigation, theming, and project structure. All subsequent work happens inside the cloned repo.
 
+## Example
+
+```
+AI:   What kind of app are you building? Does it primarily involve
+      forms, questionnaires, and chat — or does it need HealthKit,
+      SensorKit, Bluetooth, or deep Apple integration?
+
+You:  It needs to read heart rate and step data from Apple Watch
+      and connect to a Bluetooth blood pressure cuff
+
+AI:   Those require HealthKit and CoreBluetooth, which are only
+      available natively on Apple platforms. I'd recommend the
+      Spezi Template Application.
+
+      Let me check your setup — do you have Xcode installed?
+
+You:  Yes, Xcode 16
+
+AI:   Great. I'll clone the Spezi Template Application to your
+      project directory and walk you through the structure.
+```
+
 ## Limitations
 
 - Machine setup must complete before cloning

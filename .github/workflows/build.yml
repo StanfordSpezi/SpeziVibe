@@ -1,0 +1,52 @@
+#
+# This source file is part of the Stanford Spezi open-source project.
+#
+# SPDX-FileCopyrightText: 2026 Stanford University and the project authors (see CONTRIBUTORS.md)
+#
+# SPDX-License-Identifier: MIT
+#
+
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-docs:
+    name: Build Docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - name: Install dependencies
+        working-directory: docs
+        run: npm ci
+      - name: Build
+        working-directory: docs
+        run: npm run build
+
+  validate-skills:
+    name: Validate Skills
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check skill structure
+        run: |
+          status=0
+          for dir in skills/*/; do
+            skill=$(basename "$dir")
+            if [ ! -f "$dir/SKILL.md" ]; then
+              echo "::error::$skill is missing SKILL.md"
+              status=1
+            fi
+          done
+          exit $status

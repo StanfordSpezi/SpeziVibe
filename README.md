@@ -15,7 +15,7 @@ SPDX-License-Identifier: MIT
 </p>
 
 <p align="center">
-  <a href="https://github.com/StanfordSpezi/SpeziVibe/actions/workflows/static-analysis.yml"><img src="https://img.shields.io/github/actions/workflow/status/StanfordSpezi/SpeziVibe/static-analysis.yml?style=flat-square&label=build" alt="Build Status"/></a>
+  <a href="https://github.com/StanfordSpezi/SpeziVibe/actions/workflows/build.yml"><img src="https://img.shields.io/github/actions/workflow/status/StanfordSpezi/SpeziVibe/build.yml?style=flat-square&label=build" alt="Build Status"/></a>
   <a href="https://github.com/StanfordSpezi/SpeziVibe/releases"><img src="https://img.shields.io/github/v/release/StanfordSpezi/SpeziVibe?label=latest%20release&style=flat-square" alt="Latest Release"/></a>
   <a href="LICENSE.md"><img src="https://img.shields.io/github/license/StanfordSpezi/SpeziVibe?style=flat-square" alt="MIT License"/></a>
 </p>

@@ -21,6 +21,32 @@ Produces `docs/planning/need-statement.md` containing:
 - Key stakeholders to validate with
 - Identified insights about why the need is unmet
 
+## Example
+
+```
+AI:   Do you already have a need statement or draft, or are you
+      starting fresh?
+
+You:  We need an app for cardiac rehab patients
+
+AI:   That sounds like a solution — let's work backward to the
+      underlying problem. What's happening with cardiac rehab
+      patients that isn't working today?
+
+You:  They don't stick with their exercise programs after discharge
+
+AI:   Good — that's the problem space. Which patients specifically?
+      Post-MI? Post-CABG? Heart failure? And at what point after
+      discharge does adherence drop off?
+
+      ...
+
+AI:   Here's your refined need statement:
+      "A way to sustain exercise adherence in post-discharge
+      cardiac rehabilitation patients in order to reduce
+      30-day readmission rates and improve functional recovery."
+```
+
 ## Limitations
 
 - Does not write the statement for you — requires your active participation

@@ -29,6 +29,26 @@ The orchestrator picks skills based on signals in your description:
 
 Skills are skipped if you already have the corresponding planning document.
 
+## Example
+
+```
+You:  I want to build a medication tracking app for post-transplant patients
+
+AI:   Based on your description, I'd recommend these planning steps:
+      1. biodesign-needs-finding — define the core problem
+      2. digital-health-compliance-planning — HIPAA and medication data
+      3. health-data-model-planning — medication schedules, adherence
+      4. digital-health-ux-planning — patient and caregiver workflows
+      5. app-build-planner — implementation plan with milestones
+
+      Want to proceed with this order?
+
+You:  Yes, let's go
+
+AI:   Starting with needs-finding. What specific problem are
+      post-transplant patients facing with medication adherence?
+```
+
 ## Output
 
 Each skill produces its own document in `docs/planning/`. The final output is an `implementation-plan.md` with milestones, tasks, and dependencies.

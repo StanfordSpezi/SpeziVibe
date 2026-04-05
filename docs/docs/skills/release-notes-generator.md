@@ -15,6 +15,34 @@ Creates user-facing release notes with feature highlights, fixes, breaking chang
 - Breaking Changes (with before/after code and migration steps)
 - Dependencies
 
+## Example Output
+
+```markdown
+# v1.2.0 Release Notes
+
+## Highlights
+This release adds health data visualization and improves task scheduling.
+Users can now view their health trends over time and export summaries.
+
+## New Features
+- **Health Data Charts** — View step count and heart rate trends
+  over the past week or month.
+- **PDF Export** — Share a health data summary with your care team.
+
+## Bug Fixes
+- Fixed account initialization race condition (#45)
+- Resolved infinite loop with empty task lists (#52)
+
+## Breaking Changes
+- `useHealthData()` now returns an object instead of an array.
+
+  // Before
+  const [data, isLoading] = useHealthData();
+
+  // After
+  const { data, isLoading } = useHealthData();
+```
+
 ## Limitations
 
 - Does not automatically extract breaking changes — requires manual identification

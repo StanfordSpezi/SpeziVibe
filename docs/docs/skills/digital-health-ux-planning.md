@@ -20,6 +20,34 @@ Plans user experience journeys for digital health products. Platform-agnostic �
 
 Produces `docs/planning/ux-brief.md`.
 
+## Example
+
+```
+AI:   Who are the primary users, and what are their core jobs
+      when using this app?
+
+You:  Post-transplant patients tracking their meds, and
+      transplant coordinators reviewing adherence.
+
+AI:   What constraints should we design around? For example —
+      health literacy, fatigue, accessibility needs?
+
+You:  Many patients are older, some have low health literacy,
+      and they're often fatigued post-surgery.
+
+AI:   Here's an onboarding approach for the patient journey:
+
+      1. Welcome — one sentence on what the app does
+      2. Account setup — email/password only, no unnecessary fields
+      3. Medication list — import from care plan or enter manually
+      4. First check-in — mark today's meds as taken (immediate value)
+      5. Permissions — notifications only, deferred to after first use
+
+      I'd defer any health data permissions or detailed profile
+      setup until the patient has used the app for a day or two.
+      Thoughts?
+```
+
 ## Limitations
 
 - Does not produce wireframes or UI mockups

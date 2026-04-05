@@ -21,6 +21,34 @@ Plans health data entities, relationships, and governance choices before committ
 
 Produces `docs/planning/data-model-brief.md`.
 
+## Example
+
+```
+AI:   What does your app track or coordinate? And who creates,
+      reads, and updates that data?
+
+You:  Medication schedules, adherence logs, and vital signs.
+      Patients log adherence, nurses review it, doctors
+      adjust prescriptions.
+
+AI:   For each of those, here's a starting data model:
+
+      Medication Schedule
+      — Required: medication name, dose, frequency, start date
+      — Optional: end date, refill reminders, prescriber
+      — FHIR fit: MedicationRequest
+      — Lifecycle: draft → active → completed | cancelled
+
+      Adherence Log
+      — Required: medication ref, timestamp, taken (yes/no)
+      — Optional: reason skipped, notes
+      — FHIR fit: MedicationAdministration
+      — Lifecycle: recorded (immutable)
+
+      Should adherence data be shareable with external EHRs,
+      or is it self-contained within the app?
+```
+
 ## Limitations
 
 - Does not assume a specific database or framework
