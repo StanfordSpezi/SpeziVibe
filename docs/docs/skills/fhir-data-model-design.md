@@ -1,8 +1,18 @@
 ---
-sidebar_position: 8
+sidebar_position: 7
 ---
 
 # fhir-data-model-design
+
+:::tip Install this skill
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill fhir-data-model-design
+```
+
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+
+:::
 
 Maps clinical data types to specific FHIR R4 resources, terminology bindings, and relationships. Unlike most other skills, this one is expert-driven — it provides recommendations rather than asking Socratic questions.
 

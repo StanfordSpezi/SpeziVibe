@@ -5,46 +5,89 @@ slug: /getting-started
 
 # Getting Started
 
-SpeziVibe is a collection of installable skills for AI coding tools. Each skill walks you through a specific digital health planning area — needs analysis, compliance, data modeling, UX, study design — and produces a structured markdown document you can build from.
+SpeziVibe is a collection of installable skills for AI coding tools. Each skill walks you through a specific digital health planning area and produces a structured markdown document you can build from.
 
-## Installation
+:::info The workflow
+SpeziVibe's planning skills produce structured markdown briefs. Your AI coding agent then uses those briefs (plus a Spezi template repo) to write the code. See [How SpeziVibe Works](/docs/how-it-works) for the full flow before you start.
+:::
 
-Install all skills with a single command:
+## Prerequisites
+
+You need **Node.js** (which includes `npm` and `npx`).
+
+1. Install a current Node.js release from [nodejs.org](https://nodejs.org/)
+2. Confirm the tools are available:
+
+```bash
+node -v
+npx -v
+```
+
+## Install All Skills
+
+Install every skill with one command:
 
 ```bash
 npx skills add StanfordSpezi/SpeziVibe --all
 ```
 
-Skills are tool-agnostic. They work with **Claude Code**, **Cursor**, **GitHub Copilot**, **OpenAI Codex**, **Gemini CLI**, and any other tool that supports installable skills or custom instructions.
+This installs into every detected coding tool. Skills work with **Claude Code**, **Cursor**, **GitHub Copilot**, **OpenAI Codex**, **Gemini CLI**, and any other tool that supports installable skills or custom instructions.
 
-## Quick Start
+## List Skills Before Installing
 
-Once installed, start by describing what you want to build. The **build-an-app** skill figures out which planning steps apply and walks you through each one interactively:
+See what's available without installing:
 
-1. **Describe your app** — Tell your AI coding tool what you want to build
-2. **Work through each skill** — Each relevant skill asks you questions and produces a planning document (e.g., `need-statement.md`, `compliance-brief.md`, `ux-brief.md`)
-3. **Get an implementation plan** — The app-build-planner reads your planning docs and produces a milestone-based build plan
+```bash
+npx skills add StanfordSpezi/SpeziVibe --list
+```
 
-## What's Included
+## Install a Single Skill
 
-SpeziVibe includes skills organized into planning and release categories:
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill build-an-app
+```
 
-### Planning Skills
-- **build-an-app** — Orchestrates the other skills based on what you describe; walks you through each one in order
-- **biodesign-needs-finding** — Guided needs-finding using the Stanford Biodesign process; produces `need-statement.md`
-- **spezi-platform-selection** — Helps choose between React Native and Apple-native, sets up your dev environment, and clones the starter repo
-- **digital-health-study-planning** — Plans a research protocol including enrollment, consent, assessments, and outcomes; produces `study-brief.md`
-- **digital-health-compliance-planning** — Walks through HIPAA, IRB, FDA, GDPR applicability and recommends controls; produces `compliance-brief.md` (not legal advice)
-- **health-data-model-planning** — Defines health data entities, relationships, and FHIR fit; produces `data-model-brief.md`
-- **digital-health-ux-planning** — Plans user journeys, onboarding, and engagement for patients and clinicians; produces `ux-brief.md`
-- **fhir-data-model-design** — Maps clinical data to FHIR R4 resources with terminology bindings and sample JSON; produces `fhir-data-model.md`
-- **app-build-planner** — Reads planning docs and produces a milestone-based implementation plan; produces `implementation-plan.md`
+Every skill's docs page includes a copy-paste install command. Start with [build-an-app](/docs/skills/build-an-app) if you're unsure where to begin.
 
-### Release Skills
-- **keep-a-changelog-generator** — Generates changelog entries from git history in Keep a Changelog format
-- **release-notes-generator** — Creates user-facing release notes with features, fixes, and migration guidance
+## Target a Specific Tool
+
+By default, the install targets every detected tool. To target a specific one, add `-a <agent>`:
+
+```bash
+# Claude Code only
+npx skills add StanfordSpezi/SpeziVibe --skill '*' -a claude-code
+
+# Codex only
+npx skills add StanfordSpezi/SpeziVibe --skill '*' -a codex
+```
+
+See the [`skills` tool](https://github.com/vercel-labs/skills) for the full list of supported agents.
+
+## Manual Install (No npx)
+
+If you prefer not to use `npx`:
+
+1. Download the latest `spezivibe-skills.zip` from [Releases](https://github.com/StanfordSpezi/SpeziVibe/releases)
+2. Unzip the archive
+3. Copy the skill folders into your tool's skills directory (e.g., `.claude/skills/` for Claude Code)
+
+## Verify the Install
+
+Open your AI coding tool and ask it to list the available skills:
+
+```
+List the SpeziVibe skills you have access to.
+```
+
+You should see `build-an-app`, `biodesign-needs-finding`, and the other skills in the catalog.
 
 ## Next Steps
 
-- Browse the [Skills reference](/docs/skills) for detailed descriptions of each skill
-- Visit the [GitHub repository](https://github.com/StanfordSpezi/SpeziVibe) for source code and contributions
+The fastest way to get started is to run `build-an-app`. Describe what you want to build and it figures out which planning skills apply, runs them in order, and hands off to implementation:
+
+```
+I want to build a medication tracking app for post-transplant
+patients. Use the build-an-app skill to walk me through it.
+```
+
+Browse the [Skills reference](/docs/skills) for what each skill does individually, or check the [GitHub repository](https://github.com/StanfordSpezi/SpeziVibe) for source code and contribution info.

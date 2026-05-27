@@ -10,8 +10,8 @@
 set -eu
 
 if [ "$#" -ne 2 ]; then
-  echo "Usage: $0 <project-name> <destination>" >&2
-  echo "Projects: rn-cs342-template | spezi-template" >&2
+  echo "Usage: $0 <platform> <destination>" >&2
+  echo "Platforms: react-native | apple-native" >&2
   exit 1
 fi
 
@@ -19,15 +19,15 @@ PROJECT_NAME="$1"
 DESTINATION="$2"
 
 case "$PROJECT_NAME" in
-  rn-cs342-template)
-    REMOTE_URL="https://github.com/CS342/ReactNativeTemplateApplication"
+  react-native)
+    REMOTE_URL="https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate"
     ;;
-  spezi-template)
+  apple-native|spezi-template)
     REMOTE_URL="https://github.com/StanfordSpezi/SpeziTemplateApplication"
     ;;
   *)
-    echo "Unknown project: $PROJECT_NAME" >&2
-    echo "Supported projects: rn-cs342-template | spezi-template" >&2
+    echo "Unknown platform: $PROJECT_NAME" >&2
+    echo "Supported platforms: react-native | apple-native" >&2
     exit 1
     ;;
 esac

@@ -1,6 +1,6 @@
 ---
 name: app-build-planner
-description: Turn planning outputs into a milestone-based implementation plan that sequences features, maps them to available packages or modules, and hands off to a repo-local build skill.
+description: Turn planning outputs into a milestone-based implementation plan that sequences features, maps them to available packages or modules, and hands off to a coding agent for implementation.
 ---
 
 <!--
@@ -20,8 +20,9 @@ The primary deliverable is a structured **implementation plan document** saved i
 Use this skill when:
 
 - you have completed one or more planning skills (UX planning, data model planning, compliance planning, etc.)
-- you have already run `spezi-platform-selection` and cloned a template repository
-- you are ready to move from planning into implementation but want a clear sequence of what to build first
+- you are ready to turn that planning into a milestone-based build sequence
+
+Run this after the other planning skills and **before** `spezi-platform-selection`. The platform choice can be informed by what the plan reveals (HealthKit needs, cross-platform requirements, etc.).
 
 Do not use this skill if you have not done any planning work yet. Start with the planning skills first.
 
@@ -38,7 +39,7 @@ You are a directive implementation planner. You synthesize planning outputs and 
 5. Sequence features into ordered milestones
 6. Produce the implementation plan document
 
-**All output is in chat.** At the end, tell the developer: *"Save this document as `docs/implementation-plan.md` in your project. Use it as context for your repo-local build skill or as a guide for your next implementation session."*
+**All output is in chat.** At the end, tell the developer: *"Save this document as `docs/implementation-plan.md` in your project. Your coding agent will use it as the sequenced build plan — milestone by milestone."*
 
 ---
 
@@ -71,13 +72,14 @@ Identify the choices made during platform selection.
 
 Ask:
 
-1. "Which template did you clone — the React Native Template App or the Spezi Template Application for Apple Platforms?"
+1. "Which platform are you on — React Native, Apple-native, or something else (e.g. Flutter, web, an existing repo)?"
 2. "Which backend are you using — Firebase, Medplum, or something else?"
 
 Read the appropriate reference file based on the platform:
 
 - React Native → read [react-native-packages.md](references/react-native-packages.md)
 - Apple-native → read [apple-native-modules.md](references/apple-native-modules.md)
+- Other platforms → skip the Spezi package/module mapping; produce a generic plan the agent can implement using whatever framework conventions apply
 
 ---
 
@@ -186,7 +188,7 @@ Generate the full implementation plan document using this format:
 |-------|-------|
 | App | [Name and one-line description] |
 | Need statement | [From biodesign-needs-finding, or "Not available"] |
-| Platform | [React Native / Apple-native] |
+| Platform | [React Native / Apple-native / Other — specify] |
 | Backend | [Firebase / Medplum / Other] |
 | Study context | [Yes — brief description / No] |
 
@@ -259,8 +261,8 @@ Save this document as `docs/implementation-plan.md` in your project repository.
 
 To start building, work through the milestones one at a time with your coding
 agent. Each milestone is designed to be built and reviewed as a single focused
-session. If your cloned repository has a local build skill, use that. Otherwise,
-share this document as context and ask your agent to implement the first milestone.
+session. Share this document with your agent as context and ask it to implement
+Milestone 1 — verify, commit, then move to the next.
 ```
 
 ---
@@ -271,7 +273,7 @@ share this document as context and ask your agent to implement the first milesto
 - **Do not assume a backend** unless the user has confirmed their choice. Ask.
 - **Do not skip missing inputs.** If a planning area was not completed, note it as a gap and flag what the user might want to revisit.
 - **Keep milestones small and testable.** Each milestone should produce a visible, verifiable change. If a milestone has more than 5-7 tasks, consider splitting it.
-- **Stay platform-aware but not platform-expert.** Reference the correct packages and modules from the reference files but leave detailed implementation guidance to the repo-local build skill.
+- **Stay platform-aware but not platform-expert.** Reference the correct packages and modules from the reference files; leave detailed code-level implementation to the coding agent that will build from this plan.
 - **Respect priority.** Must-have features go into early milestones. Nice-to-have features go at the end and can be dropped without breaking the plan.
 
 ---

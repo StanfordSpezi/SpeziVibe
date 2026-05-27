@@ -4,6 +4,16 @@ sidebar_position: 6
 
 # health-data-model-planning
 
+:::tip Install this skill
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill health-data-model-planning
+```
+
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+
+:::
+
 Plans health data entities, relationships, and governance choices before committing to a storage layer. Biased toward FHIR for clinically meaningful or shareable data, but allows opt-out with justification.
 
 ## What It Covers

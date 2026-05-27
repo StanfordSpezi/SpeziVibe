@@ -67,7 +67,7 @@ Based on what you heard, assemble a plan from the available skills. Every skill 
 | Skill | Include when |
 |-------|-------------|
 | `biodesign-needs-finding` | User is unsure about the problem, has a vague idea, or asks for help scoping |
-| `spezi-platform-selection` | User does not already have a project repo — helps choose React Native or Apple-native and clones the template |
+| `spezi-platform-selection` | User does not already have a project repo — runs last to choose React Native or Apple-native, clone the matching template, and move the planning briefs into it |
 | `digital-health-ux-planning` | User does not already have designs or wireframes |
 | `health-data-model-planning` | App stores or processes health data (vitals, assessments, patient records) |
 | `fhir-data-model-design` | App needs FHIR interoperability or connects to EHRs |
@@ -98,20 +98,22 @@ Work through the selected skills in the order below. For each one:
 
 ### Execution order and output paths
 
+All planning skills run **before** `spezi-platform-selection`, so the user is not committed to a platform until the plan is in hand.
+
 Run skills in this order (skipping any that were not selected):
 
 | Skill | Output Path | What it Produces |
 |-------|-------------|-----------------|
 | `biodesign-needs-finding` | `docs/planning/need-statement.md` | Need statement: problem, population, outcome |
-| `spezi-platform-selection` | Cloned template repository | Working project directory with template code |
 | `digital-health-ux-planning` | `docs/planning/ux-brief.md` | User journeys, onboarding, workflows |
 | `digital-health-study-planning` | `docs/planning/study-brief.md` | Study protocol, enrollment, assessments |
 | `health-data-model-planning` | `docs/planning/data-model-brief.md` | Entities, relationships, FHIR recommendations |
 | `fhir-data-model-design` | `docs/planning/fhir-data-model.md` | FHIR resources, terminology, relationships |
 | `digital-health-compliance-planning` | `docs/planning/compliance-brief.md` | Privacy domains, controls, required decisions |
 | `app-build-planner` | `docs/implementation-plan.md` | Milestone-based build sequence |
+| `spezi-platform-selection` | Cloned template repository | Working project directory with template code; planning briefs moved into the cloned repo |
 
-After running `spezi-platform-selection`, all subsequent outputs are saved inside the cloned template repository.
+`spezi-platform-selection` runs last (when the user is ready to build). It uses the planning briefs to recommend a platform, clones the matching Spezi template, and moves the existing `docs/planning/` and `docs/implementation-plan.md` into the cloned repo so the coding agent has full context.
 
 Between each skill, ask: "Ready to move on, or do you want to adjust anything?"
 

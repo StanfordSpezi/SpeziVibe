@@ -4,6 +4,7 @@
 const sidebars = {
   docsSidebar: [
     'getting-started',
+    'how-it-works',
     'skills',
     {
       type: 'category',
@@ -11,25 +12,25 @@ const sidebars = {
       items: [
         'skills/build-an-app',
         'skills/biodesign-needs-finding',
-        'skills/spezi-platform-selection',
+        'skills/digital-health-ux-planning',
         'skills/digital-health-study-planning',
         'skills/digital-health-compliance-planning',
         'skills/health-data-model-planning',
-        'skills/digital-health-ux-planning',
         'skills/fhir-data-model-design',
         'skills/app-build-planner',
+        'skills/spezi-platform-selection',
       ],
     },
     {
       type: 'category',
-      label: 'Knowledge Management Skills',
+      label: 'Knowledge Management',
       items: [
         'skills/project-wiki',
       ],
     },
     {
       type: 'category',
-      label: 'Release Skills',
+      label: 'Release',
       items: [
         'skills/keep-a-changelog-generator',
         'skills/release-notes-generator',

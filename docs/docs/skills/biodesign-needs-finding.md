@@ -4,6 +4,16 @@ sidebar_position: 2
 
 # biodesign-needs-finding
 
+:::tip Install this skill
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill biodesign-needs-finding
+```
+
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+
+:::
+
 Walks you through a Stanford Biodesign-style needs-finding process to define a clear, solution-free problem statement.
 
 ## How It Works

@@ -5,21 +5,25 @@ slug: /skills
 
 # Skills Overview
 
-Each skill covers a specific area of digital health development &mdash; from planning through building and maintenance. Use them individually or let **build-an-app** orchestrate them based on what you describe.
+SpeziVibe's skills produce platform-agnostic markdown briefs that your AI coding agent uses to write the code. See [How SpeziVibe Works](/docs/how-it-works) for the full flow.
+
+Use these individually, or let **build-an-app** orchestrate them based on what you describe.
 
 ## Planning Skills
 
+Listed in the order they typically run. `build-an-app` orchestrates them; `spezi-platform-selection` is optional and runs last (only if you want a Spezi template).
+
 | Skill | What it does | Output |
 |-------|-------------|--------|
-| [build-an-app](skills/build-an-app) | Orchestrates other skills based on your description | Runs relevant skills in sequence |
-| [biodesign-needs-finding](skills/biodesign-needs-finding) | Guided needs-finding using Stanford Biodesign process | `need-statement.md` |
-| [spezi-platform-selection](skills/spezi-platform-selection) | Choose platform, set up environment, clone starter repo | Cloned template repo |
-| [digital-health-study-planning](skills/digital-health-study-planning) | Plan a research protocol (enrollment, consent, assessments) | `study-brief.md` |
-| [digital-health-compliance-planning](skills/digital-health-compliance-planning) | Identify applicable compliance domains and controls (not legal advice) | `compliance-brief.md` |
-| [health-data-model-planning](skills/health-data-model-planning) | Define health data entities, relationships, and FHIR fit | `data-model-brief.md` |
-| [digital-health-ux-planning](skills/digital-health-ux-planning) | Plan user journeys and workflows (no wireframes) | `ux-brief.md` |
-| [fhir-data-model-design](skills/fhir-data-model-design) | Map clinical data to FHIR R4 resources and terminology | `fhir-data-model.md` |
-| [app-build-planner](skills/app-build-planner) | Produce milestone-based implementation plan from planning docs | `implementation-plan.md` |
+| [build-an-app](skills/build-an-app) | Orchestrates the other skills based on your description | Runs relevant skills in sequence |
+| [biodesign-needs-finding](skills/biodesign-needs-finding) | Guided needs-finding using the Stanford Biodesign process | `docs/planning/need-statement.md` |
+| [digital-health-ux-planning](skills/digital-health-ux-planning) | Plan user journeys and workflows (no wireframes) | `docs/planning/ux-brief.md` |
+| [digital-health-study-planning](skills/digital-health-study-planning) | Plan a research protocol (enrollment, consent, assessments) | `docs/planning/study-brief.md` |
+| [digital-health-compliance-planning](skills/digital-health-compliance-planning) | Identify applicable compliance domains and controls (not legal advice) | `docs/planning/compliance-brief.md` |
+| [health-data-model-planning](skills/health-data-model-planning) | Define health data entities, relationships, and FHIR fit | `docs/planning/data-model-brief.md` |
+| [fhir-data-model-design](skills/fhir-data-model-design) | Map clinical data to FHIR R4 resources and terminology | `docs/planning/fhir-data-model.md` |
+| [app-build-planner](skills/app-build-planner) | Produce a milestone-based implementation plan from the planning briefs | `docs/implementation-plan.md` |
+| [spezi-platform-selection](skills/spezi-platform-selection) | Choose React Native or Apple-native, clone the matching Spezi template, move planning briefs into it | Cloned template repo with planning briefs inside |
 
 ## Knowledge Management Skills
 

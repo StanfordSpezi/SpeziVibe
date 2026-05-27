@@ -6,13 +6,19 @@ SPDX-License-Identifier: MIT
 
 # Platform Decision Guide
 
-Use the **React Native Template App** when:
+Choose between **React Native** and **Apple-native** based on the product's defining requirements.
 
-- cross-platform support matters from the beginning
+## React Native
+
+Use the Spezi React Native Template App when:
+
+- cross-platform support (iOS + Android) matters from the beginning
 - the app is mostly content, education, forms, questionnaires, scheduling, or chat
 - native integrations are shallow or optional
 
-Use the **Spezi Template Application for Apple Platforms** when:
+## Apple-native
+
+Use the Spezi Template Application for Apple Platforms when:
 
 - HealthKit is a core system of record
 - SensorKit is required
@@ -20,4 +26,6 @@ Use the **Spezi Template Application for Apple Platforms** when:
 - background collection or deep Apple-native behavior is required
 - the target experience is explicitly for iPhone, iPad, or Vision Pro
 
-If the request wants both strong cross-platform support and strong Apple-native capabilities, explain the tradeoff clearly and bias toward the platform that best serves the product-defining requirement.
+## When Both Matter
+
+If the request wants both strong cross-platform support and strong Apple-native capabilities, explain the tradeoff clearly and bias toward the platform that best serves the product-defining requirement. Cross-platform reach and deep native integration are real tradeoffs — pick the one the product cannot do without.

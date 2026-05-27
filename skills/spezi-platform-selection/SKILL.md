@@ -1,6 +1,6 @@
 ---
 name: spezi-platform-selection
-description: Ask about an app's requirements, explain the tradeoff between the React Native Template App and the Spezi Template Application for Apple Platforms, clone the right repository, and hand off to the cloned project's local skills and instructions.
+description: Choose between React Native and Apple-native for a digital health app, clone the matching Spezi starter template, and move existing planning briefs into the cloned repo so the coding agent has full context for implementation.
 ---
 
 <!--
@@ -11,16 +11,20 @@ SPDX-License-Identifier: MIT
 
 # Spezi Platform Selection
 
-Use this skill when a user needs help choosing the right starter application and bootstrapping a new project.
+Use this skill when a user has finished planning, wants to start from a Spezi template, and is ready to build. It chooses between **React Native** and **Apple-native** based on the planning briefs, clones the matching Spezi starter template, and moves the existing `docs/planning/` and `docs/implementation-plan.md` into the cloned repo so the coding agent has full context.
 
-## Candidate Templates
+This skill should run **after** the other planning skills, not before — the platform choice is informed by what the planning revealed (HealthKit needs, cross-platform requirements, etc.).
+
+## When Not To Use
+
+Skip this skill if the user is not adopting a Spezi template — for example, they're extending an existing app, using a different framework (Flutter, web, etc.), or want full control over scaffolding. The planning briefs and implementation plan work just as well in any codebase; the user can hand them to their coding agent directly.
+
+## Platform Options
 
 Read [setup-guide.md](references/setup-guide.md) before making the recommendation.
 
-- **React Native Template App**
-- **Spezi Template Application for Apple Platforms**
-
-The Apple Platforms template supports iPhone, iPad, and Vision Pro.
+- **React Native** — cross-platform (iOS + Android) from one codebase. Backed by the Spezi React Native Template App.
+- **Apple-native** — Swift / SwiftUI for iPhone, iPad, and Vision Pro. Backed by the Spezi Template Application for Apple Platforms.
 
 ## Ask First
 
@@ -32,7 +36,7 @@ Ask concise questions that reveal whether the app is primarily:
 Confirm:
 
 1. who the users are
-2. whether cross-platform support matters at launch
+2. whether Android support matters at launch
 3. whether the app is iPhone-only or Apple-platform focused
 4. whether native Apple capabilities are core to product value
 
@@ -40,12 +44,12 @@ Confirm:
 
 Read [platform-decision.md](references/platform-decision.md) before deciding.
 
-Choose the **React Native Template App** when:
+Choose **React Native** when:
 
-- cross-platform delivery matters
+- cross-platform delivery (iOS + Android) matters
 - the product is primarily content, questionnaires, scheduling, chat, or lightweight integrations
 
-Choose the **Spezi Template Application for Apple Platforms** when:
+Choose **Apple-native** when:
 
 - HealthKit, SensorKit, Bluetooth, or another Apple-native SDK is product-critical
 - the app is explicitly for iPhone, iPad, or Vision Pro
@@ -55,8 +59,8 @@ Choose the **Spezi Template Application for Apple Platforms** when:
 
 After deciding on a platform, guide the user through the matching setup steps in [setup-guide.md](references/setup-guide.md) before cloning and implementation.
 
-- For the **Spezi Template Application for Apple Platforms**, prefer helping the user install and validate Xcode first.
-- For the **React Native Template App**, help the user set up a proper Expo and React Native development environment for the targets they care about.
+- For **Apple-native**, prefer helping the user install and validate Xcode first.
+- For **React Native**, help the user set up a proper Expo and React Native development environment for the targets they care about.
 
 Make sure the user is clear whether they want:
 
@@ -68,21 +72,32 @@ Make sure the user is clear whether they want:
 
 Use the bundled clone helper instead of writing ad hoc clone commands:
 
-- `scripts/clone-template.sh rn-cs342-template <destination>`
-- `scripts/clone-template.sh spezi-template <destination>`
+- React Native: `scripts/clone-template.sh react-native <destination>`
+- Apple-native: `scripts/clone-template.sh apple-native <destination>`
 
-After cloning:
+## Carry Planning Forward
+
+If the current working directory contains a `docs/planning/` directory or a `docs/implementation-plan.md` produced by the other planning skills, **move them into the cloned repository** so the coding agent picks up the full plan from the right place:
+
+```bash
+mv docs/planning <destination>/docs/planning
+mv docs/implementation-plan.md <destination>/docs/implementation-plan.md
+```
+
+Confirm with the user before moving. If the cloned repo already contains a `docs/planning/` directory, merge rather than overwrite.
+
+After the move:
 
 1. inspect the cloned repository's local instructions
-2. inspect the cloned repository's `skills/` directory if present
-3. continue implementation inside the cloned repository rather than in this root repo
+2. continue implementation inside the cloned repository rather than in the original planning directory
 
 ## Output
 
 End with a short summary containing:
 
-- chosen template
-- why it was selected
+- chosen platform (React Native or Apple-native)
+- why it was selected (cite the planning briefs that drove the decision)
 - machine setup steps completed or still required
 - clone destination
-- the next local skills or instructions to inspect in the cloned repository
+- whether planning briefs were moved into the cloned repo
+- next step: ask the coding agent to implement Milestone 1 from `docs/implementation-plan.md`

@@ -1,8 +1,18 @@
 ---
-sidebar_position: 7
+sidebar_position: 3
 ---
 
 # digital-health-ux-planning
+
+:::tip Install this skill
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill digital-health-ux-planning
+```
+
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+
+:::
 
 Plans user experience journeys for digital health products. Platform-agnostic — focuses on user goals and decision points, not specific screens.
 
