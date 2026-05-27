@@ -14,8 +14,6 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
-<TryThisSkill skill="spezi-platform-selection" />
-
 Runs **after** the other planning skills finish, when the user is ready to build with a Spezi template. Uses the planning briefs to recommend a platform, clones the matching Spezi starter template, and moves the existing `docs/planning/` and `docs/implementation-plan.md` into the cloned repo so the coding agent has full context.
 
 Skip this skill if you're not using a Spezi template — your planning briefs and implementation plan work just as well in any codebase. See [Building Without a Spezi Template](/docs/how-it-works#building-without-a-spezi-template).
