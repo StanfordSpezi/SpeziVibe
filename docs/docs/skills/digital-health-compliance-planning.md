@@ -14,6 +14,8 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
+<TryThisSkill skill="digital-health-compliance-planning" />
+
 Helps you reason through which compliance domains apply to your project and what controls you should consider. Framework-agnostic — recommends capabilities, not specific implementations.
 
 ## Domains Assessed

@@ -14,6 +14,8 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
+<TryThisSkill skill="app-build-planner" />
+
 Reads planning documents from the other skills and produces a milestone-based implementation plan. Does not generate code — your AI coding agent uses the plan to write the code. See [How SpeziVibe Works](/docs/how-it-works).
 
 ## Inputs

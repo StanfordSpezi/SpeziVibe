@@ -14,6 +14,8 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
+<TryThisSkill skill="digital-health-ux-planning" />
+
 Plans user experience journeys for digital health products. Platform-agnostic — focuses on user goals and decision points, not specific screens.
 
 ## What It Covers

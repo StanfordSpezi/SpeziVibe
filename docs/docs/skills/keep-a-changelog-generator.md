@@ -14,6 +14,8 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
+<TryThisSkill skill="keep-a-changelog-generator" />
+
 Generates changelog entries from git history in the [Keep a Changelog](https://keepachangelog.com) format.
 
 ## How It Works

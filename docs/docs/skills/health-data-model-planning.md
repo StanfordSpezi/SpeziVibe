@@ -14,6 +14,8 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
+<TryThisSkill skill="health-data-model-planning" />
+
 Plans health data entities, relationships, and governance choices before committing to a storage layer. Biased toward FHIR for clinically meaningful or shareable data, but allows opt-out with justification.
 
 ## What It Covers
