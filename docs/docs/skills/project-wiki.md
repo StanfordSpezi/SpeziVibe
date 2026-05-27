@@ -14,8 +14,6 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
-<TryThisSkill skill="project-wiki" />
-
 Set up and maintain a persistent, AI-managed knowledge base for a digital health project — turning clinical observations, papers, interviews, and planning docs into a compounding, interlinked wiki.
 
 ## How It Works
