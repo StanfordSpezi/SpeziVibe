@@ -14,6 +14,8 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
+<TryThisSkill skill="build-an-app" />
+
 The main entry point for SpeziVibe. Describe what you want to build and this skill determines which planning skills apply, walks you through each one in sequence, and produces an implementation plan your AI coding agent can build from. See [How SpeziVibe Works](/docs/how-it-works).
 
 ## How It Works

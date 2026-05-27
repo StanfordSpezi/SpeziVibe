@@ -14,6 +14,8 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
+<TryThisSkill skill="biodesign-needs-finding" />
+
 Walks you through a Stanford Biodesign-style needs-finding process to define a clear, solution-free problem statement.
 
 ## How It Works

@@ -14,6 +14,8 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
+<TryThisSkill skill="release-notes-generator" />
+
 Creates user-facing release notes with feature highlights, fixes, breaking changes, and migration guidance.
 
 ## Output Sections

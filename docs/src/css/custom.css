@@ -858,6 +858,76 @@ a.skill-card-link:hover .skill-card-arrow,
   transform: translateX(0);
 }
 
+/* -- Try this skill buttons (used inside skill docs) -- */
+.try-this-skill {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0 0 1.75rem 0;
+}
+
+.try-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 1.15rem;
+  color: #fff !important;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none !important;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.try-button--claude {
+  background: linear-gradient(135deg, #d97757 0%, #c2603d 100%);
+  box-shadow: 0 4px 14px -4px rgba(217, 119, 87, 0.45);
+}
+
+.try-button--chatgpt {
+  background: linear-gradient(135deg, #1f8a6e 0%, #0d6c54 100%);
+  box-shadow: 0 4px 14px -4px rgba(31, 138, 110, 0.45);
+}
+
+.try-button:hover,
+.try-button:focus-visible {
+  transform: translateY(-1px);
+  color: #fff !important;
+  text-decoration: none !important;
+  filter: brightness(1.06);
+}
+
+.try-button--claude:hover,
+.try-button--claude:focus-visible {
+  box-shadow: 0 6px 22px -6px rgba(217, 119, 87, 0.65);
+}
+
+.try-button--chatgpt:hover,
+.try-button--chatgpt:focus-visible {
+  box-shadow: 0 6px 22px -6px rgba(31, 138, 110, 0.65);
+}
+
+.try-button:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.5);
+  outline-offset: 3px;
+}
+
+.try-button svg {
+  flex-shrink: 0;
+}
+
+.try-button .try-button-ext {
+  opacity: 0.7;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.try-button:hover .try-button-ext {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+
 @media (max-width: 1024px) {
   .skill-phase-grid {
     grid-template-columns: repeat(2, 1fr);
