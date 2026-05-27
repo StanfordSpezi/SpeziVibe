@@ -14,6 +14,8 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
+<TryThisSkill skill="digital-health-study-planning" />
+
 Helps plan a digital health research protocol. Platform-agnostic — focuses on the study design, not the app stack.
 
 ## What It Covers

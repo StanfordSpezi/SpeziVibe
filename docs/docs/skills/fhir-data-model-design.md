@@ -14,6 +14,8 @@ Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [
 
 :::
 
+<TryThisSkill skill="fhir-data-model-design" />
+
 Maps clinical data types to specific FHIR R4 resources, terminology bindings, and relationships. Unlike most other skills, this one is expert-driven — it provides recommendations rather than asking Socratic questions.
 
 ## What It Produces
