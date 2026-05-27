@@ -95,9 +95,9 @@ npx skills add StanfordSpezi/SpeziVibe --skill '*' -a claude-code
 
 ## Where To Start
 
-The fastest way to get started is to run `build-an-app`. Describe what you want to build and it figures out which planning skills you need, runs them in order, and hands off to implementation. You do not need to know the individual skills or their order — the orchestrator handles that for you.
+The fastest way to get started is to run `build-an-app`. Describe what you want to build and it figures out which planning skills you need, runs them in order, and hands the implementation plan off to your AI coding agent for the actual build. You do not need to know the individual skills or their order — the orchestrator handles that for you.
 
-If you prefer to run skills individually, here is the process they follow. Not every project needs every skill — use what fits and skip what does not.
+If you prefer to run skills individually, here is the process they follow. Plan first; clone a Spezi template only when the plan is ready and you're set to build. Not every project needs every skill — use what fits.
 
 ### 1. Define the Need
 
@@ -105,13 +105,7 @@ Understand the clinical or operational problem before deciding on a product. Inv
 
 Use: `biodesign-needs-finding`
 
-### 2. Choose a Platform
-
-Decide whether the project is better suited to the React Native Template App or the Spezi Template Application for Apple Platforms, then clone the selected template.
-
-Use: `spezi-platform-selection`
-
-### 3. Plan the Product
+### 2. Plan the Product
 
 Design the user experience, data model, and compliance posture. Run whichever skills are relevant — not all are required for every project.
 
@@ -121,13 +115,25 @@ Design the user experience, data model, and compliance posture. Run whichever sk
 - `digital-health-compliance-planning` — privacy, regulatory, and governance expectations
 - `digital-health-study-planning` — study protocol, consent, and data collection (only if tied to a research study)
 
-### 4. Plan the Build
+Each skill writes a brief to `docs/planning/` in your working directory.
 
-Feed your planning outputs into `app-build-planner` to get a sequenced implementation plan. The output is a structured document (`docs/implementation-plan.md`) saved in your cloned template repository.
+### 3. Plan the Build
+
+Feed your planning outputs into `app-build-planner` to get a sequenced implementation plan. The output is `docs/implementation-plan.md` — milestones, tasks, dependencies, and verification criteria.
+
+Use: `app-build-planner`
+
+### 4. Choose a Platform and Clone the Template (optional)
+
+Once the plan is in hand, decide whether the project is better suited to React Native or Apple-native, then clone the matching Spezi starter template. This skill uses your planning briefs to inform the recommendation, clones the template, and moves your `docs/planning/` and `docs/implementation-plan.md` into the cloned repo.
+
+Use: `spezi-platform-selection`
+
+> **Skip this if you're not using a Spezi template.** The planning briefs and implementation plan work in any codebase — a blank Expo project, an existing repo, a different framework. Hand them to your coding agent directly and ask it to build Milestone 1.
 
 ### 5. Build the App
 
-Open the template repository you cloned in step 2 and work through `docs/implementation-plan.md` milestone by milestone with your coding agent. Build each one, verify it works, then move to the next.
+Ask your AI coding agent to implement Milestone 1 from `docs/implementation-plan.md`. The agent uses your planning briefs as context and the Spezi template's patterns as scaffolding (or your own codebase if you skipped step 4). Build each milestone, verify, then move to the next.
 
 ### 6. Keep Learning (Optional)
 
@@ -139,17 +145,19 @@ Use: `project-wiki`
 
 This repository is organized for `npx skills`, with one skill per folder under `skills/`.
 
+Listed in the order they typically run.
+
 | Skill | What it does |
 |-------|-------------|
 | `build-an-app` | Walk through the full process — from idea to running code |
-| `spezi-platform-selection` | Choose the right app foundation — React Native or Apple-native |
 | `biodesign-needs-finding` | Turn an idea into a real clinical need |
+| `digital-health-ux-planning` | Design a patient- and clinician-friendly experience |
 | `digital-health-study-planning` | Plan a study around the app |
 | `digital-health-compliance-planning` | Think through privacy and regulatory risk early |
 | `health-data-model-planning` | Shape the app's health data backbone |
-| `digital-health-ux-planning` | Design a patient- and clinician-friendly experience |
 | `fhir-data-model-design` | Map clinical concepts to FHIR |
 | `app-build-planner` | Turn planning outputs into a milestone-based build plan |
+| `spezi-platform-selection` | Choose React Native or Apple-native and clone the matching Spezi starter template (optional) |
 | `project-wiki` | Turn your project into a compounding, AI-maintained knowledge base |
 | `keep-a-changelog-generator` | Draft changelogs people can actually read |
 | `release-notes-generator` | Summarize a release clearly |
@@ -166,18 +174,6 @@ npx skills add StanfordSpezi/SpeziVibe --skill build-an-app
 
 </details>
 
-### `spezi-platform-selection`
-
-Choose the right app foundation — helps you decide whether a project is better served by the React Native Template App or the Spezi Template Application for Apple Platforms, then points the coding agent at the right next steps.
-
-<details><summary>Install</summary>
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --skill spezi-platform-selection
-```
-
-</details>
-
 ### `biodesign-needs-finding`
 
 Turn an idea into a real clinical need — guides a team through a Stanford Biodesign-style needs-finding process so they define the problem well before jumping to a solution.
@@ -186,6 +182,18 @@ Turn an idea into a real clinical need — guides a team through a Stanford Biod
 
 ```bash
 npx skills add StanfordSpezi/SpeziVibe --skill biodesign-needs-finding
+```
+
+</details>
+
+### `digital-health-ux-planning`
+
+Design a patient- and clinician-friendly experience — helps plan onboarding, core journeys, engagement loops, and day-to-day workflows for digital health products.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill digital-health-ux-planning
 ```
 
 </details>
@@ -218,8 +226,6 @@ npx skills add StanfordSpezi/SpeziVibe --skill digital-health-compliance-plannin
 
 Shape the app's health data backbone — helps define core health concepts, entities, relationships, lifecycle states, and interoperability needs before implementation begins.
 
-If you are working inside the React Native Template App, the repo-local `data-model` skill carries the implementation-focused guidance for app entities, FHIR mappings, storage, and sync behavior.
-
 <details><summary>Install</summary>
 
 ```bash
@@ -228,23 +234,9 @@ npx skills add StanfordSpezi/SpeziVibe --skill health-data-model-planning
 
 </details>
 
-### `digital-health-ux-planning`
-
-Design a patient- and clinician-friendly experience — helps plan onboarding, core journeys, engagement loops, and day-to-day workflows for digital health products.
-
-<details><summary>Install</summary>
-
-```bash
-npx skills add StanfordSpezi/SpeziVibe --skill digital-health-ux-planning
-```
-
-</details>
-
 ### `fhir-data-model-design`
 
 Map clinical concepts to FHIR — translates clinical requirements into a FHIR R4-oriented data model with concrete resources, relationships, and implementation guidance.
-
-FHIR implementation review is now part of the React Native Template App's repo-local `fhir` skill, where it can stay aligned with the actual app mappings and services.
 
 <details><summary>Install</summary>
 
@@ -262,6 +254,18 @@ Turn planning outputs into a milestone-based build plan — extracts features fr
 
 ```bash
 npx skills add StanfordSpezi/SpeziVibe --skill app-build-planner
+```
+
+</details>
+
+### `spezi-platform-selection`
+
+Choose the right app foundation — helps you decide between **React Native** and **Apple-native** for a new app, clones the matching Spezi starter template, and moves your existing planning briefs into the cloned repo so the coding agent has full context.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill spezi-platform-selection
 ```
 
 </details>

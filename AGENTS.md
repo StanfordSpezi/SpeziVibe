@@ -24,4 +24,6 @@ skills/   Shared installable skills
 
 ## Entry Skill
 
-Use `skills/spezi-platform-selection` when the user needs help choosing the best starting platform for a new application.
+Use `skills/build-an-app` when a user wants to build a new digital health app or is unsure where to start. It orchestrates the other skills in the right order.
+
+Use `skills/spezi-platform-selection` directly when the user only needs help choosing between React Native and Apple-native.

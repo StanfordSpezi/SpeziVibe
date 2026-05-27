@@ -6,7 +6,10 @@ SPDX-License-Identifier: MIT
 
 # Setup Guide
 
-The setup workflow routes developers to one of two template applications.
+The setup workflow routes developers to one of two starter templates:
+
+- **React Native** → Spezi React Native Template App
+- **Apple-native** → Spezi Template Application for Apple Platforms
 
 Before cloning a template, help the user get their machine into a usable development state for the platform they chose.
 
@@ -23,9 +26,9 @@ Then have them:
 2. install Node.js so `npm` and `npx` are available
 3. confirm `node -v`, `npm -v`, and `npx -v` work
 
-## Apple Platform Setup
+## Apple-native Setup
 
-Use this setup when the user chooses the **Spezi Template Application for Apple Platforms**.
+Use this setup when the user chooses **Apple-native**.
 
 ### Install Xcode
 
@@ -45,18 +48,28 @@ If the user wants to run apps on a physical Apple device, remind them they may a
 - an Apple Developer account
 - code signing configured in Xcode
 
-Only after Xcode is installed and working should the workflow proceed to cloning the Apple template.
+Only after Xcode is installed and working should the workflow proceed to cloning the Apple-native template.
 
-## React Native Template App
+### Template
 
-- Clone key: `rn-cs342-template`
-- Repository: [CS342/ReactNativeTemplateApplication](https://github.com/CS342/ReactNativeTemplateApplication)
+- Clone key: `apple-native`
+- Repository: [StanfordSpezi/SpeziTemplateApplication](https://github.com/StanfordSpezi/SpeziTemplateApplication)
 
-Use this template when cross-platform delivery matters and the product is not defined by deep Apple-native integration.
+The template targets:
+
+- iPhone
+- iPad
+- Vision Pro
+
+Use it when Apple-native capabilities such as HealthKit, SensorKit, Bluetooth, or deep platform behavior are central to the app.
+
+## React Native Setup
+
+Use this setup when the user chooses **React Native**.
 
 ### Set Up A React Native Development Environment
 
-For the React Native Template App, guide the user toward a proper [Expo environment setup](https://docs.expo.dev/get-started/set-up-your-environment/) rather than a one-off quickstart.
+Guide the user toward a proper [Expo environment setup](https://docs.expo.dev/get-started/set-up-your-environment/) rather than a one-off quickstart.
 
 Make sure the user has:
 
@@ -78,17 +91,7 @@ Explain the tradeoff clearly:
 
 Before cloning the React Native template, confirm the user can support the targets they care about on their machine.
 
-## Spezi Template Application for Apple Platforms
+### Template
 
-- Clone key: `spezi-template`
-- Repository: [StanfordSpezi/SpeziTemplateApplication](https://github.com/StanfordSpezi/SpeziTemplateApplication)
-
-This template targets:
-
-- iPhone
-- iPad
-- Vision Pro
-
-Use it when Apple-native capabilities such as HealthKit, SensorKit, Bluetooth, or deep platform behavior are central to the app.
-
-After the user has a working Xcode installation, proceed with the Apple template clone and handoff.
+- Clone key: `react-native`
+- Repository: [StanfordSpezi/SpeziVibeReactNativeTemplate](https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate)

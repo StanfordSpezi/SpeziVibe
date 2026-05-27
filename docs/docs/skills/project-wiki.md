@@ -4,6 +4,16 @@ sidebar_position: 10
 
 # project-wiki
 
+:::tip Install this skill
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill project-wiki
+```
+
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+
+:::
+
 Set up and maintain a persistent, AI-managed knowledge base for a digital health project — turning clinical observations, papers, interviews, and planning docs into a compounding, interlinked wiki.
 
 ## How It Works

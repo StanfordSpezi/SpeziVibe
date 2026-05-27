@@ -4,6 +4,16 @@ sidebar_position: 5
 
 # digital-health-compliance-planning
 
+:::tip Install this skill
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill digital-health-compliance-planning
+```
+
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+
+:::
+
 Helps you reason through which compliance domains apply to your project and what controls you should consider. Framework-agnostic — recommends capabilities, not specific implementations.
 
 ## Domains Assessed

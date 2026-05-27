@@ -4,6 +4,16 @@ sidebar_position: 4
 
 # digital-health-study-planning
 
+:::tip Install this skill
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill digital-health-study-planning
+```
+
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+
+:::
+
 Helps plan a digital health research protocol. Platform-agnostic — focuses on the study design, not the app stack.
 
 ## What It Covers

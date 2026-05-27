@@ -1,8 +1,18 @@
 ---
-sidebar_position: 11
+sidebar_position: 12
 ---
 
 # release-notes-generator
+
+:::tip Install this skill
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill release-notes-generator
+```
+
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+
+:::
 
 Creates user-facing release notes with feature highlights, fixes, breaking changes, and migration guidance.
 

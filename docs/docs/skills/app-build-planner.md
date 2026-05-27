@@ -1,10 +1,20 @@
 ---
-sidebar_position: 9
+sidebar_position: 8
 ---
 
 # app-build-planner
 
-Reads planning documents from the other skills and produces a milestone-based implementation plan. Does not generate code.
+:::tip Install this skill
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill app-build-planner
+```
+
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+
+:::
+
+Reads planning documents from the other skills and produces a milestone-based implementation plan. Does not generate code — your AI coding agent uses the plan to write the code. See [How SpeziVibe Works](/docs/how-it-works).
 
 ## Inputs
 
@@ -17,7 +27,7 @@ Reads whichever of these exist (works with whatever's available):
 - `docs/planning/fhir-data-model.md`
 - `docs/planning/compliance-brief.md`
 
-Also needs your platform choice (React Native or Apple-native) and backend choice (Firebase, Medplum, or other).
+Also needs your platform choice (React Native, Apple-native, or another framework you're using) and backend choice (Firebase, Medplum, or other). If you're not using a Spezi template, the plan still works — see [How SpeziVibe Works](/docs/how-it-works#building-without-a-spezi-template).
 
 ## Output
 
@@ -34,11 +44,11 @@ Produces `docs/implementation-plan.md` containing:
 ## Example
 
 ```
-AI:   Which template did you clone — React Native or Spezi
-      Template Application? And which backend — Firebase,
-      Medplum, or something else?
+AI:   Which platform are you on — React Native, Apple-native, or
+      something else? And which backend — Firebase, Medplum, or
+      something else?
 
-You:  Spezi Template Application with Firebase.
+You:  Apple-native with Firebase.
 
 AI:   I've read your planning docs. Here's a proposed milestone
       sequence:
@@ -72,3 +82,7 @@ AI:   I've read your planning docs. Here's a proposed milestone
 - Features without matching packages are flagged as "custom implementation" with effort estimates
 - Milestones are capped at 5-7 tasks; larger ones are split
 - Flags all gaps from missing planning inputs
+
+## Next Step
+
+Open `docs/implementation-plan.md` in your AI coding tool and ask the agent to build Milestone 1. Each milestone has a goal, tasks, and verification criteria — structured so the agent can execute sequentially. Build, verify, commit, repeat.

@@ -4,9 +4,9 @@ SPDX-FileCopyrightText: 2026 Stanford University and the project authors (see CO
 SPDX-License-Identifier: MIT
 -->
 
-# Apple-Native Modules
+# Apple-native Modules
 
-Spezi Swift modules available in the Spezi Template Application for Apple Platforms. Added via Swift Package Manager.
+Spezi Swift modules available in the Apple-native starter template ([Spezi Template Application for Apple Platforms](https://github.com/StanfordSpezi/SpeziTemplateApplication)). Added via Swift Package Manager.
 
 ## SpeziAccount
 

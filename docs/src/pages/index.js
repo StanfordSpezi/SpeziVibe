@@ -73,17 +73,22 @@ function StepCard({num, title, description, showConnector, delayClass}) {
   );
 }
 
-function SkillCard({icon, name, description, className, children}) {
+function SkillCard({icon, name, description, className, children, href}) {
+  const linkHref = href || `/docs/skills/${name}`;
+  if (children) {
+    return (
+      <div className={`glass-card skill-card ${className || ''} reveal`}>
+        {children}
+      </div>
+    );
+  }
   return (
-    <div className={`glass-card skill-card ${className || ''} reveal`}>
-      {children || (
-        <>
-          <div className="skill-icon">{icon}</div>
-          <h3>{name}</h3>
-          <p>{description}</p>
-        </>
-      )}
-    </div>
+    <a href={linkHref} className={`glass-card skill-card skill-card-link ${className || ''} reveal`}>
+      <div className="skill-icon">{icon}</div>
+      <h3>{name}</h3>
+      <p>{description}</p>
+      <span className="skill-card-arrow" aria-hidden="true">&rarr;</span>
+    </a>
   );
 }
 
@@ -271,17 +276,17 @@ export default function Home() {
           <p className="section-label">What is SpeziVibe</p>
           <h2 className="section-title">Plan and build digital health apps</h2>
           <p className="section-desc">
-            SpeziVibe is a collection of installable skills for AI coding tools. Skills guide you from needs analysis and compliance through data modeling and UX &mdash; then help you build with Spezi templates, pre-built modules, and a living project knowledge base.
+            SpeziVibe&rsquo;s installable skills turn an idea into structured markdown briefs — needs, compliance, data model, UX, study design — and an implementation plan your AI coding agent can build from.
           </p>
           <p className="section-desc" style={{marginTop: '0.8rem'}}>
-            From Stanford's Spezi initiative, built to lower the barrier to high-quality digital health experiences.
+            When the plan is ready, <code>spezi-platform-selection</code> clones a matching Spezi template (React Native or Apple-native) so the agent has battle-tested architecture and modules to build on. <a href="/docs/how-it-works">How it works &rarr;</a>
           </p>
         </div>
         <div className="what-visual">
           <SkillPill icon="&#9734;" name="build-an-app" desc="Idea to running code" delayClass="reveal-delay-1" />
-          <SkillPill icon="&#9881;" name="spezi-platform-selection" desc="React Native or native" delayClass="reveal-delay-1" />
+          <SkillPill icon="&#9881;" name="spezi-platform-selection" desc="React Native or Apple-native" delayClass="reveal-delay-1" />
           <SkillPill icon="&#9829;" name="biodesign-needs-finding" desc="Stanford Biodesign" delayClass="reveal-delay-2" />
-          <SkillPill icon="&#128203;" name="digital-health-compliance" desc="Compliance planning" delayClass="reveal-delay-2" />
+          <SkillPill icon="&#128203;" name="digital-health-compliance-planning" desc="Compliance planning" delayClass="reveal-delay-2" />
           <SkillPill icon="&#128200;" name="fhir-data-model-design" desc="FHIR R4 mapping" delayClass="reveal-delay-3" />
           <SkillPill icon="&#128241;" name="digital-health-ux-planning" desc="UX journeys" delayClass="reveal-delay-3" />
         </div>
@@ -294,9 +299,9 @@ export default function Home() {
           <h2 className="section-title">From idea to app.</h2>
         </div>
         <div className="how-steps">
-          <StepCard num="01" title="Install" description="One command adds every skill to your AI coding tool. Works with anything that supports installable skills or custom instructions." showConnector delayClass="reveal-delay-1" />
-          <StepCard num="02" title="Plan" description="Describe what you want to build. Skills walk you through needs analysis, compliance, data modeling, UX, and study design &mdash; producing structured docs along the way." showConnector delayClass="reveal-delay-2" />
-          <StepCard num="03" title="Build" description="Start from a Spezi template app and add pre-built modules. Your planning docs guide the AI as it wires everything together." showConnector delayClass="reveal-delay-3" />
+          <StepCard num="01" title="Install" description="One command adds every planning skill to your AI coding tool. Works with anything that supports installable skills or custom instructions." showConnector delayClass="reveal-delay-1" />
+          <StepCard num="02" title="Plan" description="In any working directory, describe what you want to build. Skills walk you through needs analysis, compliance, data modeling, UX, and study design &mdash; producing structured markdown briefs and an implementation plan." showConnector delayClass="reveal-delay-2" />
+          <StepCard num="03" title="Build" description="When the plan is ready, clone a Spezi template (React Native or Apple-native) &mdash; or skip the template and use any codebase. Your AI coding agent reads the briefs and writes the code, milestone by milestone." showConnector delayClass="reveal-delay-3" />
           <StepCard num="04" title="Ship" description="Generate changelogs, release notes, and maintain a living project wiki that keeps your team's knowledge organized as you iterate." delayClass="reveal-delay-4" />
         </div>
       </section>
@@ -306,14 +311,22 @@ export default function Home() {
         <div className="reveal">
           <p className="section-label">Skills</p>
           <h2 className="section-title">One skill per area</h2>
-          <p className="section-desc">Each skill covers a specific aspect of digital health development &mdash; from planning through building and maintenance.</p>
+          <p className="section-desc">Each skill covers a specific aspect of digital health development. Grouped by where they fit in your project lifecycle.</p>
         </div>
-        <div className="skills-grid">
-          {/* Hero card */}
-          <div className="glass-card skill-card skill-card-hero reveal">
-            <div className="skill-icon">&#9734;</div>
-            <h3>build-an-app</h3>
-            <p>Describe what you want to build. This skill figures out which steps apply, walks you through planning, and sets you up to build with the right template and modules.</p>
+
+        {/* Featured orchestrator */}
+        <div className="skill-featured-wrapper reveal">
+          <div className="phase-eyebrow">
+            <span className="phase-eyebrow-dot"></span>
+            Start here
+          </div>
+          <div className="glass-card skill-card skill-featured">
+            <a href="/docs/skills/build-an-app" className="skill-featured-head">
+              <div className="skill-icon">&#9734;</div>
+              <h3>build-an-app</h3>
+              <p>Describe what you want to build. This skill figures out which steps apply, walks you through planning, and sets you up to build with the right template and modules.</p>
+              <span className="skill-card-arrow" aria-hidden="true">&rarr;</span>
+            </a>
             <div className="skill-card-visual">
               <span className="cmt"># Example conversation</span><br /><br />
               <span className="str">&gt; I want to build a medication tracking app</span><br />
@@ -326,30 +339,55 @@ export default function Home() {
               &nbsp;&nbsp;app-build-planner
             </div>
           </div>
+        </div>
 
-          <SkillCard icon="&#9881;" name="spezi-platform-selection" description="Choose between the React Native Template App and the Spezi Template Application for Apple Platforms, set up your dev environment, and clone the right starter repo." className="reveal-delay-1" />
-          <SkillCard icon="&#9829;" name="biodesign-needs-finding" description="Walks you through a Stanford Biodesign-style needs-finding process to define a clear problem statement before jumping to solutions. Produces a need-statement.md." className="reveal-delay-2" />
-
-          <SkillCard icon="&#128218;" name="digital-health-study-planning" description="Helps plan a research protocol &mdash; enrollment, consent, data collection, assessment schedules, and outcome measures. Produces a study-brief.md." className="skill-card-wide" />
-
-          <div className="glass-card skill-card skill-card-wide reveal" style={{background: 'rgba(232, 81, 26, 0.04)', borderColor: 'rgba(232, 81, 26, 0.12)'}}>
-            <div className="live-badge">
-              <div className="dot"></div>
-              <span>Critical Path</span>
-            </div>
-            <h3>digital-health-compliance-planning</h3>
-            <p>Helps you reason through HIPAA, IRB, FDA, GDPR, and related compliance questions early. Produces a compliance-brief.md with identified domains and recommended controls. Not legal advice.</p>
+        {/* Phase 01: Plan */}
+        <div className="skill-phase reveal">
+          <div className="skill-phase-header">
+            <span className="phase-num">01 &middot; Plan</span>
+            <p className="phase-desc">Define the problem and design the system before writing code.</p>
           </div>
+          <div className="skill-phase-grid">
+            <SkillCard icon="&#9829;" name="biodesign-needs-finding" description="Walks you through a Stanford Biodesign-style needs-finding process to define a clear problem statement. Produces a need-statement.md." />
+            <a href="/docs/skills/digital-health-compliance-planning" className="glass-card skill-card skill-card-link skill-card-emphasis reveal">
+              <div className="live-badge">
+                <div className="dot"></div>
+                <span>Critical Path</span>
+              </div>
+              <h3>digital-health-compliance-planning</h3>
+              <p>Reason through HIPAA, IRB, FDA, GDPR, and related compliance questions early. Produces a compliance-brief.md. Not legal advice.</p>
+              <span className="skill-card-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+            <SkillCard icon="&#128218;" name="digital-health-study-planning" description="Plan a research protocol &mdash; enrollment, consent, data collection, assessment schedules, and outcome measures. Produces a study-brief.md." />
+            <SkillCard icon="&#128241;" name="digital-health-ux-planning" description="Plan user journeys, onboarding, engagement, and day-to-day workflows for patients and clinicians. Produces a ux-brief.md." />
+            <SkillCard icon="&#128202;" name="health-data-model-planning" description="Define health data entities, relationships, lifecycle states, and interoperability needs. Produces a data-model-brief.md." />
+            <SkillCard icon="&#128200;" name="fhir-data-model-design" description="Map clinical data types to specific FHIR R4 resources, terminology bindings, and relationships. Produces a fhir-data-model.md." />
+          </div>
+        </div>
 
-          <SkillCard icon="&#128202;" name="health-data-model-planning" description="Helps define health data entities, relationships, lifecycle states, and interoperability needs. Biased toward FHIR for clinically meaningful data. Produces a data-model-brief.md." className="reveal-delay-1" />
-          <SkillCard icon="&#128241;" name="digital-health-ux-planning" description="Plans user journeys, onboarding, engagement, and day-to-day workflows for patients and clinicians. Platform-agnostic &mdash; no wireframes, just goals and decision points. Produces a ux-brief.md." className="reveal-delay-2" />
-          <SkillCard icon="&#128200;" name="fhir-data-model-design" description="Maps clinical data types to specific FHIR R4 resources, terminology bindings, and relationships. Expert-driven recommendations with sample JSON. Produces a fhir-data-model.md." className="reveal-delay-1" />
-          <SkillCard icon="&#128203;" name="app-build-planner" description="Reads the planning docs from other skills and produces a milestone-based implementation plan with tasks, dependencies, and verification criteria. Produces an implementation-plan.md." className="reveal-delay-2" />
+        {/* Phase 02: Build */}
+        <div className="skill-phase reveal">
+          <div className="skill-phase-header">
+            <span className="phase-num">02 &middot; Build</span>
+            <p className="phase-desc">Choose your platform and turn planning docs into an implementation plan.</p>
+          </div>
+          <div className="skill-phase-grid">
+            <SkillCard icon="&#9881;" name="spezi-platform-selection" description="Choose between React Native and Apple-native for your app, set up your dev environment, and clone the matching Spezi starter template." />
+            <SkillCard icon="&#128203;" name="app-build-planner" description="Reads the planning docs from other skills and produces a milestone-based implementation plan with tasks, dependencies, and verification criteria. Produces an implementation-plan.md." />
+          </div>
+        </div>
 
-          <SkillCard icon="&#128214;" name="project-wiki" description="Set up a persistent, AI-maintained knowledge base for your project. Add interviews, papers, and clinical observations &mdash; the AI integrates them across interlinked wiki pages, flags contradictions, and keeps everything current." className="skill-card-wide" />
-
-          <SkillCard icon="&#128196;" name="keep-a-changelog-generator" description="Generates changelog entries from git history in the Keep a Changelog format. Groups commits by category and translates technical messages into user-facing language." className="skill-card-wide" />
-          <SkillCard icon="&#128172;" name="release-notes-generator" description="Creates user-facing release notes from git history with feature highlights, fixes, breaking changes, and migration guidance." className="skill-card-wide" />
+        {/* Phase 03: Ship */}
+        <div className="skill-phase reveal">
+          <div className="skill-phase-header">
+            <span className="phase-num">03 &middot; Ship &amp; maintain</span>
+            <p className="phase-desc">Release with confidence and keep your team&rsquo;s knowledge organized as you iterate.</p>
+          </div>
+          <div className="skill-phase-grid">
+            <SkillCard icon="&#128214;" name="project-wiki" description="A persistent, AI-maintained knowledge base for your project. Add interviews, papers, and clinical observations &mdash; the AI integrates them across interlinked pages." />
+            <SkillCard icon="&#128196;" name="keep-a-changelog-generator" description="Generates changelog entries from git history in the Keep a Changelog format. Groups commits by category and translates messages into user-facing language." />
+            <SkillCard icon="&#128172;" name="release-notes-generator" description="Creates user-facing release notes from git history with feature highlights, fixes, breaking changes, and migration guidance." />
+          </div>
         </div>
       </section>
 

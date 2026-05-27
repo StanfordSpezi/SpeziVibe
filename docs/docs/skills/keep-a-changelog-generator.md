@@ -1,8 +1,18 @@
 ---
-sidebar_position: 10
+sidebar_position: 11
 ---
 
 # keep-a-changelog-generator
+
+:::tip Install this skill
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill keep-a-changelog-generator
+```
+
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+
+:::
 
 Generates changelog entries from git history in the [Keep a Changelog](https://keepachangelog.com) format.
 

@@ -8,4 +8,4 @@
 
 [submodule "react-native-template-app"]
 	path = react-native-template-app
-	url = https://github.com/CS342/ReactNativeTemplateApplication
+	url = https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate
