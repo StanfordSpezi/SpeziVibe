@@ -70,6 +70,11 @@ const config = {
             label: 'Docs',
           },
           {
+            to: '/about',
+            label: 'About',
+            position: 'left',
+          },
+          {
             href: 'https://github.com/StanfordSpezi/SpeziVibe',
             label: 'GitHub',
             position: 'right',
@@ -89,6 +94,10 @@ const config = {
               {
                 label: 'Skills',
                 to: '/docs/skills',
+              },
+              {
+                label: 'About',
+                to: '/about',
               },
             ],
           },
