@@ -70,6 +70,11 @@ const config = {
             label: 'Docs',
           },
           {
+            to: '/workshop',
+            label: 'Workshop',
+            position: 'left',
+          },
+          {
             to: '/about',
             label: 'About',
             position: 'left',
@@ -94,6 +99,10 @@ const config = {
               {
                 label: 'Skills',
                 to: '/docs/skills',
+              },
+              {
+                label: 'Workshop',
+                to: '/workshop',
               },
               {
                 label: 'About',
