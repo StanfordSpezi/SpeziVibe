@@ -23,6 +23,13 @@ const sidebars = {
     },
     {
       type: 'category',
+      label: 'Integration Skills',
+      items: [
+        'skills/fasten-ehr-integration',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Knowledge Management',
       items: [
         'skills/project-wiki',
