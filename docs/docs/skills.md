@@ -25,6 +25,12 @@ Listed in the order they typically run. `build-an-app` orchestrates them; `spezi
 | [app-build-planner](skills/app-build-planner) | Produce a milestone-based implementation plan from the planning briefs | `docs/implementation-plan.md` |
 | [spezi-platform-selection](skills/spezi-platform-selection) | Choose React Native or Apple-native, clone the matching Spezi template, move planning briefs into it | Cloned template repo with planning briefs inside |
 
+## Integration Skills
+
+| Skill | What it does | Output |
+|-------|-------------|--------|
+| [fasten-ehr-integration](skills/fasten-ehr-integration) | Connect patient-authorized EHR records via Fasten Connect — provider-linking widget, webhook ingestion, FHIR record handling, privacy walkthrough | Working integration + `docs/planning/ehr-connection-brief.md` |
+
 ## Knowledge Management Skills
 
 | Skill | What it does | Output |

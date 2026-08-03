@@ -46,6 +46,7 @@ From their answer, look for signals about:
 | Mentions patient data, PHI, HIPAA, or regulatory concerns | Compliance planning is needed |
 | Mentions HealthKit, vitals, wearables, or sensor data | Health data modeling is needed |
 | Mentions EHR, Epic, SMART on FHIR, or interoperability | FHIR data model design is needed |
+| Mentions patients pulling in their own medical records, patient portals, MyChart, or Fasten | EHR record integration (`fasten-ehr-integration`) is needed |
 | Mentions they already have a repo or project | Skip platform selection |
 | Mentions they already have designs or wireframes | UX planning may be lighter or skippable |
 | Says "I don't know where to start" or describes a vague idea | Needs-finding would help |
@@ -72,6 +73,7 @@ Based on what you heard, assemble a plan from the available skills. Every skill 
 | `health-data-model-planning` | App stores or processes health data (vitals, assessments, patient records) |
 | `fhir-data-model-design` | App needs FHIR interoperability or connects to EHRs |
 | `digital-health-compliance-planning` | App handles PHI or has regulatory concerns |
+| `fasten-ehr-integration` | App needs patients to pull their own EHR records in via Fasten Connect |
 | `digital-health-study-planning` | App is part of a research study with enrollment and assessments |
 | `app-build-planner` | Always — produces the implementation plan that drives the build |
 
@@ -110,6 +112,7 @@ Run skills in this order (skipping any that were not selected):
 | `health-data-model-planning` | `docs/planning/data-model-brief.md` | Entities, relationships, FHIR recommendations |
 | `fhir-data-model-design` | `docs/planning/fhir-data-model.md` | FHIR resources, terminology, relationships |
 | `digital-health-compliance-planning` | `docs/planning/compliance-brief.md` | Privacy domains, controls, required decisions |
+| `fasten-ehr-integration` | `docs/planning/ehr-connection-brief.md` | Working Fasten Connect integration + privacy/architecture decisions |
 | `app-build-planner` | `docs/implementation-plan.md` | Milestone-based build sequence |
 | `spezi-platform-selection` | Cloned template repository | Working project directory with template code; planning briefs moved into the cloned repo |
 

@@ -158,6 +158,7 @@ Listed in the order they typically run.
 | `fhir-data-model-design` | Map clinical concepts to FHIR |
 | `app-build-planner` | Turn planning outputs into a milestone-based build plan |
 | `spezi-platform-selection` | Choose React Native or Apple-native and clone the matching Spezi starter template (optional) |
+| `fasten-ehr-integration` | Pull patients' real EHR records into the app via Fasten Connect, with a built-in privacy walkthrough |
 | `project-wiki` | Turn your project into a compounding, AI-maintained knowledge base |
 | `keep-a-changelog-generator` | Draft changelogs people can actually read |
 | `release-notes-generator` | Summarize a release clearly |
@@ -266,6 +267,18 @@ Choose the right app foundation — helps you decide between **React Native** an
 
 ```bash
 npx skills add StanfordSpezi/SpeziVibe --skill spezi-platform-selection
+```
+
+</details>
+
+### `fasten-ehr-integration`
+
+Pull patients' real EHR records into the app — walks through integrating [Fasten Connect](https://connect.fastenhealth.com): patients link their own patient portals via an embedded widget, the backend requests bulk FHIR exports, and a webhook delivers the records into the app's own storage. Includes sandbox test flows and a mandatory walkthrough of where the health data travels and the privacy obligations of holding it.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill fasten-ehr-integration
 ```
 
 </details>

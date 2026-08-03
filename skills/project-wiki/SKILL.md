@@ -131,6 +131,7 @@ If the project has SpeziVibe planning documents, ingest them as the wiki's first
 | `docs/planning/compliance-brief.md` | `regulatory/compliance-landscape.md`, `regulatory/open-decisions.md` |
 | `docs/planning/study-brief.md` | `design/study-protocol.md`, `stakeholders/participants.md` |
 | `docs/planning/fhir-data-model.md` | `design/fhir-mappings.md` |
+| `docs/planning/ehr-connection-brief.md` | `regulatory/ehr-data-flow.md`, `design/ehr-integration.md` |
 | `docs/implementation-plan.md` | `design/implementation-roadmap.md` |
 
 Do not duplicate content — extract key facts, relationships, and open questions into wiki pages with links back to the original planning docs.
