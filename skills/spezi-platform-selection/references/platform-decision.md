@@ -10,7 +10,7 @@ Choose between **React Native** and **Apple-native** based on the product's defi
 
 ## React Native
 
-Use the Spezi React Native Template App when:
+Use the [SpeziVibe React Native Template](https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate) when:
 
 - cross-platform support (iOS + Android) matters from the beginning
 - the app is mostly content, education, forms, questionnaires, scheduling, or chat

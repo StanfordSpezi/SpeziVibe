@@ -11,7 +11,7 @@ SPDX-License-Identifier: MIT
 
 # Build an App
 
-Walk a user through building a digital health app from start to finish. This skill orchestrates the other skills in this repository — it figures out what the user needs, runs the right planning skills, and hands off to implementation.
+Walk a user through building a digital health app from start to finish. This skill orchestrates the planning and build skills in this repository — it figures out what the user needs, runs the right planning skills, and hands off to implementation. (The release utilities `keep-a-changelog-generator` and `release-notes-generator` are used later in a project's life and are not part of this flow.)
 
 ## When to Use
 
@@ -76,6 +76,7 @@ Based on what you heard, assemble a plan from the available skills. Every skill 
 | `fasten-ehr-integration` | App needs patients to pull their own EHR records in via Fasten Connect |
 | `digital-health-study-planning` | App is part of a research study with enrollment and assessments |
 | `app-build-planner` | Always — produces the implementation plan that drives the build |
+| `project-wiki` | User wants a persistent knowledge base that grows with the project — also offered at the end of planning (Step 4) even if not selected here |
 
 Present the plan as a short numbered list with one line per skill explaining what it does. Then ask:
 
@@ -124,12 +125,14 @@ Between each skill, ask: "Ready to move on, or do you want to adjust anything?"
 
 ## Step 4: Start Building
 
-After `app-build-planner` saves `docs/implementation-plan.md`, summarize everything that was produced — only list documents that were actually created:
+Run this step only after **all** selected skills have completed. In particular, if `spezi-platform-selection` was selected, it must run before building starts — implementation happens inside the cloned template, not in the planning directory.
+
+Summarize everything that was produced — only list documents that were actually created:
 
 ```
 Here's what we have:
 
-Project: [cloned template path]
+Project: [cloned template path, or the current directory if no template was cloned]
 
 Planning documents:
   [list only the docs that were created]
@@ -141,7 +144,13 @@ Implementation plan:
 Ready to start building Milestone 1?
 ```
 
-If the user says yes, read `docs/implementation-plan.md`, find Milestone 1, and begin implementing it.
+If `project-wiki` was not already run, offer it once before the build starts:
+
+> "Would you like to set up a project wiki to keep accumulating knowledge as you build? It seeds from your planning documents and grows as you add interviews, papers, and clinical observations."
+
+If the user accepts, run the `project-wiki` skill (read its SKILL.md and follow its instructions), then return here.
+
+When the user is ready to build, read `docs/implementation-plan.md`, find Milestone 1, and begin implementing it.
 
 ---
 

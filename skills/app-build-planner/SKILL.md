@@ -24,7 +24,7 @@ Use this skill when:
 
 Run this after the other planning skills and **before** `spezi-platform-selection`. The platform choice can be informed by what the plan reveals (HealthKit needs, cross-platform requirements, etc.).
 
-Do not use this skill if you have not done any planning work yet. Start with the planning skills first.
+Planning inputs make the plan much better, but they are not a hard requirement — if no planning documents exist, Step 1 falls back to asking the user to describe the app directly. Prefer running the planning skills first when the user has time for them.
 
 ## Working Style
 
@@ -39,7 +39,7 @@ You are a directive implementation planner. You synthesize planning outputs and 
 5. Sequence features into ordered milestones
 6. Produce the implementation plan document
 
-**All output is in chat.** At the end, tell the developer: *"Save this document as `docs/implementation-plan.md` in your project. Your coding agent will use it as the sequenced build plan — milestone by milestone."*
+**Save the deliverable to disk.** Write the finished plan to `docs/implementation-plan.md` in the project repository, then tell the developer: *"Your implementation plan is saved at `docs/implementation-plan.md`. Your coding agent will use it as the sequenced build plan — milestone by milestone."* If the current environment cannot write files (e.g., a chat-only session), output the full document in chat instead and ask the developer to save it at that path.
 
 ---
 
@@ -55,6 +55,7 @@ Check `docs/planning/` in the project repository for outputs from upstream plann
 | `health-data-model-planning` | `docs/planning/data-model-brief.md` | Data model brief: core entities, relationships, lifecycle states, FHIR recommendations |
 | `fhir-data-model-design` | `docs/planning/fhir-data-model.md` | FHIR spec: concrete resources, terminology bindings, resource relationships |
 | `digital-health-compliance-planning` | `docs/planning/compliance-brief.md` | Compliance brief: privacy domains, consent requirements, audit controls |
+| `fasten-ehr-integration` | `docs/planning/ehr-connection-brief.md` | EHR connection brief: Fasten Connect integration status, privacy and architecture decisions |
 
 Read each file that exists. For any that are missing, note the gap and move on.
 
@@ -113,7 +114,7 @@ For each feature, note:
 
 Also extract separately:
 
-- **Data entities** — if a `health-data-model-planning` or `fhir-data-model-design` document is available, list each data entity (e.g., Patient, Observation, QuestionnaireResponse) with its FHIR resource mapping. These feed the Data Model Integration table in the output document.
+- **Data entities** — if a `health-data-model-planning` or `fhir-data-model-design` document is available, list each data entity (e.g., Patient, Observation, QuestionnaireResponse) with its FHIR resource mapping. If both documents exist, treat `fhir-data-model.md` as authoritative for FHIR mappings — the data model brief's FHIR recommendations are preliminary. These feed the Data Model Integration table in the output document.
 - **Compliance controls** — if a `digital-health-compliance-planning` document is available, list each required control (e.g., "audit log all PHI access", "collect informed consent before data collection", "enforce data retention policy"). These feed the Compliance Integration table in the output document.
 
 ---
@@ -124,10 +125,10 @@ For each extracted feature, identify which pre-built packages (React Native) or 
 
 Use the reference files:
 
-- [react-native-packages.md](references/react-native-packages.md) — `@spezivibe/account`, `@spezivibe/onboarding`, `@spezivibe/questionnaire`, `@spezivibe/scheduler`, `@spezivibe/chat`, `@spezivibe/firebase`, `@spezivibe/medplum`
+- [react-native-packages.md](references/react-native-packages.md) — `@spezivibe/account`, `@spezivibe/onboarding`, `@spezivibe/questionnaire`, `@spezivibe/scheduler`, `@spezivibe/chat`, `@spezivibe/firebase`, `@spezivibe/medplum`, and `@spezivibe/healthkit` (not yet built — see its Status note)
 - [apple-native-modules.md](references/apple-native-modules.md) — SpeziAccount, SpeziOnboarding, SpeziQuestionnaire, SpeziScheduler, SpeziChat, SpeziHealthKit, SpeziFHIR, SpeziFirebaseAccount, SpeziFirestore, SpeziNotifications, SpeziViews
 
-Check the reference file's **Status** field for each package before recommending it. Some packages (notably `@spezivibe/healthkit`) are not yet built and should be flagged as requiring custom implementation.
+Read each package's entry in the reference file before recommending it — a **Status** note flags a package that is not ready for use. On React Native, `@spezivibe/healthkit` is not yet built, so features that depend on it must be flagged as requiring custom implementation. The Apple-native modules are all released Spezi packages.
 
 For features that have no matching package or module, note that they require custom implementation and estimate relative effort (small, medium, large).
 
@@ -180,7 +181,7 @@ Generate the full implementation plan document using this format:
 ```markdown
 # Implementation Plan: [App Name]
 
-> Generated by `app-build-planner`. Save as `docs/implementation-plan.md` in your project.
+> Generated by `app-build-planner`. Saved as `docs/implementation-plan.md` in your project.
 
 ## Context
 
@@ -257,7 +258,7 @@ Generate the full implementation plan document using this format:
 
 ## Next Steps
 
-Save this document as `docs/implementation-plan.md` in your project repository.
+This plan is saved as `docs/implementation-plan.md` in your project repository.
 
 To start building, work through the milestones one at a time with your coding
 agent. Each milestone is designed to be built and reviewed as a single focused
@@ -291,4 +292,4 @@ Before delivering the implementation plan, verify:
 - [ ] Custom implementation effort is noted for features without a matching package
 - [ ] Missing planning inputs are flagged
 - [ ] Open questions are listed
-- [ ] The handoff instruction tells the user where to save the document
+- [ ] The plan is saved to `docs/implementation-plan.md` (or, in a chat-only session, the user has been told to save it there)

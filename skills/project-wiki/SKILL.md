@@ -141,6 +141,7 @@ Do not duplicate content — extract key facts, relationships, and open question
 Check whether an `AGENTS.md` or `CLAUDE.md` already exists at the project root.
 
 - **If one exists:** append a clearly scoped `## Project Wiki Schema` section to the existing file. Do not overwrite or remove any existing content — the file may contain instructions for other tools or skills.
+- **If both exist:** append the same section to both files so they stay in sync — many projects keep `AGENTS.md` and `CLAUDE.md` identical.
 - **If neither exists:** create a new `AGENTS.md` at the project root.
 
 The Project Wiki Schema section should describe:
@@ -274,11 +275,7 @@ A living list of open questions, organized by category. When a question gets ans
 
 ## Integration with build-an-app
 
-When `build-an-app` completes its planning phase, it should offer:
-
-> "Your planning documents are ready. Would you like to set up a project wiki to keep accumulating knowledge as you build? The wiki will seed from your planning docs and grow as you add interviews, papers, and clinical observations."
-
-If the user accepts, hand off to this skill.
+The `build-an-app` orchestrator offers this skill at the end of its planning phase, after the project directory is in its final location (i.e., after `spezi-platform-selection` has cloned a template, if one was selected). When invoked from that flow, seed the wiki from the planning documents listed above and skip any "Understand the Project" questions the planning documents already answer.
 
 ## Guardrails
 

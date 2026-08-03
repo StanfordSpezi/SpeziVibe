@@ -21,6 +21,8 @@ Use this skill when you need to:
 - reason about interoperability requirements with FHIR as the default starting point for clinical data
 - prepare for later implementation in a mobile app, backend, analytics pipeline, or research workflow
 
+**Relationship to `fhir-data-model-design`:** this skill plans the concepts — entities, relationships, lifecycle states, and whether FHIR fits. When the app needs a concrete FHIR R4 specification (specific resources, profiles, and terminology bindings), run `fhir-data-model-design` afterwards; its output supersedes this brief's preliminary FHIR recommendations.
+
 ## Working Style
 
 Start with the domain, but assume that clinically meaningful data will often benefit from a FHIR-oriented design unless there is a strong reason not to.

@@ -20,6 +20,8 @@ Use this skill when you need to:
 - Summarize changes for users/stakeholders
 - Document migration steps for breaking changes
 
+Use `keep-a-changelog-generator` instead when you need to maintain the project's `CHANGELOG.md` file. This skill writes the narrative announcement for a single release; that one keeps the structured, cumulative changelog.
+
 ## Release Notes Structure
 
 ```markdown

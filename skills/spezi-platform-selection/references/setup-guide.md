@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
 
 The setup workflow routes developers to one of two starter templates:
 
-- **React Native** → Spezi React Native Template App
+- **React Native** → SpeziVibe React Native Template
 - **Apple-native** → Spezi Template Application for Apple Platforms
 
 Before cloning a template, help the user get their machine into a usable development state for the platform they chose.

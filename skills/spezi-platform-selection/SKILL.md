@@ -23,8 +23,8 @@ Skip this skill if the user is not adopting a Spezi template — for example, th
 
 Read [setup-guide.md](references/setup-guide.md) before making the recommendation.
 
-- **React Native** — cross-platform (iOS + Android) from one codebase. Backed by the Spezi React Native Template App.
-- **Apple-native** — Swift / SwiftUI for iPhone, iPad, and Vision Pro. Backed by the Spezi Template Application for Apple Platforms.
+- **React Native** — cross-platform (iOS + Android) from one codebase. Backed by the [SpeziVibe React Native Template](https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate).
+- **Apple-native** — Swift / SwiftUI for iPhone, iPad, and Vision Pro. Backed by the [Spezi Template Application](https://github.com/StanfordSpezi/SpeziTemplateApplication) for Apple platforms.
 
 ## Ask First
 
@@ -75,6 +75,8 @@ Use the bundled clone helper instead of writing ad hoc clone commands:
 - React Native: `scripts/clone-template.sh react-native <destination>`
 - Apple-native: `scripts/clone-template.sh apple-native <destination>`
 
+The helper renames the clone's `origin` remote to `template`, so the user cannot accidentally push their project (and planning briefs) to the Stanford template repository. Before the user pushes, help them create their own repository and add it as `origin`.
+
 ## Carry Planning Forward
 
 If the current working directory contains a `docs/planning/` directory or a `docs/implementation-plan.md` produced by the other planning skills, **move them into the cloned repository** so the coding agent picks up the full plan from the right place:
@@ -88,7 +90,7 @@ Confirm with the user before moving. If the cloned repo already contains a `docs
 
 After the move:
 
-1. inspect the cloned repository's local instructions
+1. read the cloned repository's `README.md` and any agent instruction files (`AGENTS.md`, `CLAUDE.md`) so implementation follows the template's conventions
 2. continue implementation inside the cloned repository rather than in the original planning directory
 
 ## Output

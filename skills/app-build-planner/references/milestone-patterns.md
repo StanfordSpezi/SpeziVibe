@@ -8,6 +8,8 @@ SPDX-License-Identifier: MIT
 
 Common milestone sequences for digital health app archetypes. Use these as starting templates and adapt based on the actual planning inputs.
 
+> **Package availability:** in the tables below, the React Native `healthkit` package (`@spezivibe/healthkit`) is **not yet built** — see [react-native-packages.md](react-native-packages.md). On React Native, plan health-data milestones as custom HealthKit integration work. The Apple-native `SpeziHealthKit` module is available.
+
 ## Research Study App
 
 Apps tied to a clinical or research study with defined enrollment, consent, assessments, and data collection.
