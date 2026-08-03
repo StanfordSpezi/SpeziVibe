@@ -7,4 +7,15 @@
 #
 
 .DS_Store
+
+# Dependency installs
+node_modules/
+
+# Agent skill install targets and lockfile created by `npx skills add`
+# (symlink farms under hidden per-agent directories, e.g. .claude/skills/)
 .agents/
+/.*/skills/
+skills-lock.json
+
+# Personal, machine-specific agent settings
+.claude/settings.local.json
