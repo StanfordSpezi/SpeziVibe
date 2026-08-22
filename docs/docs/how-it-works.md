@@ -14,7 +14,7 @@ When the plan is ready, your AI coding agent reads those briefs and writes the c
 1. **Plan first.** Open your AI coding tool in any working directory and run the planning skills. They ask you questions and write briefs into `docs/planning/`. Run only the ones that fit your project — `build-an-app` can orchestrate the right ones based on what you describe.
 2. **Sequence the build.** `app-build-planner` reads the briefs and produces `docs/implementation-plan.md` — a milestone-by-milestone build plan.
 3. **Choose a platform and clone the template.** `spezi-platform-selection` picks **React Native** or **Apple-native** based on what your planning revealed, clones the matching Spezi template, and brings your planning docs along so they're inside the cloned repo.
-4. **Build, one milestone at a time.** Inside the cloned template, tell your coding agent: *"Implement Milestone 1 from `docs/implementation-plan.md`."* It uses your planning briefs as context and the template's existing patterns as scaffolding to write the code.
+4. **Build, one milestone at a time.** Inside the template project, tell your coding agent: *"Implement Milestone 1 from `docs/implementation-plan.md`."* It uses your planning briefs as context and the template's existing patterns as scaffolding to write the code.
 5. **Ship.** Generate changelogs and release notes. Maintain a `project-wiki` of accumulated knowledge as the project grows.
 
 ## Mental Model
