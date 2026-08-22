@@ -75,6 +75,8 @@ Ask the user where the project should live — a sibling directory of the planni
 - React Native: `scripts/clone-template.sh react-native <destination>` — runs the template's official generator (`npx create-spezivibe-app`), which prompts for a backend and optional features and produces a standalone app. Do **not** clone the SpeziVibeReactNativeTemplate repository directly: it is a monorepo of CLI, packages, and template infrastructure, not an app.
 - Apple-native: `scripts/clone-template.sh apple-native <destination>` — clones the Spezi Template Application.
 
+If the React Native generator fails (the script reports the app was not created), don't improvise a clone of the template monorepo — check the [template repository's README](https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate) for the current generation instructions and surface the failure to the user.
+
 For the Apple-native clone, the helper renames the `origin` remote to `template`, so the user cannot accidentally push their project (and planning briefs) to the Stanford template repository. The React Native generator produces a fresh project with no remote. Either way, before the user pushes, help them create their own repository and add it as `origin`.
 
 ## Carry Planning Forward
