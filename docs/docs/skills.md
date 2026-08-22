@@ -23,7 +23,7 @@ Listed in the order they typically run. `build-an-app` orchestrates them; `spezi
 | [health-data-model-planning](skills/health-data-model-planning) | Define health data entities, relationships, and FHIR fit | `docs/planning/data-model-brief.md` |
 | [fhir-data-model-design](skills/fhir-data-model-design) | Map clinical data to FHIR R4 resources and terminology | `docs/planning/fhir-data-model.md` |
 | [app-build-planner](skills/app-build-planner) | Produce a milestone-based implementation plan from the planning briefs | `docs/implementation-plan.md` |
-| [spezi-platform-selection](skills/spezi-platform-selection) | Choose React Native or Apple-native, clone the matching Spezi template, move planning briefs into it | Cloned template repo with planning briefs inside |
+| [spezi-platform-selection](skills/spezi-platform-selection) | Choose React Native or Apple-native, set up the matching Spezi template, move planning briefs into it | Template project with planning briefs inside |
 
 ## Integration Skills
 

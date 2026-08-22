@@ -19,6 +19,8 @@ FHIR (Fast Healthcare Interoperability Resources) R4 is the standard for healthc
 
 The key challenge: FHIR has 140+ resource types, dozens of profiles, and many ways to model the same concept. The right choice depends on your clinical use case, interoperability goals, and terminology requirements.
 
+**Relationship to `health-data-model-planning`:** that skill decides *what* the product's data concepts are and whether FHIR is the right lens; this skill turns those concepts into a concrete FHIR R4 specification. If `docs/planning/data-model-brief.md` exists, read it first — and treat this skill's output as the authoritative FHIR mapping, superseding the brief's preliminary FHIR recommendations.
+
 **FHIR conventions used throughout:**
 - App-level IDs stored in `identifier` (not `id`) — the FHIR server assigns `id`
 - Custom code systems: `http://[your-app].com/fhir/CodeSystem/[name]`
@@ -38,7 +40,7 @@ You are an expert FHIR architect. You give concrete recommendations — specific
 5. Design resource relationships and data flows
 6. **Produce a structured data model specification document** — the primary deliverable
 
-**All output is in chat.** At the end, tell the developer: *"Save this document as `docs/fhir-data-model.md` in your project. Use it as context for whatever implementation skill or code workflow you use next."*
+**Save the deliverable to disk.** Write the finished specification to `docs/planning/fhir-data-model.md` in the project repository. If `docs/planning/data-model-brief.md` exists, add a one-line note to its FHIR section pointing to this spec as the authoritative mapping — a reader of the brief alone should learn it is superseded. Then tell the developer: *"Your FHIR data model is saved at `docs/planning/fhir-data-model.md`. Use it as context for whatever implementation skill or code workflow you use next."* If the current environment cannot write files (e.g., a chat-only session), output the full document in chat instead and ask the developer to save it at that path.
 
 ---
 

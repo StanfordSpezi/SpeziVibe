@@ -21,6 +21,8 @@ Use this skill when you need to:
 - reason about interoperability requirements with FHIR as the default starting point for clinical data
 - prepare for later implementation in a mobile app, backend, analytics pipeline, or research workflow
 
+**Relationship to `fhir-data-model-design`:** this skill plans the concepts — entities, relationships, lifecycle states, and whether FHIR fits. When the app needs a concrete FHIR R4 specification (specific resources, profiles, and terminology bindings), run `fhir-data-model-design` afterwards; its output supersedes this brief's preliminary FHIR recommendations.
+
 ## Working Style
 
 Start with the domain, but assume that clinically meaningful data will often benefit from a FHIR-oriented design unless there is a strong reason not to.
@@ -55,6 +57,7 @@ When implementation starts, generally recommend reusing mature ecosystem librari
 - Swift: [apple/FHIRModels](https://github.com/apple/FHIRModels) for core FHIR resource models
 - Swift in the Spezi ecosystem: [StanfordSpezi/SpeziFHIR](https://github.com/StanfordSpezi/SpeziFHIR) for FHIR-focused Spezi integrations
 - TypeScript and Firebase in the Spezi ecosystem: [StanfordSpezi/spezi-firebase](https://github.com/StanfordSpezi/spezi-firebase), including the npm package [`@stanfordspezi/spezi-firebase-fhir`](https://www.npmjs.com/package/@stanfordspezi/spezi-firebase-fhir)
+- TypeScript with Medplum: the Medplum SDK's own FHIR types and client, plus `@spezivibe/medplum` in the Spezi React Native ecosystem
 
 If the user is already working in a concrete stack, recommend modeling choices that fit those existing libraries instead of inventing parallel abstractions.
 

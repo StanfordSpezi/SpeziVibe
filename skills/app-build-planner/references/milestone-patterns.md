@@ -8,6 +8,8 @@ SPDX-License-Identifier: MIT
 
 Common milestone sequences for digital health app archetypes. Use these as starting templates and adapt based on the actual planning inputs.
 
+> **Package availability:** in the tables below, the React Native `healthkit` package (`@spezivibe/healthkit`) is **not yet built** — see [react-native-packages.md](react-native-packages.md). On React Native, plan health-data milestones as custom HealthKit integration work. The Apple-native `SpeziHealthKit` module is available.
+
 ## Research Study App
 
 Apps tied to a clinical or research study with defined enrollment, consent, assessments, and data collection.
@@ -88,6 +90,8 @@ Apps focused on self-tracking, coaching, habit formation, and health behavior ch
 ## Adapting a Pattern
 
 If the app combines archetypes (e.g., a patient engagement app with a research consent flow), start with the pattern that best matches the primary user loop and integrate elements from the secondary pattern as additional milestones.
+
+The health-data milestones in all three patterns assume HealthKit as the data source. When the source is a Bluetooth peripheral or another sensor, replace them with custom integration work — neither platform's reference file lists a BLE package.
 
 When adapting a pattern to the actual planning inputs:
 

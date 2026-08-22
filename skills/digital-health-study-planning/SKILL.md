@@ -57,6 +57,8 @@ Work through:
 - consent requirements
 - participant withdrawal process
 
+This skill covers the participant-facing side of consent — who consents, when, and how it fits the study flow. `digital-health-compliance-planning` covers the regulatory side (IRB expectations, consent capture and versioning, de-identification); coordinate rather than duplicate if both skills run.
+
 Do not assume device ownership, app literacy, or language access without checking.
 
 ### 3. Data Collection Plan

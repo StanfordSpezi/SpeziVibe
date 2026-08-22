@@ -8,7 +8,7 @@ slug: /getting-started
 SpeziVibe is a collection of installable skills for AI coding tools. Each skill walks you through a specific digital health planning area and produces a structured markdown document you can build from.
 
 :::info The workflow
-SpeziVibe's planning skills produce structured markdown briefs. Your AI coding agent then uses those briefs (plus a Spezi template repo) to write the code. See [How SpeziVibe Works](/docs/how-it-works) for the full flow before you start.
+SpeziVibe's planning skills produce structured markdown briefs. Your AI coding agent then uses those briefs (plus a Spezi template, if you use one) to write the code. See [How SpeziVibe Works](/docs/how-it-works) for the full flow before you start.
 :::
 
 ## Prerequisites

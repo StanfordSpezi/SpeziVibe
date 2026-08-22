@@ -24,7 +24,7 @@ Use this skill when:
 
 Run this after the other planning skills and **before** `spezi-platform-selection`. The platform choice can be informed by what the plan reveals (HealthKit needs, cross-platform requirements, etc.).
 
-Do not use this skill if you have not done any planning work yet. Start with the planning skills first.
+Planning inputs make the plan much better, but they are not a hard requirement — if no planning documents exist, Step 1 falls back to asking the user to describe the app directly. Prefer running the planning skills first when the user has time for them.
 
 ## Working Style
 
@@ -39,7 +39,7 @@ You are a directive implementation planner. You synthesize planning outputs and 
 5. Sequence features into ordered milestones
 6. Produce the implementation plan document
 
-**All output is in chat.** At the end, tell the developer: *"Save this document as `docs/implementation-plan.md` in your project. Your coding agent will use it as the sequenced build plan — milestone by milestone."*
+**Save the deliverable to disk.** Write the finished plan to `docs/implementation-plan.md` in the project repository, then tell the developer: *"Your implementation plan is saved at `docs/implementation-plan.md`. Your coding agent will use it as the sequenced build plan — milestone by milestone."* If the current environment cannot write files (e.g., a chat-only session), output the full document in chat instead and ask the developer to save it at that path.
 
 ---
 
@@ -55,6 +55,7 @@ Check `docs/planning/` in the project repository for outputs from upstream plann
 | `health-data-model-planning` | `docs/planning/data-model-brief.md` | Data model brief: core entities, relationships, lifecycle states, FHIR recommendations |
 | `fhir-data-model-design` | `docs/planning/fhir-data-model.md` | FHIR spec: concrete resources, terminology bindings, resource relationships |
 | `digital-health-compliance-planning` | `docs/planning/compliance-brief.md` | Compliance brief: privacy domains, consent requirements, audit controls |
+| `fasten-ehr-integration` | `docs/planning/ehr-connection-brief.md` | EHR connection brief: Fasten Connect integration status, privacy and architecture decisions |
 
 Read each file that exists. For any that are missing, note the gap and move on.
 
@@ -68,18 +69,23 @@ If no planning documents are found at all, ask the user to describe the app's co
 
 ## Step 2: Confirm Platform and Backend
 
-Identify the choices made during platform selection.
+Identify the platform and backend, if they have been chosen. In the `build-an-app` flow this skill runs **before** `spezi-platform-selection`, so an undecided platform is a normal state — not a blocker.
 
 Ask:
 
-1. "Which platform are you on — React Native, Apple-native, or something else (e.g. Flutter, web, an existing repo)?"
-2. "Which backend are you using — Firebase, Medplum, or something else?"
+1. "Which platform are you on — React Native, Apple-native, or something else (e.g. Flutter, web)? Or is that still undecided?" (For an existing repo, the answer is whatever framework the repo uses.)
+2. "Which backend are you using — Firebase, Medplum, or something else? Or is that still undecided?"
 
 Read the appropriate reference file based on the platform:
 
 - React Native → read [react-native-packages.md](references/react-native-packages.md)
 - Apple-native → read [apple-native-modules.md](references/apple-native-modules.md)
 - Other platforms → skip the Spezi package/module mapping; produce a generic plan the agent can implement using whatever framework conventions apply
+- Undecided (e.g., `spezi-platform-selection` runs after this skill) → read **both** reference files, set the plan's Platform field to "To be decided", and write platform notes in dual form (e.g., "questionnaire / SpeziQuestionnaire") so the plan holds whichever way the decision goes — the step that later establishes the platform (`spezi-platform-selection`, or the orchestrator's no-template project setup if the user opts out of a template) narrows the plan afterwards
+
+If the backend is also undecided, do not assume one — record the choice in the plan's Open Questions.
+
+For a React Native or Apple-native app that was **not** built from the Spezi template, still read the reference file, but treat each package as an adoption question rather than a given — note in the plan whether it can be added to the existing app or whether the feature needs custom implementation.
 
 ---
 
@@ -113,21 +119,21 @@ For each feature, note:
 
 Also extract separately:
 
-- **Data entities** — if a `health-data-model-planning` or `fhir-data-model-design` document is available, list each data entity (e.g., Patient, Observation, QuestionnaireResponse) with its FHIR resource mapping. These feed the Data Model Integration table in the output document.
+- **Data entities** — if a `health-data-model-planning` or `fhir-data-model-design` document is available, list each data entity (e.g., Patient, Observation, QuestionnaireResponse) with its FHIR resource mapping. If both documents exist, treat `fhir-data-model.md` as authoritative for FHIR mappings — the data model brief's FHIR recommendations are preliminary. These feed the Data Model Integration table in the output document.
 - **Compliance controls** — if a `digital-health-compliance-planning` document is available, list each required control (e.g., "audit log all PHI access", "collect informed consent before data collection", "enforce data retention policy"). These feed the Compliance Integration table in the output document.
 
 ---
 
 ## Step 4: Map to Packages and Modules
 
-For each extracted feature, identify which pre-built packages (React Native) or modules (Apple-native) can be used.
+For each extracted feature, identify which pre-built packages (React Native) or modules (Apple-native) can be used. For platforms outside the Spezi ecosystem, skip the mapping (per Step 2) and note the relative effort of each feature as custom implementation instead.
 
 Use the reference files:
 
-- [react-native-packages.md](references/react-native-packages.md) — `@spezivibe/account`, `@spezivibe/onboarding`, `@spezivibe/questionnaire`, `@spezivibe/scheduler`, `@spezivibe/chat`, `@spezivibe/firebase`, `@spezivibe/medplum`
+- [react-native-packages.md](references/react-native-packages.md) — `@spezivibe/account`, `@spezivibe/onboarding`, `@spezivibe/questionnaire`, `@spezivibe/scheduler`, `@spezivibe/chat`, `@spezivibe/firebase`, `@spezivibe/medplum`, and `@spezivibe/healthkit` (not yet built — see its Status note)
 - [apple-native-modules.md](references/apple-native-modules.md) — SpeziAccount, SpeziOnboarding, SpeziQuestionnaire, SpeziScheduler, SpeziChat, SpeziHealthKit, SpeziFHIR, SpeziFirebaseAccount, SpeziFirestore, SpeziNotifications, SpeziViews
 
-Check the reference file's **Status** field for each package before recommending it. Some packages (notably `@spezivibe/healthkit`) are not yet built and should be flagged as requiring custom implementation.
+Read each package's entry in the reference file before recommending it — a **Status** note flags a package that is not ready for use. On React Native, `@spezivibe/healthkit` is not yet built, so features that depend on it must be flagged as requiring custom implementation. The Apple-native modules are all released Spezi packages.
 
 For features that have no matching package or module, note that they require custom implementation and estimate relative effort (small, medium, large).
 
@@ -180,7 +186,7 @@ Generate the full implementation plan document using this format:
 ```markdown
 # Implementation Plan: [App Name]
 
-> Generated by `app-build-planner`. Save as `docs/implementation-plan.md` in your project.
+> Generated by `app-build-planner`. Saved as `docs/implementation-plan.md` in your project.
 
 ## Context
 
@@ -188,8 +194,8 @@ Generate the full implementation plan document using this format:
 |-------|-------|
 | App | [Name and one-line description] |
 | Need statement | [From biodesign-needs-finding, or "Not available"] |
-| Platform | [React Native / Apple-native / Other — specify] |
-| Backend | [Firebase / Medplum / Other] |
+| Platform | [React Native / Apple-native / Other — specify / To be decided] |
+| Backend | [Firebase / Medplum / Other / To be decided — see Open Questions] |
 | Study context | [Yes — brief description / No] |
 
 ## Planning Inputs
@@ -233,7 +239,7 @@ Generate the full implementation plan document using this format:
 
 ## Data Model Integration
 
-[Map each data entity from the planning phase to the milestone where it gets implemented.]
+[Map each data entity from the planning phase to the milestone where it gets implemented. If no data-model planning was run, replace the table with a one-line note naming the gap.]
 
 | Entity | FHIR Resource | Milestone | Notes |
 |--------|--------------|-----------|-------|
@@ -241,7 +247,7 @@ Generate the full implementation plan document using this format:
 
 ## Compliance Integration
 
-[Map each compliance control to the milestone where it gets addressed.]
+[Map each compliance control to the milestone where it gets addressed. If no compliance planning was run, replace the table with a one-line note naming the gap.]
 
 | Control | Milestone | How |
 |---------|-----------|-----|
@@ -257,7 +263,7 @@ Generate the full implementation plan document using this format:
 
 ## Next Steps
 
-Save this document as `docs/implementation-plan.md` in your project repository.
+This plan is saved as `docs/implementation-plan.md` in your project repository.
 
 To start building, work through the milestones one at a time with your coding
 agent. Each milestone is designed to be built and reviewed as a single focused
@@ -291,4 +297,4 @@ Before delivering the implementation plan, verify:
 - [ ] Custom implementation effort is noted for features without a matching package
 - [ ] Missing planning inputs are flagged
 - [ ] Open questions are listed
-- [ ] The handoff instruction tells the user where to save the document
+- [ ] The plan is saved to `docs/implementation-plan.md` (or, in a chat-only session, the user has been told to save it there)

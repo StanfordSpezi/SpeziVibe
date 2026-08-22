@@ -31,7 +31,7 @@ The main entry point for SpeziVibe. Describe what you want to build and this ski
 The orchestrator picks skills based on signals in your description:
 
 - Mentions a clinical problem or "I don't know where to start" → **biodesign-needs-finding**
-- No existing repo → **spezi-platform-selection**
+- No existing repo, starting from a Spezi template → **spezi-platform-selection** (optional — you can [build with any framework](/docs/how-it-works#building-without-a-spezi-template) instead)
 - No existing designs → **digital-health-ux-planning**
 - Mentions research, study, or trial → **digital-health-study-planning**
 - Involves health data → **health-data-model-planning**
@@ -53,10 +53,10 @@ AI:   Based on your description, here's the sequence I'd recommend:
       4. digital-health-ux-planning — patient and caregiver workflows
       5. app-build-planner — implementation plan with milestones
       6. spezi-platform-selection — pick React Native or Apple-native,
-         clone the matching template (when you're ready to build)
+         set up the matching template (when you're ready to build)
 
       All planning briefs land in docs/planning/. spezi-platform-selection
-      runs last and brings them into the cloned template, where your
+      runs last and brings them into the template project, where your
       coding agent will start building.
 
       Want to proceed with this order?
@@ -73,8 +73,8 @@ Each skill produces its own document in `docs/planning/`. The final output is an
 
 ## What Happens Next
 
-After `build-an-app` finishes, you have a folder of planning briefs and `docs/implementation-plan.md`. Inside your cloned Spezi template, tell your AI coding agent:
+After `build-an-app` finishes, you have a folder of planning briefs and `docs/implementation-plan.md`. Inside your project — the cloned Spezi template, or your own repo or scaffold if you chose a [different framework](/docs/how-it-works#building-without-a-spezi-template) — tell your AI coding agent:
 
 > *Implement Milestone 1 from `docs/implementation-plan.md`.*
 
-The agent uses your planning briefs as context and the Spezi template's patterns as scaffolding to write the code. See [How SpeziVibe Works](/docs/how-it-works) for the full flow.
+The agent uses your planning briefs as context — plus the Spezi template's patterns as scaffolding, if you're using one — to write the code. See [How SpeziVibe Works](/docs/how-it-works) for the full flow.

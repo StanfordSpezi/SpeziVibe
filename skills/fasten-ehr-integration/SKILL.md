@@ -45,6 +45,10 @@ Your app ◀──FHIR records (webhook + download)── Fasten Connect
 
 This is *consumer-mediated exchange*: the patient exercises their HIPAA right of access and directs the records to the app. It is read-only — there is no write-back to the EHR. Fasten also supports a TEFCA Individual Access Services path with identity proofing (CLEAR / ID.me) instead of portal logins; the API surface is the same.
 
+## Planning-First Pass
+
+When this skill runs during planning — before the app exists (the `build-an-app` orchestrator does this) — the verification gates in Steps 2–7 cannot fire yet. In that mode: work through Step 1 as far as it is answerable, walk the Data Privacy section in full, and produce the Output brief with `Current mode: not started`. The developer account and Steps 2–7 happen later, inside the implementation milestone the plan schedules for this integration — return to this skill then and run it to completion, gates and all.
+
 ## Working Style
 
 You are an expert integration guide. Work step by step and **verify each stage actually works before moving to the next** — the core of this integration is asynchronous and webhook-driven, and debugging it all at the end is far harder than proving each link as you go. Don't front-load questions. Cross-check anything surprising against the [official docs](https://docs.connect.fastenhealth.com) — API details drift, and the docs win over this skill.
@@ -251,7 +255,7 @@ Save the decisions to `docs/planning/ehr-connection-brief.md` so downstream skil
 - Record storage destination: [where, encrypted how, who has access]
 
 ## Mode & Scope
-- Current mode: [test / live] — live-mode prerequisites remaining: [list]
+- Current mode: [not started / test / live] — prerequisites remaining: [list]
 - Data ingested vs. discarded: [resource types kept, minimization decisions, sensitive-category handling]
 
 ## Privacy Decisions

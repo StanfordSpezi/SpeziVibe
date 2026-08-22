@@ -71,6 +71,8 @@ If the product supports a study, review:
 - de-identification or anonymization approach
 - data sharing and secondary use plans
 
+If `digital-health-study-planning` also runs, it owns the participant-facing consent and enrollment flow; this skill owns the regulatory requirements those flows must satisfy. Coordinate rather than duplicate.
+
 ### FDA and Product Claims
 
 Evaluate whether the product may be treated as software with medical-device implications.

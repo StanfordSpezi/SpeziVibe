@@ -18,7 +18,9 @@ Generate changelogs from git history following Keep a Changelog format.
 Use this skill when you need to:
 - Generate changelog entries for a release
 - Document changes since the last version
-- Create release notes from commits
+- Maintain a project's `CHANGELOG.md` file
+
+Use `release-notes-generator` instead when you need a narrative release announcement with highlights, usage examples, and migration guidance. This skill maintains the structured `CHANGELOG.md` file; that one writes the story of a single release.
 
 ## Changelog Format
 
@@ -79,7 +81,7 @@ git log v1.0.0..HEAD --oneline
 git log --format="%h %s%n%b" HEAD~10..HEAD
 
 # Commits since a date
-git log --since="2024-01-01" --oneline
+git log --since="2026-01-01" --oneline
 ```
 
 ## Writing Guidelines
@@ -103,7 +105,7 @@ Flag API changes clearly:
 ## Output Example
 
 ```markdown
-## [1.2.0] - 2024-01-14
+## [1.2.0] - 2026-01-14
 
 ### Added
 - New health data visualization screen

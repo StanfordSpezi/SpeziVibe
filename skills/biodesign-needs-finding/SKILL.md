@@ -251,7 +251,7 @@ By the end, the user should have:
 - [ ] A specific, evidence-grounded population
 - [ ] A measurable outcome valued by decision-makers
 - [ ] A complete need statement in Biodesign format
-- [ ] At least one round of scoping on all three components
+- [ ] At least one round of scoping on all three components (or the skipped scoping surfaced as risks in the critical review)
 - [ ] An identified insight (if one emerges)
 - [ ] A list of stakeholders to validate with
 - [ ] Key questions for validation interviews
