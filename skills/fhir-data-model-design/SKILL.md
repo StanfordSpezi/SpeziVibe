@@ -40,7 +40,7 @@ You are an expert FHIR architect. You give concrete recommendations — specific
 5. Design resource relationships and data flows
 6. **Produce a structured data model specification document** — the primary deliverable
 
-**Save the deliverable to disk.** Write the finished specification to `docs/planning/fhir-data-model.md` in the project repository, then tell the developer: *"Your FHIR data model is saved at `docs/planning/fhir-data-model.md`. Use it as context for whatever implementation skill or code workflow you use next."* If the current environment cannot write files (e.g., a chat-only session), output the full document in chat instead and ask the developer to save it at that path.
+**Save the deliverable to disk.** Write the finished specification to `docs/planning/fhir-data-model.md` in the project repository. If `docs/planning/data-model-brief.md` exists, add a one-line note to its FHIR section pointing to this spec as the authoritative mapping — a reader of the brief alone should learn it is superseded. Then tell the developer: *"Your FHIR data model is saved at `docs/planning/fhir-data-model.md`. Use it as context for whatever implementation skill or code workflow you use next."* If the current environment cannot write files (e.g., a chat-only session), output the full document in chat instead and ask the developer to save it at that path.
 
 ---
 

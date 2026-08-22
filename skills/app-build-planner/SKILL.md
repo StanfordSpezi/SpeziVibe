@@ -73,7 +73,7 @@ Identify the platform and backend, if they have been chosen. In the `build-an-ap
 
 Ask:
 
-1. "Which platform are you on — React Native, Apple-native, or something else (e.g. Flutter, web, an existing repo)? Or is that still undecided?"
+1. "Which platform are you on — React Native, Apple-native, or something else (e.g. Flutter, web)? Or is that still undecided?" (For an existing repo, the answer is whatever framework the repo uses.)
 2. "Which backend are you using — Firebase, Medplum, or something else? Or is that still undecided?"
 
 Read the appropriate reference file based on the platform:
@@ -81,9 +81,11 @@ Read the appropriate reference file based on the platform:
 - React Native → read [react-native-packages.md](references/react-native-packages.md)
 - Apple-native → read [apple-native-modules.md](references/apple-native-modules.md)
 - Other platforms → skip the Spezi package/module mapping; produce a generic plan the agent can implement using whatever framework conventions apply
-- Undecided (e.g., `spezi-platform-selection` runs after this skill) → read **both** reference files, set the plan's Platform field to "To be decided", and write platform notes in dual form (e.g., "questionnaire / SpeziQuestionnaire") so the plan holds whichever way the decision goes — `spezi-platform-selection` narrows the plan to the chosen platform afterwards
+- Undecided (e.g., `spezi-platform-selection` runs after this skill) → read **both** reference files, set the plan's Platform field to "To be decided", and write platform notes in dual form (e.g., "questionnaire / SpeziQuestionnaire") so the plan holds whichever way the decision goes — the step that later establishes the platform (`spezi-platform-selection`, or the orchestrator's no-template project setup if the user opts out of a template) narrows the plan afterwards
 
 If the backend is also undecided, do not assume one — record the choice in the plan's Open Questions.
+
+For a React Native or Apple-native app that was **not** built from the Spezi template, still read the reference file, but treat each package as an adoption question rather than a given — note in the plan whether it can be added to the existing app or whether the feature needs custom implementation.
 
 ---
 

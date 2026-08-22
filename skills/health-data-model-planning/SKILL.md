@@ -57,6 +57,7 @@ When implementation starts, generally recommend reusing mature ecosystem librari
 - Swift: [apple/FHIRModels](https://github.com/apple/FHIRModels) for core FHIR resource models
 - Swift in the Spezi ecosystem: [StanfordSpezi/SpeziFHIR](https://github.com/StanfordSpezi/SpeziFHIR) for FHIR-focused Spezi integrations
 - TypeScript and Firebase in the Spezi ecosystem: [StanfordSpezi/spezi-firebase](https://github.com/StanfordSpezi/spezi-firebase), including the npm package [`@stanfordspezi/spezi-firebase-fhir`](https://www.npmjs.com/package/@stanfordspezi/spezi-firebase-fhir)
+- TypeScript with Medplum: the Medplum SDK's own FHIR types and client, plus `@spezivibe/medplum` in the Spezi React Native ecosystem
 
 If the user is already working in a concrete stack, recommend modeling choices that fit those existing libraries instead of inventing parallel abstractions.
 

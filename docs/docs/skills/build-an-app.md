@@ -53,10 +53,10 @@ AI:   Based on your description, here's the sequence I'd recommend:
       4. digital-health-ux-planning — patient and caregiver workflows
       5. app-build-planner — implementation plan with milestones
       6. spezi-platform-selection — pick React Native or Apple-native,
-         clone the matching template (when you're ready to build)
+         set up the matching template (when you're ready to build)
 
       All planning briefs land in docs/planning/. spezi-platform-selection
-      runs last and brings them into the cloned template, where your
+      runs last and brings them into the template project, where your
       coding agent will start building.
 
       Want to proceed with this order?

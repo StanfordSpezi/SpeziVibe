@@ -20,7 +20,20 @@ DESTINATION="$2"
 
 case "$PROJECT_NAME" in
   react-native)
-    REMOTE_URL="https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate"
+    # The React Native repository is a monorepo (CLI + packages + template
+    # infrastructure); apps are generated with its official CLI, not cloned.
+    npx create-spezivibe-app "$DESTINATION"
+    # The generator can exit 0 even when cancelled — trust the filesystem, not
+    # the exit code.
+    if [ ! -d "$DESTINATION" ]; then
+      echo "create-spezivibe-app did not create $DESTINATION (cancelled or failed)." >&2
+      exit 1
+    fi
+    echo ""
+    echo "Generated a SpeziVibe React Native app in $DESTINATION."
+    echo "Before pushing, create your own repository and add it as 'origin':"
+    echo "  git -C \"$DESTINATION\" remote add origin <your-repository-url>"
+    exit 0
     ;;
   apple-native)
     REMOTE_URL="https://github.com/StanfordSpezi/SpeziTemplateApplication"
@@ -41,4 +54,4 @@ echo ""
 echo "Cloned $REMOTE_URL into $DESTINATION."
 echo "The template remains available as the 'template' remote."
 echo "Before pushing, create your own repository and add it as 'origin':"
-echo "  git -C $DESTINATION remote add origin <your-repository-url>"
+echo "  git -C \"$DESTINATION\" remote add origin <your-repository-url>"

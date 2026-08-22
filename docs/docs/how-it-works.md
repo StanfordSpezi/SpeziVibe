@@ -42,10 +42,10 @@ my-planning/
    └─ implementation-plan.md
 ```
 
-After `spezi-platform-selection` clones the template and brings planning along, your project looks like:
+After `spezi-platform-selection` sets up the template (generating the app with `create-spezivibe-app` for React Native, cloning for Apple-native) and brings planning along, your project looks like:
 
 ```
-my-app/                  ← cloned Spezi template
+my-app/                  ← your Spezi template project
 ├─ docs/
 │  ├─ planning/          ← moved in from your planning directory
 │  └─ implementation-plan.md
@@ -67,7 +67,7 @@ The Spezi templates are recommended scaffolding, not a requirement. The planning
 To skip the template path:
 
 1. Run the planning skills in any working directory.
-2. Skip `spezi-platform-selection`, or run it just for the platform recommendation and clone manually into a project of your choice.
+2. Skip `spezi-platform-selection`, or run it just for the platform recommendation and set up a project of your choice manually.
 3. Open your project in your AI coding tool.
 4. Tell the agent: *"Read `docs/planning/` and `docs/implementation-plan.md`. Implement Milestone 1 in this codebase."*
 
