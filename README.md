@@ -97,7 +97,7 @@ npx skills add StanfordSpezi/SpeziVibe --skill '*' -a claude-code
 
 The fastest way to get started is to run `build-an-app`. Describe what you want to build and it figures out which planning skills you need, runs them in order, and hands the implementation plan off to your AI coding agent for the actual build. You do not need to know the individual skills or their order — the orchestrator handles that for you.
 
-If you prefer to run skills individually, here is the process they follow. Plan first; clone a Spezi template only when the plan is ready and you're set to build. Not every project needs every skill — use what fits.
+If you prefer to run skills individually, here is the process they follow. Plan first; set up a Spezi template only when the plan is ready and you're set to build. Not every project needs every skill — use what fits.
 
 ### 1. Define the Need
 
@@ -123,9 +123,9 @@ Feed your planning outputs into `app-build-planner` to get a sequenced implement
 
 Use: `app-build-planner`
 
-### 4. Choose a Platform and Clone the Template (optional)
+### 4. Choose a Platform and Set Up the Template (optional)
 
-Once the plan is in hand, decide whether the project is better suited to React Native or Apple-native, then clone the matching Spezi starter template. This skill uses your planning briefs to inform the recommendation, clones the template, and moves your `docs/planning/` and `docs/implementation-plan.md` into the cloned repo.
+Once the plan is in hand, decide whether the project is better suited to React Native or Apple-native, then set up the matching Spezi starter template — React Native apps are generated with the official `create-spezivibe-app` CLI, Apple-native clones the Spezi Template Application. This skill uses your planning briefs to inform the recommendation, sets up the template, and moves your `docs/planning/` and `docs/implementation-plan.md` into the new project.
 
 Use: `spezi-platform-selection`
 
@@ -157,7 +157,7 @@ Listed in the order they typically run.
 | `health-data-model-planning` | Shape the app's health data backbone |
 | `fhir-data-model-design` | Map clinical concepts to FHIR |
 | `app-build-planner` | Turn planning outputs into a milestone-based build plan |
-| `spezi-platform-selection` | Choose React Native or Apple-native and clone the matching Spezi starter template (optional) |
+| `spezi-platform-selection` | Choose React Native or Apple-native and set up the matching Spezi starter template (optional) |
 | `fasten-ehr-integration` | Pull patients' real EHR records into the app via Fasten Connect, with a built-in privacy walkthrough |
 | `project-wiki` | Turn your project into a compounding, AI-maintained knowledge base |
 | `keep-a-changelog-generator` | Draft changelogs people can actually read |
@@ -261,7 +261,7 @@ npx skills add StanfordSpezi/SpeziVibe --skill app-build-planner
 
 ### `spezi-platform-selection`
 
-Choose the right app foundation — helps you decide between **React Native** and **Apple-native** for a new app, clones the matching Spezi starter template, and moves your existing planning briefs into the cloned repo so the coding agent has full context.
+Choose the right app foundation — helps you decide between **React Native** and **Apple-native** for a new app, sets up the matching Spezi starter template (CLI-generated for React Native, cloned for Apple-native), and moves your existing planning briefs into the new project so the coding agent has full context.
 
 <details><summary>Install</summary>
 
