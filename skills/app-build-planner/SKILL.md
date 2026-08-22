@@ -69,11 +69,11 @@ If no planning documents are found at all, ask the user to describe the app's co
 
 ## Step 2: Confirm Platform and Backend
 
-Identify the choices made during platform selection.
+Identify the platform and backend, if they have been chosen. In the `build-an-app` flow this skill runs **before** `spezi-platform-selection`, so an undecided platform is a normal state — not a blocker.
 
 Ask:
 
-1. "Which platform are you on — React Native, Apple-native, or something else (e.g. Flutter, web, an existing repo)?"
+1. "Which platform are you on — React Native, Apple-native, or something else (e.g. Flutter, web, an existing repo)? Or is that still undecided?"
 2. "Which backend are you using — Firebase, Medplum, or something else?"
 
 Read the appropriate reference file based on the platform:
@@ -81,6 +81,9 @@ Read the appropriate reference file based on the platform:
 - React Native → read [react-native-packages.md](references/react-native-packages.md)
 - Apple-native → read [apple-native-modules.md](references/apple-native-modules.md)
 - Other platforms → skip the Spezi package/module mapping; produce a generic plan the agent can implement using whatever framework conventions apply
+- Undecided (e.g., `spezi-platform-selection` runs after this skill) → read **both** reference files, set the plan's Platform field to "To be decided", and write platform notes in dual form (e.g., "questionnaire / SpeziQuestionnaire") so the plan holds whichever way the decision goes — `spezi-platform-selection` narrows the plan to the chosen platform afterwards
+
+If the backend is also undecided, do not assume one — record the choice in the plan's Open Questions.
 
 ---
 
@@ -189,7 +192,7 @@ Generate the full implementation plan document using this format:
 |-------|-------|
 | App | [Name and one-line description] |
 | Need statement | [From biodesign-needs-finding, or "Not available"] |
-| Platform | [React Native / Apple-native / Other — specify] |
+| Platform | [React Native / Apple-native / Other — specify / To be decided] |
 | Backend | [Firebase / Medplum / Other] |
 | Study context | [Yes — brief description / No] |
 

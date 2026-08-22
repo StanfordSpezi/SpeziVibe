@@ -275,7 +275,7 @@ A living list of open questions, organized by category. When a question gets ans
 
 ## Integration with build-an-app
 
-The `build-an-app` orchestrator offers this skill at the end of its planning phase, after the project directory is in its final location (i.e., after `spezi-platform-selection` has cloned a template, if one was selected). When invoked from that flow, seed the wiki from the planning documents listed above and skip any "Understand the Project" questions the planning documents already answer.
+The `build-an-app` orchestrator offers this skill at the end of its planning phase, after the project directory is in its final location (i.e., after `spezi-platform-selection` has cloned a template, or — for projects not using a Spezi template — after the orchestrator's project setup has established where the code lives). When invoked from that flow, seed the wiki from the planning documents listed above and skip any "Understand the Project" questions the planning documents already answer.
 
 ## Guardrails
 

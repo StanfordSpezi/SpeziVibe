@@ -28,8 +28,9 @@ Reads whichever of these exist (works with whatever's available):
 - `docs/planning/data-model-brief.md`
 - `docs/planning/fhir-data-model.md`
 - `docs/planning/compliance-brief.md`
+- `docs/planning/ehr-connection-brief.md`
 
-Also needs your platform choice (React Native, Apple-native, or another framework you're using) and backend choice (Firebase, Medplum, or other). If you're not using a Spezi template, the plan still works — see [How SpeziVibe Works](/docs/how-it-works#building-without-a-spezi-template).
+Also asks for your platform choice (React Native, Apple-native, or another framework you're using) and backend choice (Firebase, Medplum, or other). If you haven't decided the platform yet — you'll pick it with `spezi-platform-selection` afterwards — the plan is written to work for either and narrowed once you choose. If you're not using a Spezi template, the plan still works — see [How SpeziVibe Works](/docs/how-it-works#building-without-a-spezi-template).
 
 ## Output
 

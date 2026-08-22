@@ -91,7 +91,8 @@ Confirm with the user before moving. If the cloned repo already contains a `docs
 After the move:
 
 1. read the cloned repository's `README.md` and any agent instruction files (`AGENTS.md`, `CLAUDE.md`) so implementation follows the template's conventions
-2. continue implementation inside the cloned repository rather than in the original planning directory
+2. if `docs/implementation-plan.md` lists its platform as "To be decided", update the Platform field to the chosen platform and trim any dual platform notes (e.g., "questionnaire / SpeziQuestionnaire") down to the chosen side
+3. continue implementation inside the cloned repository rather than in the original planning directory
 
 ## Output
 

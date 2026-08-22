@@ -48,6 +48,7 @@ From their answer, look for signals about:
 | Mentions EHR, Epic, SMART on FHIR, or interoperability | FHIR data model design is needed |
 | Mentions patients pulling in their own medical records, patient portals, MyChart, or Fasten | EHR record integration (`fasten-ehr-integration`) is needed |
 | Mentions they already have a repo or project | Skip platform selection |
+| Mentions a framework outside the Spezi templates (Flutter, Kotlin, web, etc.) or says they don't want a starter template | Skip platform selection — they'll build with their own framework (see Step 4) |
 | Mentions they already have designs or wireframes | UX planning may be lighter or skippable |
 | Says "I don't know where to start" or describes a vague idea | Needs-finding would help |
 
@@ -68,7 +69,7 @@ Based on what you heard, assemble a plan from the available skills. Every skill 
 | Skill | Include when |
 |-------|-------------|
 | `biodesign-needs-finding` | User is unsure about the problem, has a vague idea, or asks for help scoping |
-| `spezi-platform-selection` | User does not already have a project repo — runs last to choose React Native or Apple-native, clone the matching template, and move the planning briefs into it |
+| `spezi-platform-selection` | User does not already have a project repo **and** wants to start from a Spezi template — runs last to choose React Native or Apple-native, clone the matching template, and move the planning briefs into it. Users who prefer another framework skip it; Step 4 sets up their project instead |
 | `digital-health-ux-planning` | User does not already have designs or wireframes |
 | `health-data-model-planning` | App stores or processes health data (vitals, assessments, patient records) |
 | `fhir-data-model-design` | App needs FHIR interoperability or connects to EHRs |
@@ -78,7 +79,7 @@ Based on what you heard, assemble a plan from the available skills. Every skill 
 | `app-build-planner` | Always — produces the implementation plan that drives the build |
 | `project-wiki` | User wants a persistent knowledge base that grows with the project — also offered at the end of planning (Step 4) even if not selected here |
 
-Present the plan as a short numbered list with one line per skill explaining what it does. Then ask:
+Present the plan as a short numbered list with one line per skill explaining what it does. If the plan includes `spezi-platform-selection`, note that the templates are optional — the user can build with whatever framework they want, and if they'd rather not use a Spezi template, drop that step (Step 4 will set up their project instead). Then ask:
 
 > "Does this look right, or would you add or remove anything?"
 
@@ -119,6 +120,10 @@ Run skills in this order (skipping any that were not selected):
 
 `spezi-platform-selection` runs last (when the user is ready to build). It uses the planning briefs to recommend a platform, clones the matching Spezi template, and moves the existing `docs/planning/` and `docs/implementation-plan.md` into the cloned repo so the coding agent has full context.
 
+If the user is **not** using a Spezi template, there is no clone step — the planning briefs and implementation plan are framework-agnostic, and Step 4 sets up the project with the user's chosen framework instead.
+
+`fasten-ehr-integration` is part planning, part implementation — its full deliverable is a working, tested integration. When the app does not exist yet, run it at this point for the developer-account setup and the privacy/architecture decisions that produce `docs/planning/ehr-connection-brief.md`, and let `app-build-planner` schedule the working integration as a milestone; return to the skill during that milestone to build and verify the integration inside the actual project.
+
 Between each skill, ask: "Ready to move on, or do you want to adjust anything?"
 
 ---
@@ -127,12 +132,23 @@ Between each skill, ask: "Ready to move on, or do you want to adjust anything?"
 
 Run this step only after **all** selected skills have completed. In particular, if `spezi-platform-selection` was selected, it must run before building starts — implementation happens inside the cloned template, not in the planning directory.
 
+### Set up the project (no-template path)
+
+If the user is **not** using a Spezi template, establish where the code will live before building starts:
+
+- **Existing repo** — build there. If the planning documents were produced in a different directory, move `docs/planning/` and `docs/implementation-plan.md` into the repo (confirm before moving; merge if `docs/planning/` already exists).
+- **No repo yet** — scaffold a new project with the standard tooling for the user's chosen framework (e.g., `npx create-expo-app`, `flutter create`, `npm create vite@latest`, a blank Xcode project), then move `docs/planning/` and `docs/implementation-plan.md` into it. Read the scaffold's README and any agent instruction files so implementation follows its conventions.
+
+Either way, implementation happens inside that project directory, not the bare planning directory. Without a template the user gives up the pre-wired Spezi scaffolding (onboarding/consent flows, HealthKit integration, FHIR mappings), so expect the plan's milestones to involve more custom implementation — `app-build-planner` already flags this when the platform is "other".
+
+### Summarize and hand off
+
 Summarize everything that was produced — only list documents that were actually created:
 
 ```
 Here's what we have:
 
-Project: [cloned template path, or the current directory if no template was cloned]
+Project: [the cloned template path, the user's existing repo, or the newly scaffolded project]
 
 Planning documents:
   [list only the docs that were created]
@@ -157,6 +173,7 @@ When the user is ready to build, read `docs/implementation-plan.md`, find Milest
 ## Guardrails
 
 - **Every skill is optional except `app-build-planner`.** Include skills based on what the user described, not a fixed checklist.
+- **Templates are optional.** The Spezi templates are the fast path, not a requirement. If the user wants a different framework (Flutter, Kotlin, web, anything else), skip `spezi-platform-selection` and set up their project in Step 4 — the planning briefs and implementation plan work in any codebase.
 - **Do not front-load questions.** Start with "What do you want to build?" and ask at most one follow-up.
 - **When in doubt, include it in the plan.** If you're not sure whether a skill is needed, propose it and let the user remove it. It's easier to drop a step than to discover you missed one.
 - **Respect the user's pace.** Let them review and adjust after each skill completes. Do not auto-advance without checking.
