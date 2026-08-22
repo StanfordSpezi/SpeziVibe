@@ -100,6 +100,8 @@ Work through the selected skills in the order below. For each one:
 3. After completion, verify the output was saved to the correct path
 4. Briefly summarize what was produced before moving on
 
+Two conventions apply throughout. Output paths are relative to the current working directory — until Step 4 (or `spezi-platform-selection`) establishes the project, the working directory stands in for the "project repository" the skills mention. And when a skill asks questions the user already answered earlier in the flow, carry those answers forward instead of re-asking.
+
 ### Execution order and output paths
 
 All planning skills run **before** `spezi-platform-selection`, so the user is not committed to a platform until the plan is in hand.
@@ -137,13 +139,19 @@ Run this step only after **all** selected skills have completed. In particular, 
 If the user is **not** using a Spezi template, establish where the code will live before building starts:
 
 - **Existing repo** — build there. If the planning documents were produced in a different directory, move `docs/planning/` and `docs/implementation-plan.md` into the repo (confirm before moving; merge if `docs/planning/` already exists).
-- **No repo yet** — scaffold a new project with the standard tooling for the user's chosen framework (e.g., `npx create-expo-app`, `flutter create`, `npm create vite@latest`, a blank Xcode project), then move `docs/planning/` and `docs/implementation-plan.md` into it. Read the scaffold's README and any agent instruction files so implementation follows its conventions.
+- **No repo yet** — ask where the project should live (a sibling directory of the planning directory, named after the app, is a good default), scaffold it with the standard tooling for the user's chosen framework (e.g., `npx create-expo-app`, `flutter create`, `npm create vite@latest`, a blank Xcode project), then move `docs/planning/` and `docs/implementation-plan.md` into it. Read the scaffold's README and any agent instruction files so implementation follows its conventions, initialize a git repository if the tooling didn't, and install dependencies before the build starts.
 
-Either way, implementation happens inside that project directory, not the bare planning directory. Without a template the user gives up the pre-wired Spezi scaffolding (onboarding/consent flows, HealthKit integration, FHIR mappings), so expect the plan's milestones to involve more custom implementation — `app-build-planner` already flags this when the platform is "other".
+After the move, clear out the emptied `docs/` directory left behind in the planning directory. Either way, implementation happens inside that project directory, not the bare planning directory. Without a template the user gives up the pre-wired Spezi scaffolding (onboarding/consent flows, HealthKit integration, FHIR mappings), so expect the plan's milestones to involve more custom implementation — `app-build-planner` already flags this when the platform is "other".
 
 ### Summarize and hand off
 
-Summarize everything that was produced — only list documents that were actually created:
+If `project-wiki` was not already run, offer it once before summarizing:
+
+> "Would you like to set up a project wiki to keep accumulating knowledge as you build? It seeds from your planning documents and grows as you add interviews, papers, and clinical observations."
+
+If the user accepts, run the `project-wiki` skill (read its SKILL.md and follow its instructions), then return here.
+
+Then summarize everything that was produced — only list documents that were actually created:
 
 ```
 Here's what we have:
@@ -159,12 +167,6 @@ Implementation plan:
 
 Ready to start building Milestone 1?
 ```
-
-If `project-wiki` was not already run, offer it once before the build starts:
-
-> "Would you like to set up a project wiki to keep accumulating knowledge as you build? It seeds from your planning documents and grows as you add interviews, papers, and clinical observations."
-
-If the user accepts, run the `project-wiki` skill (read its SKILL.md and follow its instructions), then return here.
 
 When the user is ready to build, read `docs/implementation-plan.md`, find Milestone 1, and begin implementing it.
 

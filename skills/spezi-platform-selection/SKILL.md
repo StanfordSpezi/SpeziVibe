@@ -70,7 +70,7 @@ Make sure the user is clear whether they want:
 
 ## Clone The Selected Template
 
-Use the bundled clone helper instead of writing ad hoc clone commands:
+Ask the user where the project should live — a sibling directory of the planning directory, named after the app, is a good default. Then use the bundled clone helper instead of writing ad hoc clone commands:
 
 - React Native: `scripts/clone-template.sh react-native <destination>`
 - Apple-native: `scripts/clone-template.sh apple-native <destination>`
@@ -82,16 +82,20 @@ The helper renames the clone's `origin` remote to `template`, so the user cannot
 If the current working directory contains a `docs/planning/` directory or a `docs/implementation-plan.md` produced by the other planning skills, **move them into the cloned repository** so the coding agent picks up the full plan from the right place:
 
 ```bash
+mkdir -p <destination>/docs
 mv docs/planning <destination>/docs/planning
 mv docs/implementation-plan.md <destination>/docs/implementation-plan.md
+rmdir docs 2>/dev/null || true
 ```
+
+The `mkdir -p` matters — the templates do not necessarily ship a `docs/` directory, and `mv` fails without the parent. The trailing `rmdir` clears the emptied `docs/` left behind in the planning directory.
 
 Confirm with the user before moving. If the cloned repo already contains a `docs/planning/` directory, merge rather than overwrite.
 
 After the move:
 
 1. read the cloned repository's `README.md` and any agent instruction files (`AGENTS.md`, `CLAUDE.md`) so implementation follows the template's conventions
-2. if `docs/implementation-plan.md` lists its platform as "To be decided", update the Platform field to the chosen platform and trim any dual platform notes (e.g., "questionnaire / SpeziQuestionnaire") down to the chosen side
+2. if `docs/implementation-plan.md` lists its platform as "To be decided", update the Platform field to the chosen platform, trim any dual platform notes (e.g., "questionnaire / SpeziQuestionnaire") down to the chosen side — including in the Feature List's Packages/Modules column — and remove the now-resolved platform question from Open Questions
 3. continue implementation inside the cloned repository rather than in the original planning directory
 
 ## Output

@@ -74,7 +74,7 @@ Identify the platform and backend, if they have been chosen. In the `build-an-ap
 Ask:
 
 1. "Which platform are you on — React Native, Apple-native, or something else (e.g. Flutter, web, an existing repo)? Or is that still undecided?"
-2. "Which backend are you using — Firebase, Medplum, or something else?"
+2. "Which backend are you using — Firebase, Medplum, or something else? Or is that still undecided?"
 
 Read the appropriate reference file based on the platform:
 
@@ -124,7 +124,7 @@ Also extract separately:
 
 ## Step 4: Map to Packages and Modules
 
-For each extracted feature, identify which pre-built packages (React Native) or modules (Apple-native) can be used.
+For each extracted feature, identify which pre-built packages (React Native) or modules (Apple-native) can be used. For platforms outside the Spezi ecosystem, skip the mapping (per Step 2) and note the relative effort of each feature as custom implementation instead.
 
 Use the reference files:
 
@@ -193,7 +193,7 @@ Generate the full implementation plan document using this format:
 | App | [Name and one-line description] |
 | Need statement | [From biodesign-needs-finding, or "Not available"] |
 | Platform | [React Native / Apple-native / Other — specify / To be decided] |
-| Backend | [Firebase / Medplum / Other] |
+| Backend | [Firebase / Medplum / Other / To be decided — see Open Questions] |
 | Study context | [Yes — brief description / No] |
 
 ## Planning Inputs
@@ -237,7 +237,7 @@ Generate the full implementation plan document using this format:
 
 ## Data Model Integration
 
-[Map each data entity from the planning phase to the milestone where it gets implemented.]
+[Map each data entity from the planning phase to the milestone where it gets implemented. If no data-model planning was run, replace the table with a one-line note naming the gap.]
 
 | Entity | FHIR Resource | Milestone | Notes |
 |--------|--------------|-----------|-------|
@@ -245,7 +245,7 @@ Generate the full implementation plan document using this format:
 
 ## Compliance Integration
 
-[Map each compliance control to the milestone where it gets addressed.]
+[Map each compliance control to the milestone where it gets addressed. If no compliance planning was run, replace the table with a one-line note naming the gap.]
 
 | Control | Milestone | How |
 |---------|-----------|-----|
