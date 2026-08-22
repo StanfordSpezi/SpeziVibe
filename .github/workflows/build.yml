@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check skill structure
+      - name: Check skill structure and frontmatter
         run: |
           status=0
           for dir in skills/*/; do
@@ -47,6 +47,45 @@ jobs:
             if [ ! -f "$dir/SKILL.md" ]; then
               echo "::error::$skill is missing SKILL.md"
               status=1
+              continue
+            fi
+            name=$(awk '/^---$/{n++; next} n==1 && /^name:/{sub(/^name:[[:space:]]*/, ""); print; exit}' "$dir/SKILL.md")
+            description=$(awk '/^---$/{n++; next} n==1 && /^description:/{sub(/^description:[[:space:]]*/, ""); print; exit}' "$dir/SKILL.md")
+            if [ "$name" != "$skill" ]; then
+              echo "::error::$skill/SKILL.md frontmatter name is '$name' but the directory is '$skill'"
+              status=1
+            fi
+            if [ -z "$description" ]; then
+              echo "::error::$skill/SKILL.md frontmatter is missing a description"
+              status=1
             fi
           done
           exit $status
+      - name: Check docs pages stay in sync with skills
+        run: |
+          status=0
+          for dir in skills/*/; do
+            skill=$(basename "$dir")
+            if [ ! -f "docs/docs/skills/$skill.md" ]; then
+              echo "::error::$skill has no docs page at docs/docs/skills/$skill.md"
+              status=1
+            fi
+            if ! grep -q "skills/$skill" docs/sidebars.js; then
+              echo "::error::$skill is not listed in docs/sidebars.js"
+              status=1
+            fi
+          done
+          for page in docs/docs/skills/*.md; do
+            skill=$(basename "$page" .md)
+            if [ ! -d "skills/$skill" ]; then
+              echo "::error::$page has no matching skill directory"
+              status=1
+            fi
+          done
+          exit $status
+      - name: Check AGENTS.md and CLAUDE.md are identical
+        run: |
+          if ! diff -u AGENTS.md CLAUDE.md; then
+            echo "::error::AGENTS.md and CLAUDE.md have diverged — keep them identical"
+            exit 1
+          fi
