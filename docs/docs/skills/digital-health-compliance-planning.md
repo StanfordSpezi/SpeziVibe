@@ -1,8 +1,9 @@
 ---
 sidebar_position: 5
+description: Identify privacy and compliance questions, proposed controls, and decisions to review.
 ---
 
-# digital-health-compliance-planning
+# Plan for privacy and compliance
 
 :::tip Install this skill
 
@@ -10,7 +11,7 @@ sidebar_position: 5
 npx skills add StanfordSpezi/SpeziVibe --skill digital-health-compliance-planning
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 

@@ -5,29 +5,29 @@ slug: /how-it-works
 
 # How SpeziVibe Works
 
-SpeziVibe is a set of installable **planning skills** that walk you through the decisions a digital health app needs — clinical need, compliance, data model, UX, study design — and produce a folder of structured markdown briefs.
+SpeziVibe gives your AI coding tool reusable **skills** for digital health development. Start with `build-an-app`: describe your idea, agree on the planning steps that fit, and review the results as you go.
 
-When the plan is ready, your AI coding agent reads those briefs and writes the code inside a Spezi template repo.
+When the plan is ready, your AI coding agent reads those briefs and writes the code in your existing project or a Spezi starter template.
 
 ## The Workflow
 
 1. **Plan first.** Open your AI coding tool in any working directory and run the planning skills. They ask you questions and write briefs into `docs/planning/`. Run only the ones that fit your project — `build-an-app` can orchestrate the right ones based on what you describe.
 2. **Sequence the build.** `app-build-planner` reads the briefs and produces `docs/implementation-plan.md` — a milestone-by-milestone build plan.
-3. **Choose a platform and clone the template.** `spezi-platform-selection` picks **React Native** or **Apple-native** based on what your planning revealed, clones the matching Spezi template, and brings your planning docs along so they're inside the cloned repo.
-4. **Build, one milestone at a time.** Inside the template project, tell your coding agent: *"Implement Milestone 1 from `docs/implementation-plan.md`."* It uses your planning briefs as context and the template's existing patterns as scaffolding to write the code.
+3. **Choose your project foundation.** Use an existing codebase, set up a project in your chosen framework, or run the optional `spezi-platform-selection` skill to choose a **React Native** or **Apple-native** Spezi starter. Make sure the planning documents are inside the project before building.
+4. **Build, one milestone at a time.** Inside your project, tell your coding agent: *"Implement Milestone 1 from `docs/implementation-plan.md`."* It uses your planning briefs and the project's existing patterns to write the code.
 5. **Ship.** Generate changelogs and release notes. Maintain a `project-wiki` of accumulated knowledge as the project grows.
 
 ## Mental Model
 
 > The planning skills produce the **brief**. Your coding agent produces the **code**.
 
-The briefs are the bridge — clear, structured decisions an agent can ground itself in instead of guessing. The Spezi template gives the agent battle-tested architecture, modules, and patterns to build on top of.
+The briefs record decisions your agent can refer to while building. A Spezi starter can also provide modules and project patterns for your chosen platform.
 
-You don't clone the template until you're ready to build. Planning is platform-agnostic on purpose — a need statement, compliance brief, or FHIR data model shouldn't change based on whether you eventually pick React Native or Apple-native.
+You can plan before choosing a framework. Once you choose, review the implementation plan with your agent and resolve any platform-specific tasks or open questions.
 
 ## Where Files Live
 
-Before cloning, briefs live in your working directory:
+Briefs live in the folder where you run the skills. This is an illustrative set; your project only needs the documents from the skills you use:
 
 ```
 my-planning/
@@ -42,15 +42,14 @@ my-planning/
    └─ implementation-plan.md
 ```
 
-After `spezi-platform-selection` sets up the template (generating the app with `create-spezivibe-app` for React Native, cloning for Apple-native) and brings planning along, your project looks like:
+When the app project is ready, keep those documents alongside its code. The source folders vary by framework:
 
 ```
-my-app/                  ← your Spezi template project
+my-app/                  ← your app project
 ├─ docs/
-│  ├─ planning/          ← moved in from your planning directory
+│  ├─ planning/          ← your reviewed briefs
 │  └─ implementation-plan.md
-├─ src/                  ← your agent writes code here
-└─ ...                   ← template scaffolding
+└─ ...                   ← application source and configuration
 ```
 
 Commit `docs/planning/` and `docs/implementation-plan.md` to source control. The agent — and future contributors — will keep coming back to them.
@@ -67,11 +66,12 @@ The Spezi templates are recommended scaffolding, not a requirement. The planning
 To skip the template path:
 
 1. Run the planning skills in any working directory.
-2. Skip `spezi-platform-selection`, or run it just for the platform recommendation and set up a project of your choice manually.
-3. Open your project in your AI coding tool.
-4. Tell the agent: *"Read `docs/planning/` and `docs/implementation-plan.md`. Implement Milestone 1 in this codebase."*
+2. Ask your agent to use your existing project or scaffold one in your chosen framework. Skip `spezi-platform-selection`.
+3. If you planned in another folder, bring `docs/planning/` and `docs/implementation-plan.md` into the app project. Review any existing files before merging them.
+4. Open that project in your AI coding tool. Resolve the plan’s platform choice and any tasks that still assume a Spezi template.
+5. Tell the agent: *"Read `docs/planning/` and `docs/implementation-plan.md`. Review the open questions with me, then implement the first agreed milestone in this codebase."*
 
-Your agent uses the briefs as context and writes code in whatever stack you're working in. You give up the Spezi-specific scaffolding — pre-wired onboarding/consent flows, HealthKit integration, FHIR mappings, design tokens — and your agent will rebuild those from scratch (or skip them). The trade is more flexibility for more work.
+Your agent uses the briefs as context and works within your chosen stack. Features that a Spezi module would provide may need another library or custom implementation; account for that in the plan.
 
 **When this makes sense:**
 
@@ -80,14 +80,20 @@ Your agent uses the briefs as context and writes code in whatever stack you're w
 - You want full control over architecture decisions
 - You're prototyping and don't need production-grade scaffolding yet
 
-When in doubt, use a template. It's the faster path to a working app.
+If you’re unsure which foundation fits, compare the options with [spezi-platform-selection](skills/spezi-platform-selection).
 
 ## Why Stop at Markdown?
 
-The planning skills deliberately don't generate code. A milestone in `implementation-plan.md` might say:
+The planning skills focus on decisions and documents. Other skills, such as `fasten-ehr-integration`, also work on implementation. A milestone in `implementation-plan.md` might say:
 
 > *Build a medication list view that reads from Firestore, follows the design tokens in the Spezi template, and handles offline cache.*
 
 That's specific enough for a modern AI coding agent to execute, and flexible enough that it can adapt to your team's conventions, evolving requirements, and new Spezi modules as they ship.
 
-Code generators get stale. A precise plan + a smart agent + a maintained template stays current.
+Keep the plan current as you learn. After each milestone, verify the result and update decisions that changed.
+
+## Working in Browser Chat
+
+The [workshop](/workshop) also supports planning in browser chat without installing skills. The chat needs the skill instructions and any earlier briefs. Review the result, then save each Markdown document at the path shown in the workshop.
+
+When you’re ready to build, [prepare a coding tool](/docs/getting-started), put the saved documents in your app project, and use the workshop’s build handoff prompt. Browser chat does not create a working project on your machine.

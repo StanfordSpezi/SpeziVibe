@@ -1,8 +1,9 @@
 ---
 sidebar_position: 8
+description: Turn planning briefs into implementation milestones, tasks, and verification criteria.
 ---
 
-# app-build-planner
+# Create an implementation plan
 
 :::tip Install this skill
 
@@ -10,7 +11,7 @@ sidebar_position: 8
 npx skills add StanfordSpezi/SpeziVibe --skill app-build-planner
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 
@@ -88,4 +89,4 @@ AI:   I've read your planning docs. Here's a proposed milestone
 
 ## Next Step
 
-Open `docs/implementation-plan.md` in your AI coding tool and ask the agent to build Milestone 1. Each milestone has a goal, tasks, and verification criteria — structured so the agent can execute sequentially. Build, verify, commit, repeat.
+Review `docs/implementation-plan.md`, resolve any open platform decisions, and make sure it and your briefs are inside the app project. If you need help setting up that project, resume with [build-an-app](build-an-app). Then ask your coding agent to implement the first agreed milestone and verify its result before continuing.

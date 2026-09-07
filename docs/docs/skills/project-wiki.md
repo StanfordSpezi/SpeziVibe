@@ -1,8 +1,9 @@
 ---
 sidebar_position: 10
+description: Keep project evidence, decisions, and open questions in a shared Markdown knowledge base.
 ---
 
-# project-wiki
+# Maintain a project wiki
 
 :::tip Install this skill
 
@@ -10,7 +11,7 @@ sidebar_position: 10
 npx skills add StanfordSpezi/SpeziVibe --skill project-wiki
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 

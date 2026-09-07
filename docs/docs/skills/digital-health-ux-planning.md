@@ -1,8 +1,9 @@
 ---
 sidebar_position: 3
+description: Plan user journeys, onboarding, and everyday workflows for your digital health app.
 ---
 
-# digital-health-ux-planning
+# Plan the user experience
 
 :::tip Install this skill
 
@@ -10,7 +11,7 @@ sidebar_position: 3
 npx skills add StanfordSpezi/SpeziVibe --skill digital-health-ux-planning
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 

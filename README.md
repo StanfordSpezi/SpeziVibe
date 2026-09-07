@@ -31,7 +31,7 @@ This work supports the broader [Stanford Spezi](https://github.com/StanfordSpezi
 Install all skills into your coding agent with a single command:
 
 ```bash
-npx skills add StanfordSpezi/SpeziVibe --all
+npx skills add StanfordSpezi/SpeziVibe --skill '*'
 ```
 
 Or list them first to see what is available:
@@ -84,7 +84,7 @@ We use the [skills](https://github.com/vercel-labs/skills) tool for installing a
 Install every skill from this repository:
 
 ```bash
-npx skills add StanfordSpezi/SpeziVibe --all
+npx skills add StanfordSpezi/SpeziVibe --skill '*'
 ```
 
 If you want to target a specific agent, add `-a claude-code`, `-a codex`, or another supported agent:

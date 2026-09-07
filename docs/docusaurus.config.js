@@ -5,8 +5,8 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'SpeziVibe',
-  tagline: 'Vibe Code Digital Health Apps',
-  favicon: 'https://raw.githubusercontent.com/StanfordSpezi/SpeziVibe/main/assets/rocket-logo.png',
+  tagline: 'Plan and build digital health apps with AI',
+  favicon: 'img/rocket-logo.png',
 
   future: {
     v4: true,
@@ -22,7 +22,7 @@ const config = {
 
   markdown: {
     hooks: {
-      onBrokenMarkdownLinks: 'warn',
+      onBrokenMarkdownLinks: 'throw',
     },
   },
 
@@ -51,7 +51,7 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      image: 'https://raw.githubusercontent.com/StanfordSpezi/SpeziVibe/main/assets/rocket-logo.png',
+      image: 'img/rocket-logo.png',
       colorMode: {
         disableSwitch: false,
         respectPrefersColorScheme: true,
@@ -60,14 +60,13 @@ const config = {
         title: 'SpeziVibe',
         logo: {
           alt: 'SpeziVibe Logo',
-          src: 'https://raw.githubusercontent.com/StanfordSpezi/SpeziVibe/main/assets/rocket-logo.png',
+          src: 'img/rocket-logo.png',
         },
         items: [
           {
-            type: 'docSidebar',
-            sidebarId: 'docsSidebar',
+            to: '/docs/skills',
+            label: 'Skills',
             position: 'left',
-            label: 'Docs',
           },
           {
             to: '/workshop',
@@ -84,6 +83,12 @@ const config = {
             label: 'GitHub',
             position: 'right',
           },
+          {
+            to: '/docs/getting-started',
+            position: 'right',
+            label: 'Get started',
+            className: 'navbar-get-started',
+          },
         ],
       },
       footer: {
@@ -95,6 +100,10 @@ const config = {
               {
                 label: 'Getting Started',
                 to: '/docs/getting-started',
+              },
+              {
+                label: 'How it works',
+                to: '/docs/how-it-works',
               },
               {
                 label: 'Skills',

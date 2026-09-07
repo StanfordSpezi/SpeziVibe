@@ -1,0 +1,38 @@
+// Source: https://github.com/StanfordSpezi/Spezi/blob/main/CONTRIBUTORS.md
+// SPDX-FileCopyrightText: 2022 Stanford University and the project authors
+// SPDX-License-Identifier: MIT
+
+export const SPEZI_CONTRIBUTORS = [
+  {name: 'Oliver Aalami', github: 'aalami5'},
+  {name: 'Arkadiusz Bachorski', github: 'arkadiuszbachorski'},
+  {name: 'Andreas Bauer', github: 'bauer-andreas'},
+  {name: 'Vicky Bikia', github: 'Vicbi'},
+  {name: 'Eldi Cano', github: 'eldcn'},
+  {name: 'Joan Disho', github: 'jdisho'},
+  {name: 'Paul Goldschmidt', github: 'PaulGoldschmidt'},
+  {name: 'Michael Heckmann', github: 'michaelheckmann'},
+  {name: 'Paul Heidekrüger', github: 'paulhdk'},
+  {name: 'Warren Hiemstra', github: 'srcWarren'},
+  {name: 'Matthew Jörke', github: 'mjoerke'},
+  {name: 'Thomas Kaar', github: 'ThomasKaar'},
+  {name: 'Palle Klewitz', github: 'palle-k'},
+  {name: 'Lukas Kollmer', github: 'lukaskollmer'},
+  {name: 'Paul Johannes Kraft', github: 'pauljohanneskraft'},
+  {name: 'Caitlin Kunchur', github: 'ckunchur'},
+  {name: 'Patrick Langer', github: 'RealLast'},
+  {name: 'Sébastien Letzelter', github: 'Seb-Ltz'},
+  {name: 'Nikolai Madlener', github: 'NikolaiMadlener'},
+  {name: 'Ricky Mutschlechner', github: 'WowSuchRicky'},
+  {name: 'Philipp Nagy', github: 'phnagy'},
+  {name: 'Leon Nissen', github: 'LeonNissen'},
+  {name: 'Adrit Rao', github: 'AdritRao'},
+  {name: 'Vishnu Ravi', github: 'vishnuravi'},
+  {name: 'Nick Riedman', github: 'nriedman'},
+  {name: 'Max Rosenblattl', github: 'max-rosenblattl'},
+  {name: 'Felix Schlegel', github: 'felixschlegel'},
+  {name: 'Paul Schmiedmayer', github: 'PSchmiedmayer'},
+  {name: 'Kilian Schneider', github: 'Basler182'},
+  {name: 'Matthew Turk', github: 'MatthewTurk247'},
+  {name: 'Philipp Zagar', github: 'philippzagar'},
+  {name: 'Aydin Zahedivash', github: 'aydinzahedi'},
+];
