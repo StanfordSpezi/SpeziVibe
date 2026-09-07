@@ -68,7 +68,7 @@ export default function Home() {
             <Link to="/docs/getting-started" className="btn-primary">Get started <span aria-hidden="true">→</span></Link>
             <Link to="/workshop" className="btn-secondary">Explore the workshop</Link>
           </div>
-          <p className="hero-note">From <Link to="/framework">Stanford Spezi</Link> <span aria-hidden="true">·</span> Free & open source</p>
+          <p className="hero-note">From <a href="https://bdh.stanford.edu">Stanford Biodesign Digital Health</a> <span aria-hidden="true">·</span> Free & open source (MIT)</p>
         </div>
         <HeroScene />
         <a className="hero-scroll" href="#how-it-works">An idea worth building <span aria-hidden="true">↓</span></a>

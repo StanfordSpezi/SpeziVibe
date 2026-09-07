@@ -98,6 +98,14 @@ const config = {
       },
       footer: {
         style: 'dark',
+        logo: {
+          alt: 'Stanford Mussallem Center for Biodesign',
+          src: 'img/biodesign-footer-dark.png',
+          href: 'https://biodesign.stanford.edu',
+          width: 1913,
+          height: 275,
+          className: 'biodesign-footer-logo',
+        },
         links: [
           {
             title: 'Learn',
@@ -167,7 +175,6 @@ const config = {
             ],
           },
         ],
-        copyright: `Built by Stanford Mussallem Center for Biodesign. MIT License.`,
       },
       prism: {
         theme: prismThemes.github,

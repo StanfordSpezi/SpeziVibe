@@ -204,6 +204,32 @@ body {
   font-size: 0.92rem;
 }
 
+.footer__bottom a:has(.biodesign-footer-logo) {
+  display: inline-block;
+  max-width: 100%;
+  opacity: 1;
+}
+
+/* The official banner has transparent space to the right of the wordmark.
+   Show the left portion while keeping its original proportions and clear space.
+   Both site themes use a dark footer, so both use the official white artwork. */
+.footer__logo.biodesign-footer-logo {
+  display: block;
+  width: 260px;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 440 / 275;
+  object-fit: cover;
+  object-position: left;
+  margin-top: 0;
+}
+
+.footer__bottom a:has(.biodesign-footer-logo):focus-visible {
+  outline: 2px solid #ff9c7b;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
 /* -- Docs: keep the protocol voice inside the documentation -------------- */
 
 .markdown h1,
