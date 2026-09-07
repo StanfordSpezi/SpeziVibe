@@ -1,5 +1,6 @@
 import React from 'react';
 import Layout from '@theme/Layout';
+import Link from '@docusaurus/Link';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import {SPEZI_CONTRIBUTORS} from '../data/speziContributors';
 
@@ -52,7 +53,7 @@ export default function About() {
         <div className="section-main">
           <h1>Good ideas should reach patients faster</h1>
           <p className="prose">
-            Stanford Spezi is an open-source digital health ecosystem housed at Stanford Biodesign.
+            <Link to="/framework">Stanford Spezi</Link> is an open-source digital health ecosystem housed at Stanford Biodesign.
             SpeziVibe is our toolkit for turning clinical needs into working apps with AI.
           </p>
         </div>

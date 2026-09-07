@@ -3,6 +3,9 @@ import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import CopyBlock from '../components/CopyBlock';
 import HeroScene from '../components/HeroScene';
+import SpeziScreens from '../components/SpeziScreens';
+import SpeziProjectCards from '../components/SpeziProjectCards';
+import {SPEZI_PROJECTS} from '../data/speziFramework';
 
 const INSTALL_CMD = "npx skills add StanfordSpezi/SpeziVibe --skill '*'";
 const FIRST_PROMPT = 'I want to build a medication tracker for post-transplant patients. Use the build-an-app skill to walk me through it.';
@@ -65,7 +68,7 @@ export default function Home() {
             <Link to="/docs/getting-started" className="btn-primary">Get started <span aria-hidden="true">→</span></Link>
             <Link to="/workshop" className="btn-secondary">Explore the workshop</Link>
           </div>
-          <p className="hero-note">From Stanford Spezi <span aria-hidden="true">·</span> Free & open source</p>
+          <p className="hero-note">From <Link to="/framework">Stanford Spezi</Link> <span aria-hidden="true">·</span> Free & open source</p>
         </div>
         <HeroScene />
         <a className="hero-scroll" href="#how-it-works">An idea worth building <span aria-hidden="true">↓</span></a>
@@ -101,42 +104,26 @@ export default function Home() {
         <Link className="text-link" to="/docs/how-it-works">See the full workflow <span aria-hidden="true">→</span></Link>
       </Section>
 
-      <Section id="example" label="An idea in motion">
+      <Section id="spezi" label="The foundation">
+        <div className="spezi-home-intro">
+          <div>
+            <h2 className="title" id="spezi-title">Build on Spezi.</h2>
+            <p className="prose">Spezi provides the building blocks for digital health apps. SpeziVibe helps you plan and build with AI.</p>
+            <p className="spezi-home-detail">Combine reusable Swift modules for accounts, consent, questionnaires, connected devices, and more in your Apple-native app.</p>
+            <Link to="/framework" className="text-link">Explore the framework <span aria-hidden="true">→</span></Link>
+          </div>
+          <SpeziScreens />
+        </div>
+        <p className="framework-note">Building on another platform? SpeziVibe’s planning skills work with other frameworks, too.</p>
+      </Section>
+
+      <Section id="built-with-spezi" label="In practice">
         <div className="section-heading-row">
-          <h2 className="title" id="example-title">See what a plan<br />can become.</h2>
-          <span className="example-label">Illustrative concept</span>
+          <h2 className="title" id="built-with-spezi-title">Built with Spezi.</h2>
+          <Link to="/framework#built-with-spezi" className="text-link">See all projects <span aria-hidden="true">→</span></Link>
         </div>
-        <p className="prose">One medication-tracking idea, from the question that starts it to a screen you could build.</p>
-        <div className="example-journey">
-          <div className="example-need">
-            <p className="example-kicker">01 / The need</p>
-            <blockquote>“Did I take my morning medication?”</blockquote>
-            <p>Help people keep track of their daily routine, without adding another thing to remember.</p>
-            <span className="example-connector" aria-hidden="true">→</span>
-          </div>
-          <div className="example-plan">
-            <p className="example-kicker">02 / The planning brief</p>
-            <h3>A calmer daily check-in.</h3>
-            <dl>
-              <div><dt>For whom</dt><dd>People managing a daily medication routine.</dd></div>
-              <div><dt>First milestone</dt><dd>A daily list, a way to record a dose, and a clear history.</dd></div>
-              <div><dt>Decisions to resolve</dt><dd>Reminders, data storage, and who can see the record.</dd></div>
-            </dl>
-          </div>
-          <div className="example-app">
-            <p className="example-kicker">03 / A possible experience</p>
-            <div className="concept-screen" role="img" aria-label="Illustrative medication tracker screen. Today, one of two medications recorded. Morning medication recorded at 8:04 AM. Evening medication not yet recorded.">
-              <div className="concept-brand"><span aria-hidden="true">✳</span> Day by day <span className="concept-avatar">J</span></div>
-              <p className="concept-date">YOUR DAILY CHECK-IN</p>
-              <p className="concept-title">A little more<br />peace of mind.</p>
-              <div className="concept-progress"><span>Today</span><strong>1 of 2 recorded</strong><div><i /></div></div>
-              <div className="concept-medication"><span className="concept-check">✓</span><div><strong>Morning medication</strong><span>Recorded at 8:04 AM</span></div></div>
-              <div className="concept-medication"><span className="concept-check is-pending">◷</span><div><strong>Evening medication</strong><span>Not yet recorded</span></div></div>
-              <p className="concept-history">Your routine, one day at a time.</p>
-            </div>
-          </div>
-        </div>
-        <p className="example-caption">A sample brief and interface to show the process. Your agent builds from the decisions you review together.</p>
+        <p className="prose">Explore how Stanford Biodesign Digital Health and its collaborators use Spezi for research, remote monitoring, and everyday health.</p>
+        <SpeziProjectCards projects={SPEZI_PROJECTS} compact horizontal />
       </Section>
 
       <Section id="start" label="Your first session">

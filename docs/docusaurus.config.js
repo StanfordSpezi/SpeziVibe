@@ -64,6 +64,11 @@ const config = {
         },
         items: [
           {
+            to: '/framework',
+            label: 'Framework',
+            position: 'left',
+          },
+          {
             to: '/docs/skills',
             label: 'Skills',
             position: 'left',
@@ -79,7 +84,7 @@ const config = {
             position: 'left',
           },
           {
-            href: 'https://github.com/StanfordSpezi/SpeziVibe',
+            href: 'https://github.com/StanfordSpezi',
             label: 'GitHub',
             position: 'right',
           },
@@ -120,11 +125,36 @@ const config = {
             ],
           },
           {
+            title: 'Build with Spezi',
+            items: [
+              {
+                label: 'Framework',
+                to: '/framework',
+              },
+              {
+                label: 'Apple-native template',
+                href: 'https://github.com/StanfordSpezi/SpeziTemplateApplication',
+              },
+              {
+                label: 'Developer documentation',
+                href: 'https://swiftpackageindex.com/StanfordSpezi/Spezi/documentation',
+              },
+              {
+                label: 'SpeziVibe skills on GitHub',
+                href: 'https://github.com/StanfordSpezi/SpeziVibe',
+              },
+            ],
+          },
+          {
             title: 'Community',
             items: [
               {
-                label: 'GitHub',
-                href: 'https://github.com/StanfordSpezi/SpeziVibe',
+                label: 'Spezi on GitHub',
+                href: 'https://github.com/StanfordSpezi',
+              },
+              {
+                label: 'Discussions',
+                href: 'https://github.com/orgs/StanfordSpezi/discussions',
               },
               {
                 label: 'Stanford Biodesign',
