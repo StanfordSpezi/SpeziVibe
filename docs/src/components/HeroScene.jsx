@@ -1,5 +1,4 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {useColorMode} from '@docusaurus/theme-common';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import {createRocket} from './createRocket';
 import {createStarfield} from './createStarfield';
@@ -11,7 +10,7 @@ export default function HeroScene() {
   const [paused, setPaused] = useState(false);
   const [ready, setReady] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const {colorMode} = useColorMode();
+  const [failed, setFailed] = useState(false);
   const rocketUrl = useBaseUrl('/img/rocket-logo.png');
 
   useEffect(() => {
@@ -26,6 +25,7 @@ export default function HeroScene() {
     let cleanedUp = false;
     let cleanup = () => {};
     setReady(false);
+    setFailed(false);
     setReducedMotion(motion.matches);
 
     // Load WebGL only on the homepage, after the useful page content renders.
@@ -38,7 +38,8 @@ export default function HeroScene() {
       try {
         renderer = new THREE.WebGLRenderer({alpha: true, antialias: true, powerPreference: 'low-power'});
       } catch {
-        return; // The original rocket artwork remains visible without WebGL.
+        setFailed(true);
+        return; // Show the original artwork only when WebGL is unavailable.
       }
 
       const scene = new THREE.Scene();
@@ -90,6 +91,7 @@ export default function HeroScene() {
       let previousTime = null;
       let elapsed = 0;
       let animating = false;
+      let hasRendered = false;
       const hero = host.closest('.launch-hero');
       const draw = (time) => {
         const delta = previousTime === null ? 0 : Math.min((time - previousTime) / 1000, 0.05);
@@ -106,6 +108,12 @@ export default function HeroScene() {
         rocketModel.animate(elapsed);
         starfield.animate(elapsed);
         renderer.render(scene, camera);
+        // Reveal a complete first frame, never an empty or half-built canvas.
+        if (!hasRendered) {
+          hasRendered = true;
+          setFailed(false);
+          setReady(true);
+        }
       };
 
       const updateMotion = () => {
@@ -133,7 +141,9 @@ export default function HeroScene() {
       const onContextLost = (event) => {
         event.preventDefault();
         contextLost = true;
+        hasRendered = false;
         setReady(false);
+        setFailed(true);
         updateMotion();
       };
       const onContextRestored = () => {
@@ -141,11 +151,11 @@ export default function HeroScene() {
         try {
           updateEnvironment();
           resize();
-          setReady(true);
           updateMotion();
         } catch {
           cleanup();
           setReady(false);
+          setFailed(true);
         }
       };
       const observer = new IntersectionObserver(([entry]) => { inView = entry.isIntersecting; updateMotion(); });
@@ -178,21 +188,28 @@ export default function HeroScene() {
       updateEnvironment();
       resize();
       updateMotion();
-      setReady(true);
     }).catch(() => {
       cleanup();
-      if (!disposed) setReady(false);
+      if (!disposed) {
+        setReady(false);
+        setFailed(true);
+      }
     });
 
     return () => { disposed = true; cleanup(); };
-  }, [colorMode, rocketUrl]);
+  }, []);
 
   return (
-    <div className={`hero-scene${ready ? ' is-ready' : ''}`}>
+    <div className={`hero-scene${ready ? ' is-ready' : ''}${failed ? ' is-fallback' : ''}`}>
       <div ref={hostRef} className="hero-scene-canvas" aria-hidden="true" />
       <div className="hero-scene-fallback" aria-hidden="true">
         <img className="hero-rocket-fallback" src={rocketUrl} alt="" width="240" height="240" />
       </div>
+      <noscript>
+        <div className="hero-scene-fallback is-static" aria-hidden="true">
+          <img className="hero-rocket-fallback" src={rocketUrl} alt="" width="240" height="240" />
+        </div>
+      </noscript>
       {ready && !reducedMotion && (
         <button className="scene-toggle" type="button" onClick={() => setPaused((value) => !value)} aria-label={paused ? 'Play hero animation' : 'Pause hero animation'}>
           <span aria-hidden="true">{paused ? '▷' : 'Ⅱ'}</span> {paused ? 'Play' : 'Pause'}

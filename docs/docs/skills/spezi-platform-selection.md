@@ -21,8 +21,12 @@ Skip this skill if you're not using a Spezi template — your planning briefs an
 
 ## Platform Options
 
-- **React Native** — cross-platform (iOS + Android) from one codebase. Good for forms, questionnaires, chat, and lightweight integrations. Backed by the Spezi React Native Template App.
-- **Apple-native** — Swift / SwiftUI for iPhone, iPad, and Vision Pro. Use when HealthKit, SensorKit, Bluetooth, or deep Apple integration is core to the product. Backed by the Spezi Template Application for Apple Platforms.
+- **React Native** — React Native and Expo for iOS and Android from one codebase. A good fit when cross-platform delivery matters. Backed by the [SpeziVibe React Native Template](https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate), whose generator offers backend and optional feature choices.
+- **Apple-native** — Swift / SwiftUI for iPhone, iPad, and Vision Pro. A good fit when HealthKit, SensorKit, or deep Apple integration is central to the app. Backed by the [Spezi Template Application](https://github.com/StanfordSpezi/SpeziTemplateApplication) and [Spezi’s Swift modules](/framework#modules).
+
+Bluetooth alone does not require Apple-native development; cross-platform libraries are available. If you need both Android support and deep Apple integrations, the skill helps weigh those requirements and identify any native integration work.
+
+The templates have different capabilities. The React Native template has its own implementation skills; bridges to native Spezi modules are on its [roadmap](https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate#contributing).
 
 ## How It Works
 
@@ -39,25 +43,26 @@ A template project with working navigation, theming, and project structure, plus
 ## Example
 
 ```
-AI:   What kind of app are you building? Does it primarily involve
-      forms, questionnaires, and chat — or does it need HealthKit,
-      SensorKit, Bluetooth, or deep Apple integration?
+AI:   Who will use the app? Does it need to support Android,
+      and which health data or device integrations matter most?
 
-You:  It needs to read heart rate and step data from Apple Watch
-      and connect to a Bluetooth blood pressure cuff
+You:  It's for iPhone users. It needs heart rate and step data
+      from Apple Health and a Bluetooth blood pressure cuff.
 
-AI:   Those require HealthKit and CoreBluetooth, which work best
-      natively on Apple platforms. I'd recommend going Apple-native.
+AI:   I'd recommend Apple-native for your iPhone-focused app
+      and HealthKit needs. We'll also check whether Spezi supports
+      your cuff's model and Bluetooth services.
 
       Let me check your setup — do you have Xcode installed?
 
-You:  Yes, Xcode 16
+You:  Yes.
 
-AI:   Great. I'll clone the Spezi iOS template into your project
-      directory and walk you through the structure.
+AI:   Let's verify the Xcode version meets the template's requirements,
+      then choose a folder for the app. I'll set up the Apple-native
+      template there and bring your planning documents with it.
 ```
 
 ## Limitations
 
 - Machine setup must complete before template setup
-- Switching platforms after cloning requires starting over
+- Changing platforms later requires revisiting the app foundation and platform-specific code; your planning briefs can still be reused

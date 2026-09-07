@@ -77,7 +77,7 @@ The selected planning skills save briefs in `docs/planning/`. The build planner 
 
 ## What Happens Next
 
-After `build-an-app` finishes, you have a folder of planning briefs and `docs/implementation-plan.md`. Inside your project — the cloned Spezi template, or your own repo or scaffold if you chose a [different framework](/docs/how-it-works#building-without-a-spezi-template) — tell your AI coding agent:
+After `build-an-app` finishes, you have a folder of planning briefs and `docs/implementation-plan.md`. Inside your project — a generated React Native app, the Apple-native template, or your own repo or scaffold if you chose a [different framework](/docs/how-it-works#building-without-a-spezi-template) — tell your AI coding agent:
 
 > *Implement Milestone 1 from `docs/implementation-plan.md`.*
 

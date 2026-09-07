@@ -1,8 +1,12 @@
 import React from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import CopyBlock from '../components/CopyBlock';
 import HeroScene from '../components/HeroScene';
+import PlatformOptions from '../components/PlatformOptions';
+import SpeziProjectCards from '../components/SpeziProjectCards';
+import {SPEZI_PROJECTS} from '../data/speziFramework';
 
 const INSTALL_CMD = "npx skills add StanfordSpezi/SpeziVibe --skill '*'";
 const FIRST_PROMPT = 'I want to build a medication tracker for post-transplant patients. Use the build-an-app skill to walk me through it.';
@@ -20,7 +24,7 @@ const STEPS = [
   },
   {
     title: 'Build, one milestone at a time',
-    body: 'Your coding agent uses the plan to implement your app. Work in an existing project or start with a Spezi template.',
+    body: 'Your coding agent uses the plan to implement your app. Choose React Native, Apple-native, or another framework, or build on an existing project.',
     detail: 'Keep the plan alongside your code',
   },
 ];
@@ -46,6 +50,7 @@ function Section({id, label, children, dark = false}) {
 }
 
 export default function Home() {
+  const biodesignLogo = useBaseUrl('/img/biodesign-footer-dark.png');
   return (
     <Layout
       title="Vibe coding for digital health"
@@ -65,7 +70,13 @@ export default function Home() {
             <Link to="/docs/getting-started" className="btn-primary">Get started <span aria-hidden="true">→</span></Link>
             <Link to="/workshop" className="btn-secondary">Explore the workshop</Link>
           </div>
-          <p className="hero-note">From Stanford Spezi <span aria-hidden="true">·</span> Free & open source</p>
+          <div className="hero-attribution">
+            <a className="hero-biodesign-logo" href="https://bdh.stanford.edu">
+              <img src={biodesignLogo} width="1913" height="275"
+                alt="Stanford Mussallem Center for Biodesign" decoding="async" />
+            </a>
+            <p className="hero-note">From <a href="https://bdh.stanford.edu">Stanford Biodesign Digital Health</a><br />Free & open source (MIT)</p>
+          </div>
         </div>
         <HeroScene />
         <a className="hero-scroll" href="#how-it-works">An idea worth building <span aria-hidden="true">↓</span></a>
@@ -101,42 +112,21 @@ export default function Home() {
         <Link className="text-link" to="/docs/how-it-works">See the full workflow <span aria-hidden="true">→</span></Link>
       </Section>
 
-      <Section id="example" label="An idea in motion">
+      <Section id="spezi" label="Your foundation">
+        <h2 className="title" id="spezi-title">Your app. Your platform.</h2>
+        <p className="prose">Start with SpeziVibe to plan and build with AI. When you’re ready to choose a foundation, use a template from the Stanford Spezi ecosystem or bring your own framework.</p>
+        <PlatformOptions />
+        <p className="framework-note">You can start planning before choosing a platform. SpeziVibe helps you decide based on what your app needs.</p>
+        <Link to="/framework" className="text-link">Explore Spezi’s framework and templates <span aria-hidden="true">→</span></Link>
+      </Section>
+
+      <Section id="built-with-spezi" label="In practice">
         <div className="section-heading-row">
-          <h2 className="title" id="example-title">See what a plan<br />can become.</h2>
-          <span className="example-label">Illustrative concept</span>
+          <h2 className="title" id="built-with-spezi-title">Built with Spezi.</h2>
+          <Link to="/framework#built-with-spezi" className="text-link">See all projects <span aria-hidden="true">→</span></Link>
         </div>
-        <p className="prose">One medication-tracking idea, from the question that starts it to a screen you could build.</p>
-        <div className="example-journey">
-          <div className="example-need">
-            <p className="example-kicker">01 / The need</p>
-            <blockquote>“Did I take my morning medication?”</blockquote>
-            <p>Help people keep track of their daily routine, without adding another thing to remember.</p>
-            <span className="example-connector" aria-hidden="true">→</span>
-          </div>
-          <div className="example-plan">
-            <p className="example-kicker">02 / The planning brief</p>
-            <h3>A calmer daily check-in.</h3>
-            <dl>
-              <div><dt>For whom</dt><dd>People managing a daily medication routine.</dd></div>
-              <div><dt>First milestone</dt><dd>A daily list, a way to record a dose, and a clear history.</dd></div>
-              <div><dt>Decisions to resolve</dt><dd>Reminders, data storage, and who can see the record.</dd></div>
-            </dl>
-          </div>
-          <div className="example-app">
-            <p className="example-kicker">03 / A possible experience</p>
-            <div className="concept-screen" role="img" aria-label="Illustrative medication tracker screen. Today, one of two medications recorded. Morning medication recorded at 8:04 AM. Evening medication not yet recorded.">
-              <div className="concept-brand"><span aria-hidden="true">✳</span> Day by day <span className="concept-avatar">J</span></div>
-              <p className="concept-date">YOUR DAILY CHECK-IN</p>
-              <p className="concept-title">A little more<br />peace of mind.</p>
-              <div className="concept-progress"><span>Today</span><strong>1 of 2 recorded</strong><div><i /></div></div>
-              <div className="concept-medication"><span className="concept-check">✓</span><div><strong>Morning medication</strong><span>Recorded at 8:04 AM</span></div></div>
-              <div className="concept-medication"><span className="concept-check is-pending">◷</span><div><strong>Evening medication</strong><span>Not yet recorded</span></div></div>
-              <p className="concept-history">Your routine, one day at a time.</p>
-            </div>
-          </div>
-        </div>
-        <p className="example-caption">A sample brief and interface to show the process. Your agent builds from the decisions you review together.</p>
+        <p className="prose">Explore how Stanford Biodesign Digital Health and its collaborators use Spezi for research, remote monitoring, and everyday health.</p>
+        <SpeziProjectCards projects={SPEZI_PROJECTS} compact horizontal />
       </Section>
 
       <Section id="start" label="Your first session">

@@ -7,7 +7,7 @@ slug: /how-it-works
 
 SpeziVibe gives your AI coding tool reusable **skills** for digital health development. Start with `build-an-app`: describe your idea, agree on the planning steps that fit, and review the results as you go.
 
-When the plan is ready, your AI coding agent reads those briefs and writes the code in your existing project or a Spezi starter template.
+When the plan is ready, your AI coding agent reads those briefs and writes the code in your existing project, a Spezi starter template, or a new project in your chosen framework.
 
 ## The Workflow
 
@@ -24,6 +24,15 @@ When the plan is ready, your AI coding agent reads those briefs and writes the c
 The briefs record decisions your agent can refer to while building. A Spezi starter can also provide modules and project patterns for your chosen platform.
 
 You can plan before choosing a framework. Once you choose, review the implementation plan with your agent and resolve any platform-specific tasks or open questions.
+
+## How Spezi Fits
+
+SpeziVibe is part of the Stanford Spezi ecosystem and is the starting point for planning and building with AI. When you’re ready to implement, the ecosystem offers two starter paths:
+
+- **React Native and Expo:** use the [SpeziVibe React Native template](https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate) for iOS and Android, with a generator and app-specific implementation skills.
+- **Swift and SwiftUI:** use the [Apple-native template](https://github.com/StanfordSpezi/SpeziTemplateApplication) and [Spezi’s Swift modules](/framework#modules) for Apple-native apps.
+
+The templates have different capabilities; the Swift modules are specific to Apple-native development. You can also use SpeziVibe with another framework or an existing project, as described below.
 
 ## Where Files Live
 
@@ -80,7 +89,7 @@ Your agent uses the briefs as context and works within your chosen stack. Featur
 - You want full control over architecture decisions
 - You're prototyping and don't need production-grade scaffolding yet
 
-If you’re unsure which foundation fits, compare the options with [spezi-platform-selection](skills/spezi-platform-selection).
+If you want a Spezi starter, compare React Native and Apple-native with [spezi-platform-selection](skills/spezi-platform-selection). For other frameworks, ask `build-an-app` to help choose and set up a project based on your plan.
 
 ## Why Stop at Markdown?
 

@@ -74,6 +74,11 @@ const config = {
             position: 'left',
           },
           {
+            to: '/framework',
+            label: 'Framework',
+            position: 'left',
+          },
+          {
             to: '/about',
             label: 'About',
             position: 'left',
@@ -93,6 +98,14 @@ const config = {
       },
       footer: {
         style: 'dark',
+        logo: {
+          alt: 'Stanford Mussallem Center for Biodesign',
+          src: 'img/biodesign-footer-dark.png',
+          href: 'https://biodesign.stanford.edu',
+          width: 1913,
+          height: 275,
+          className: 'biodesign-footer-logo',
+        },
         links: [
           {
             title: 'Learn',
@@ -120,11 +133,40 @@ const config = {
             ],
           },
           {
+            title: 'Framework & templates',
+            items: [
+              {
+                label: 'Framework',
+                to: '/framework',
+              },
+              {
+                label: 'React Native template',
+                href: 'https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate',
+              },
+              {
+                label: 'Apple-native template',
+                href: 'https://github.com/StanfordSpezi/SpeziTemplateApplication',
+              },
+              {
+                label: 'Swift framework docs',
+                href: 'https://swiftpackageindex.com/StanfordSpezi/Spezi/documentation',
+              },
+              {
+                label: 'SpeziVibe skills on GitHub',
+                href: 'https://github.com/StanfordSpezi/SpeziVibe',
+              },
+            ],
+          },
+          {
             title: 'Community',
             items: [
               {
-                label: 'GitHub',
-                href: 'https://github.com/StanfordSpezi/SpeziVibe',
+                label: 'Spezi on GitHub',
+                href: 'https://github.com/StanfordSpezi',
+              },
+              {
+                label: 'Discussions',
+                href: 'https://github.com/orgs/StanfordSpezi/discussions',
               },
               {
                 label: 'Stanford Biodesign',
@@ -133,7 +175,6 @@ const config = {
             ],
           },
         ],
-        copyright: `Built by Stanford Mussallem Center for Biodesign. MIT License.`,
       },
       prism: {
         theme: prismThemes.github,
