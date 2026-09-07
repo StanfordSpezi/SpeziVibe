@@ -10,7 +10,6 @@ const TEAM = [
 ];
 
 const LINKS = [
-  {label: 'Spezi website', href: 'https://spezi.stanford.edu', icon: 'globe'},
   {label: 'Spezi on GitHub', href: 'https://github.com/StanfordSpezi', icon: 'github'},
   {label: 'Stanford Mussallem Center for Biodesign', href: 'https://biodesign.stanford.edu', icon: 'landmark'},
 ];
@@ -35,13 +34,7 @@ function LinkIcon({name}) {
       </svg>
     );
   }
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="10"></circle>
-      <line x1="2" y1="12" x2="22" y2="12"></line>
-      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-    </svg>
-  );
+  return null;
 }
 
 export default function About() {
@@ -49,7 +42,7 @@ export default function About() {
   return (
     <Layout
       title="About"
-      description="SpeziVibe is part of Stanford Spezi, an open-source digital health ecosystem housed at Stanford Biodesign."
+      description="Stanford Spezi is an open-source digital health ecosystem housed at Stanford Biodesign. Meet our project leadership and contributors."
       wrapperClassName="landing-page"
     >
       <header className="page-head">
@@ -59,8 +52,8 @@ export default function About() {
         <div className="section-main">
           <h1>Good ideas should reach patients faster</h1>
           <p className="prose">
-            SpeziVibe is part of <a href="https://spezi.stanford.edu" target="_blank" rel="noopener noreferrer">Stanford Spezi</a>,
-            an open-source digital health ecosystem housed at Stanford Biodesign.
+            Stanford Spezi is an open-source digital health ecosystem housed at Stanford Biodesign.
+            SpeziVibe is our toolkit for turning clinical needs into working apps with AI.
           </p>
         </div>
       </header>
