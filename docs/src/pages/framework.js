@@ -4,7 +4,8 @@ import Link from '@docusaurus/Link';
 import useBrokenLinks from '@docusaurus/useBrokenLinks';
 import SpeziScreens from '../components/SpeziScreens';
 import SpeziProjectCards from '../components/SpeziProjectCards';
-import {FRAMEWORK_REPO, FRAMEWORK_DOCS, TEMPLATE_REPO, SPEZI_MODULES, SPEZI_PROJECTS} from '../data/speziFramework';
+import PlatformOptions from '../components/PlatformOptions';
+import {FRAMEWORK_REPO, FRAMEWORK_DOCS, REACT_NATIVE_TEMPLATE_REPO, SPEZI_MODULES, SPEZI_PROJECTS} from '../data/speziFramework';
 
 function Section({id, label, children}) {
   const brokenLinks = useBrokenLinks();
@@ -22,7 +23,7 @@ function Section({id, label, children}) {
 export default function Framework() {
   return (
     <Layout title="Spezi framework"
-      description="Build digital health apps with Stanford Spezi. Explore reusable Swift modules, the Apple-native template, developer documentation, and apps built with Spezi."
+      description="Start with SpeziVibe, then explore Stanford Spezi’s React Native template, Apple-native Swift framework, and real digital health projects."
       wrapperClassName="landing-page framework-page">
       <header className="page-head">
         <div className="section-rail"><span className="rail-label">The framework</span></div>
@@ -30,26 +31,42 @@ export default function Framework() {
           <p className="eyebrow">Stanford Spezi · Free & open source</p>
           <h1>The building blocks<br />for better health apps.</h1>
           <p className="prose">
-            Spezi is a modular framework for building digital health apps. Combine reusable Swift
-            packages for accounts, consent, questionnaires, connected devices, and more in your Apple-native app.
+            Stanford Spezi brings together tools for building digital health apps.
+            Start with SpeziVibe to plan and build with AI, then choose a React Native template,
+            the Apple-native Spezi framework, or your own stack.
           </p>
           <div className="buttons framework-actions">
-            <a href={TEMPLATE_REPO} className="btn-primary">Explore the template <span aria-hidden="true">↗</span></a>
-            <a href={FRAMEWORK_DOCS} className="btn-secondary">Developer docs <span aria-hidden="true">↗</span></a>
-          </div>
-          <div className="framework-preview">
-            <SpeziScreens />
-            <p className="framework-note">Module examples from the Spezi GitHub repositories. Select a screen to explore its module.</p>
+            <Link to="/docs/getting-started" className="btn-primary">Get started with SpeziVibe <span aria-hidden="true">→</span></Link>
+            <a href={FRAMEWORK_DOCS} className="btn-secondary">Swift framework docs <span aria-hidden="true">↗</span></a>
           </div>
         </div>
       </header>
 
-      <Section id="modules" label="Make it yours">
-        <h2 className="title" id="modules-title">Choose what your app needs.</h2>
+      <Section id="start-building" label="Your foundation">
+        <h2 className="title" id="start-building-title">Choose the platform that fits.</h2>
         <p className="prose">
-          Each module handles a part of your app. Spezi helps those modules work together,
-          so you can build on existing functionality and add your own.
+          SpeziVibe guides the planning and implementation across all three paths.
+          The templates give you an app foundation; your needs determine which one to use.
         </p>
+        <PlatformOptions />
+        <p className="framework-note">
+          For help choosing a starter, <Link to="/docs/skills/spezi-platform-selection">compare React Native and Apple-native.</Link>{' '}
+          The React Native template includes its own implementation skills. Bridges to native Spezi modules are on its{' '}
+          <a href={`${REACT_NATIVE_TEMPLATE_REPO}#contributing`}>roadmap</a>; the Swift modules below are for Apple-native apps.
+        </p>
+      </Section>
+
+      <Section id="modules" label="Apple-native">
+        <h2 className="title" id="modules-title">Build with Spezi’s Swift modules.</h2>
+        <p className="prose">
+          For Swift and SwiftUI apps, the Spezi framework provides reusable packages for
+          accounts, consent, questionnaires, connected devices, and more.
+          Each module handles a part of your app, and Spezi helps them work together.
+        </p>
+        <div className="framework-preview">
+          <SpeziScreens />
+          <p className="framework-note">Apple-native module examples from the Spezi GitHub repositories. Select a screen to explore its module.</p>
+        </div>
         <div className="spezi-module-grid">
           {SPEZI_MODULES.map((module, index) => (
             <article className="spezi-module" key={module.title}>
@@ -64,34 +81,11 @@ export default function Framework() {
             </article>
           ))}
         </div>
-        <a href="https://github.com/StanfordSpezi" className="text-link">Explore the full ecosystem on GitHub <span aria-hidden="true">↗</span></a>
-      </Section>
-
-      <Section id="start-building" label="Your starting point">
-        <h2 className="title" id="start-building-title">From an idea to your first build.</h2>
-        <p className="prose">
-          Spezi provides the building blocks. SpeziVibe helps you plan and build with AI.
-          Choose the starting point that fits where you are today.
-        </p>
-        <div className="framework-start-grid">
-          <article className="framework-start">
-            <p className="eyebrow">Plan with SpeziVibe</p>
-            <h3>I have an app idea.</h3>
-            <p>Use our skills to work through the clinical need, user experience, health data, and build plan with your AI coding tool.</p>
-            <Link to="/docs/getting-started" className="text-link">Get started with AI <span aria-hidden="true">→</span></Link>
-          </article>
-          <article className="framework-start">
-            <p className="eyebrow">Build with Spezi</p>
-            <h3>I’m ready to write code.</h3>
-            <p>Start with the Apple-native template to see modules working together. Follow its setup guide to run and adapt it in Xcode on a Mac.</p>
-            <a href="https://stanfordspezi.github.io/SpeziTemplateApplication" className="text-link">Follow the template guide <span aria-hidden="true">↗</span></a>
-          </article>
-        </div>
         <p className="framework-note">
-          Already have a Swift app? <a href="https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup">Add Spezi to your project.</a>{' '}
-          Considering iOS and Android? <Link to="/docs/skills/spezi-platform-selection">Compare Apple-native and React Native.</Link>{' '}
-          SpeziVibe’s planning skills also work with other frameworks and existing codebases.
+          Follow the <a href="https://stanfordspezi.github.io/SpeziTemplateApplication">Apple-native template guide</a> to run and adapt an app in Xcode on a Mac, or{' '}
+          <a href="https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup">add Spezi to an existing Swift project.</a>
         </p>
+        <a href="https://github.com/StanfordSpezi" className="text-link">Explore the full ecosystem on GitHub <span aria-hidden="true">↗</span></a>
       </Section>
 
       <Section id="built-with-spezi" label="In practice">

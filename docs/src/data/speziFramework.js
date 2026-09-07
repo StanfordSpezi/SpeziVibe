@@ -8,6 +8,7 @@
 export const FRAMEWORK_REPO = 'https://github.com/StanfordSpezi/Spezi';
 export const FRAMEWORK_DOCS = 'https://swiftpackageindex.com/StanfordSpezi/Spezi/documentation';
 export const TEMPLATE_REPO = 'https://github.com/StanfordSpezi/SpeziTemplateApplication';
+export const REACT_NATIVE_TEMPLATE_REPO = 'https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate';
 
 export const SPEZI_SCREENS = [
   {name: 'Consent', image: 'consent.png', width: 1470, height: 3000,

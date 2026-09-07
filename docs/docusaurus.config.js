@@ -64,11 +64,6 @@ const config = {
         },
         items: [
           {
-            to: '/framework',
-            label: 'Framework',
-            position: 'left',
-          },
-          {
             to: '/docs/skills',
             label: 'Skills',
             position: 'left',
@@ -79,12 +74,17 @@ const config = {
             position: 'left',
           },
           {
+            to: '/framework',
+            label: 'Framework',
+            position: 'left',
+          },
+          {
             to: '/about',
             label: 'About',
             position: 'left',
           },
           {
-            href: 'https://github.com/StanfordSpezi',
+            href: 'https://github.com/StanfordSpezi/SpeziVibe',
             label: 'GitHub',
             position: 'right',
           },
@@ -125,18 +125,22 @@ const config = {
             ],
           },
           {
-            title: 'Build with Spezi',
+            title: 'Framework & templates',
             items: [
               {
                 label: 'Framework',
                 to: '/framework',
               },
               {
+                label: 'React Native template',
+                href: 'https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate',
+              },
+              {
                 label: 'Apple-native template',
                 href: 'https://github.com/StanfordSpezi/SpeziTemplateApplication',
               },
               {
-                label: 'Developer documentation',
+                label: 'Swift framework docs',
                 href: 'https://swiftpackageindex.com/StanfordSpezi/Spezi/documentation',
               },
               {

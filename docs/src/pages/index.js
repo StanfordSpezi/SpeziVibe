@@ -3,7 +3,7 @@ import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
 import CopyBlock from '../components/CopyBlock';
 import HeroScene from '../components/HeroScene';
-import SpeziScreens from '../components/SpeziScreens';
+import PlatformOptions from '../components/PlatformOptions';
 import SpeziProjectCards from '../components/SpeziProjectCards';
 import {SPEZI_PROJECTS} from '../data/speziFramework';
 
@@ -23,7 +23,7 @@ const STEPS = [
   },
   {
     title: 'Build, one milestone at a time',
-    body: 'Your coding agent uses the plan to implement your app. Work in an existing project or start with a Spezi template.',
+    body: 'Your coding agent uses the plan to implement your app. Choose React Native, Apple-native, or another framework, or build on an existing project.',
     detail: 'Keep the plan alongside your code',
   },
 ];
@@ -104,17 +104,12 @@ export default function Home() {
         <Link className="text-link" to="/docs/how-it-works">See the full workflow <span aria-hidden="true">→</span></Link>
       </Section>
 
-      <Section id="spezi" label="The foundation">
-        <div className="spezi-home-intro">
-          <div>
-            <h2 className="title" id="spezi-title">Build on Spezi.</h2>
-            <p className="prose">Spezi provides the building blocks for digital health apps. SpeziVibe helps you plan and build with AI.</p>
-            <p className="spezi-home-detail">Combine reusable Swift modules for accounts, consent, questionnaires, connected devices, and more in your Apple-native app.</p>
-            <Link to="/framework" className="text-link">Explore the framework <span aria-hidden="true">→</span></Link>
-          </div>
-          <SpeziScreens />
-        </div>
-        <p className="framework-note">Building on another platform? SpeziVibe’s planning skills work with other frameworks, too.</p>
+      <Section id="spezi" label="Your foundation">
+        <h2 className="title" id="spezi-title">Your app. Your platform.</h2>
+        <p className="prose">Start with SpeziVibe to plan and build with AI. When you’re ready to choose a foundation, use a template from the Stanford Spezi ecosystem or bring your own framework.</p>
+        <PlatformOptions />
+        <p className="framework-note">You can start planning before choosing a platform. SpeziVibe helps you decide based on what your app needs.</p>
+        <Link to="/framework" className="text-link">Explore Spezi’s framework and templates <span aria-hidden="true">→</span></Link>
       </Section>
 
       <Section id="built-with-spezi" label="In practice">

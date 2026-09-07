@@ -10,6 +10,8 @@ SpeziVibe gives your AI coding tool a digital health playbook. You describe an i
 
 Start with **`build-an-app`**. It chooses the skills your project needs and walks you through them. You don’t need to learn the skill catalog or choose a framework first.
 
+You can build with React Native, Apple-native Swift, another framework, or an existing app. SpeziVibe guides the process; a template is an optional starting point for the code.
+
 :::tip Just want to explore an idea?
 Open the [workshop](/workshop) and select **In browser chat**. You can work through planning without installing anything. Save the resulting briefs, then return here when you’re ready to build in a coding tool.
 :::
@@ -127,13 +129,18 @@ my-health-app/
 
 ## 4. Build your first milestone
 
-Once you’ve reviewed the plan, the guide helps prepare the app project:
+Once you’ve reviewed the plan, the guide helps prepare the app project. Choose based on who will use the app and which devices and features it needs:
 
-- **Existing app:** continue in that project.
-- **New app with a Spezi starter:** the optional platform skill helps choose React Native or Apple-native and sets up the starter.
-- **Another framework:** the guide helps create a project in your chosen framework.
+| Starting point | What it gives you |
+| --- | --- |
+| **React Native — iOS and Android** | A React Native and Expo app generated from the [SpeziVibe React Native template](https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate), with backend and optional feature choices. |
+| **Apple-native — Swift and SwiftUI** | The [Spezi Template Application](https://github.com/StanfordSpezi/SpeziTemplateApplication), with reusable [Spezi framework modules](/framework#modules) for Apple-native apps. Requires Xcode on a Mac. |
+| **Another framework** | A new project using your chosen tools, such as Flutter, Kotlin, or a web framework. Your coding agent uses the same planning briefs to guide implementation. |
+| **An existing app** | Keep your current project and its conventions. The agent uses your plan to extend it. |
 
-For React Native, the setup script runs `create-spezivibe-app` to generate an app. For Apple-native, it clones the Spezi Template Application. You don’t need to run these setup commands yourself; let the skill guide you through the requirements for your chosen platform.
+For a Spezi starter, the optional [platform-selection skill](/docs/skills/spezi-platform-selection) helps compare React Native and Apple-native, checks your development setup, and prepares the project. React Native uses `create-spezivibe-app` to generate an app; Apple-native clones the template. You don’t need to run these setup commands yourself. For another framework or an existing app, `build-an-app` continues directly with that project.
+
+Each template has its own capabilities. The Swift modules are for Apple-native apps; check the React Native template’s supported features and plan any additional integrations with your agent.
 
 If setup creates a new folder, open that folder in your coding tool and check that the planning documents came with it. Because skills were installed for the original project, check that `build-an-app` is still available and repeat step 2 in the new folder if needed.
 

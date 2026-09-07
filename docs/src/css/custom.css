@@ -659,13 +659,6 @@ h4 {
 .hero-note a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 .hero-note a:hover { color: #fff; }
 
-.spezi-home-intro {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 2.5rem;
-  align-items: center;
-}
-.spezi-home-detail { color: var(--ink-2); line-height: 1.7; margin: 1.25rem 0; }
 .spezi-screens {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -708,12 +701,12 @@ h4 {
 .spezi-module p { color: var(--ink-2); font-size: 0.92rem; line-height: 1.7; }
 .spezi-package-links { list-style: none; padding: 0; margin: auto 0 0; }
 .spezi-package-links a { display: inline-block; padding: 0.65rem 0; font-size: 0.82rem; overflow-wrap: anywhere; }
-.framework-start-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-.framework-start { display: flex; flex-direction: column; padding: 2rem; border: 1px solid var(--rule); border-radius: 8px; background: var(--doc); }
-.framework-start:first-child { background: var(--accent-wash); border-color: var(--accent-line); }
-.framework-start h3 { font-size: 1.5rem; letter-spacing: -0.03em; }
-.framework-start > p:not(.eyebrow) { color: var(--ink-2); font-size: 0.95rem; line-height: 1.7; }
-.framework-start > .text-link { margin-top: auto; padding-top: 0.75rem; }
+.platform-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin-top: 2rem; }
+.platform-option { display: flex; flex-direction: column; min-width: 0; padding: 1.5rem; border: 1px solid var(--rule); border-top: 3px solid var(--data); border-radius: 8px; background: var(--doc); }
+.platform-option .eyebrow { color: var(--data); font-size: 0.65rem; }
+.platform-option h3 { font-size: 1.5rem; letter-spacing: -0.03em; }
+.platform-option > p:not(.eyebrow) { color: var(--ink-2); font-size: 0.95rem; line-height: 1.7; }
+.platform-option > .text-link { margin-top: auto; padding-top: 0.75rem; font-size: 0.85rem; }
 .spezi-app-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
 .spezi-app { display: flex; flex-direction: column; border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; background: var(--doc); }
 .spezi-app-image { display: flex; align-items: center; justify-content: center; height: 384px; padding: 2rem; background: var(--data-wash); }
@@ -760,18 +753,16 @@ h4 {
 .spezi-app-grid--horizontal > .spezi-app { min-width: 0; scroll-snap-align: start; }
 .spezi-app-grid--horizontal:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 8px; }
 
-@media (max-width: 1100px) {
-  .spezi-home-intro { grid-template-columns: minmax(0, 1fr); }
-  .spezi-home-intro .spezi-screens { width: 100%; max-width: 580px; margin: 0 auto; }
+@media (max-width: 900px) {
+  .platform-options { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 700px) {
   .spezi-app-grid.spezi-app-grid--horizontal { grid-auto-columns: 85%; }
   .spezi-module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
-  .framework-start-grid, .spezi-app-grid { grid-template-columns: minmax(0, 1fr); }
+  .spezi-app-grid { grid-template-columns: minmax(0, 1fr); }
   .framework-preview { padding: 1.25rem 0.75rem; }
   .framework-preview .spezi-screens, .spezi-screens { gap: 0.5rem; }
   .spezi-screens figcaption { font-size: 0.72rem; }
-  .framework-start { padding: 1.5rem; }
 }
 @media (max-width: 420px) {
   .spezi-module-grid { grid-template-columns: minmax(0, 1fr); }

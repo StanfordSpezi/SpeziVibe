@@ -176,11 +176,11 @@ export default function Workshop() {
             <ul>{reviewedOutputs.map((step) => <li key={step.id}><code>{step.output}</code></li>)}</ul>
             {skipCount > 0 && <p>Include any briefs you already had for the skipped steps. Keep remaining gaps visible in your implementation plan.</p>}
             {browser && <p>Move your saved Markdown documents into a project folder and <Link to="/docs/getting-started">set up your coding tool with the skills</Link>. Browser chat prepared the plan; the next step happens in your coding tool.</p>}
-            <p>Use your existing project or choose a framework with your agent. Spezi starter templates are optional.</p>
+            <p>Continue with SpeziVibe in your coding tool. Choose a React Native or Apple-native starter, use another framework, or keep building in your existing project.</p>
             <CopyBlock label="Build handoff prompt" text="Use the build-an-app skill to resume from docs/planning/ and docs/implementation-plan.md. Check the documents that actually exist, summarize unresolved decisions, and help me prepare the project and implement the first agreed milestone. Ask me about any missing context before building." />
             <div className="ws-complete-links">
               <Link className="btn-primary" to="/docs/how-it-works">See how building works</Link>
-              <Link className="btn-secondary" to="/docs/skills/spezi-platform-selection">Explore optional templates</Link>
+              <Link className="btn-secondary" to="/docs/skills/spezi-platform-selection">Compare React Native & Apple-native</Link>
             </div>
           </section>}
         </div>
