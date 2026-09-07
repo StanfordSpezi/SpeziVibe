@@ -1,6 +1,7 @@
 import React from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import CopyBlock from '../components/CopyBlock';
 import HeroScene from '../components/HeroScene';
 import PlatformOptions from '../components/PlatformOptions';
@@ -49,6 +50,7 @@ function Section({id, label, children, dark = false}) {
 }
 
 export default function Home() {
+  const biodesignLogo = useBaseUrl('/img/biodesign-footer-dark.png');
   return (
     <Layout
       title="Vibe coding for digital health"
@@ -68,7 +70,13 @@ export default function Home() {
             <Link to="/docs/getting-started" className="btn-primary">Get started <span aria-hidden="true">→</span></Link>
             <Link to="/workshop" className="btn-secondary">Explore the workshop</Link>
           </div>
-          <p className="hero-note">From <a href="https://bdh.stanford.edu">Stanford Biodesign Digital Health</a> <span aria-hidden="true">·</span> Free & open source (MIT)</p>
+          <div className="hero-attribution">
+            <a className="hero-biodesign-logo" href="https://bdh.stanford.edu">
+              <img src={biodesignLogo} width="1913" height="275"
+                alt="Stanford Mussallem Center for Biodesign" decoding="async" />
+            </a>
+            <p className="hero-note">From <a href="https://bdh.stanford.edu">Stanford Biodesign Digital Health</a><br />Free & open source (MIT)</p>
+          </div>
         </div>
         <HeroScene />
         <a className="hero-scroll" href="#how-it-works">An idea worth building <span aria-hidden="true">↓</span></a>

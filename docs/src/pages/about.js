@@ -60,6 +60,31 @@ export default function About() {
       </header>
 
       <div className="band">
+        <section className="section" aria-labelledby="biodesign-process-title">
+          <div className="section-rail">
+            <span className="rail-label">Our approach</span>
+          </div>
+          <div className="section-main">
+            <h2 className="title" id="biodesign-process-title">Identify. Invent. Implement.</h2>
+            <p className="prose">
+              The Biodesign innovation process starts with understanding an unmet health need.
+              Teams then explore and test possible solutions, and develop a path to bring the
+              strongest idea into patient care.
+            </p>
+            <p className="prose">
+              SpeziVibe brings that focus on needs to building digital health apps with AI.
+              Its skills help you define who needs help, plan the experience and health data,
+              and turn those decisions into milestones you can build, test, and refine.
+              The <Link to="/workshop">workshop</Link> guides you through those planning conversations.
+            </p>
+            <a className="text-link" href="https://biodesign.stanford.edu/about-us/process.html">
+              Explore the Biodesign process <span aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </section>
+      </div>
+
+      <div className="band">
         <section className="section" aria-labelledby="project-leads-title">
           <div className="section-rail">
             <span className="rail-label">People</span>

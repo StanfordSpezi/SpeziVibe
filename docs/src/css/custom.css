@@ -1761,9 +1761,13 @@ h4 {
 }
 
 .hero-scene-canvas {
+  opacity: 0;
+  transition: opacity 700ms ease-out;
   -webkit-mask-image: radial-gradient(ellipse at center, #000 45%, transparent 73%);
   mask-image: radial-gradient(ellipse at center, #000 45%, transparent 73%);
 }
+
+.hero-scene.is-ready .hero-scene-canvas { opacity: 1; }
 
 .hero-scene-canvas,
 .hero-scene-canvas canvas {
@@ -1778,10 +1782,18 @@ h4 {
   pointer-events: none;
   display: grid;
   place-items: center;
+  opacity: 0;
+  transition: opacity 350ms ease-out;
 }
 
-.hero-scene.is-ready .hero-scene-fallback {
-  display: none;
+.hero-scene.is-fallback .hero-scene-fallback,
+.hero-scene-fallback.is-static {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-scene-canvas,
+  .hero-scene-fallback { transition: none; }
 }
 
 .hero-rocket-fallback {
@@ -1864,6 +1876,17 @@ h4 {
 .launch-hero .eyebrow { color: #c3ccda; }
 .launch-hero .brand-dot { background: #ff865b; }
 .launch-hero .hero-note { color: #bac5d5; }
+.hero-attribution { display: flex; align-items: center; gap: 1.5rem; margin-top: 1.5rem; }
+.hero-biodesign-logo { display: block; width: 160px; flex: 0 0 160px; }
+/* Match the footer's display of the official banner's left-hand wordmark. */
+.hero-biodesign-logo img { display: block; width: 100%; height: auto; aspect-ratio: 440 / 275; object-fit: cover; object-position: left; }
+.hero-biodesign-logo:focus-visible { outline: 2px solid #ff9c7b; outline-offset: 4px; border-radius: 4px; }
+.hero-attribution .hero-note { margin: 0; padding-left: 1.5rem; border-left: 1px solid #627085; line-height: 1.8; }
+@media (max-width: 600px) {
+  .hero-attribution { flex-direction: column; align-items: flex-start; gap: 0; }
+  .hero-biodesign-logo { flex-basis: auto; }
+  .hero-attribution .hero-note { border-left: 0; padding-left: 0; }
+}
 .launch-hero .btn-primary { background: #ff916a; border-color: #ff916a; color: #17120f; box-shadow: 0 6px 28px #f263221c; }
 .launch-hero .btn-primary:hover { background: #ffab8c; }
 .launch-hero .btn-secondary { background: transparent; color: var(--ink); border-color: #627085; }
