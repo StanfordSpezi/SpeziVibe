@@ -33,6 +33,12 @@ jobs:
       - name: Build
         working-directory: docs
         run: npm run build
+      - name: Check site links and page structure
+        working-directory: docs
+        run: npm run check:site
+      - name: Check workshop interactions
+        working-directory: docs
+        run: npm run check:workshop
 
   validate-skills:
     name: Validate Skills

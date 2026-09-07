@@ -1,4 +1,5 @@
 import React from 'react';
+import CopyBlock from './CopyBlock';
 
 const SKILL_BASE = 'https://raw.githubusercontent.com/StanfordSpezi/SpeziVibe/main/skills';
 
@@ -15,7 +16,9 @@ const DEPENDENCIES = {
       'health-data-model-planning',
       'fhir-data-model-design',
       'digital-health-compliance-planning',
+      'fasten-ehr-integration',
       'app-build-planner',
+      'project-wiki',
     ],
   },
   'app-build-planner': {
@@ -81,6 +84,9 @@ export function buildPrompt(skill, {context} = {}) {
 
   lines.push(
     "STEP 3 — Walk me through the skill interactively. When a step would normally save a markdown file to a project, show the file content in a code block instead so I can copy it. Don't simulate my answers — wait for me to respond.",
+    '',
+    'If you cannot fetch the skill instructions or their reference files, ask me to paste them before proceeding.',
+    'Ask me to paste or attach any existing briefs you need. Do not claim to have read files, run commands, created a project, or tested an integration from this chat. Help me prepare the decisions and instructions, then hand off file and code work to my coding tool.',
   );
 
   return lines.join('\n');
@@ -148,5 +154,14 @@ export function TryButtons({prompt, className}) {
 }
 
 export default function TryThisSkill({skill}) {
-  return <TryButtons prompt={buildPrompt(skill)} />;
+  const prompt = buildPrompt(skill);
+  return <div className="skill-browser-help">
+    <p>Explore this skill in browser chat. Each button opens a new conversation; bring any earlier briefs with you and save the results yourself.</p>
+    <TryButtons prompt={prompt} />
+    <details>
+      <summary>Need to paste the prompt yourself?</summary>
+      <CopyBlock text={prompt} label={`Browser prompt for ${skill}`} />
+      <p>If your chat can’t open the skill link, <a href={`https://github.com/StanfordSpezi/SpeziVibe/blob/main/skills/${skill}/SKILL.md`} target="_blank" rel="noopener noreferrer">open the instructions in a new tab</a> and paste them into the chat.</p>
+    </details>
+  </div>;
 }

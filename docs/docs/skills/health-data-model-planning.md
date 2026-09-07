@@ -1,8 +1,9 @@
 ---
 sidebar_position: 6
+description: Define the health data your app needs, its relationships, and how it can be shared.
 ---
 
-# health-data-model-planning
+# Plan your health data model
 
 :::tip Install this skill
 
@@ -10,7 +11,7 @@ sidebar_position: 6
 npx skills add StanfordSpezi/SpeziVibe --skill health-data-model-planning
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 

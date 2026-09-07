@@ -1,276 +1,189 @@
 import React, {useEffect, useState} from 'react';
 import Layout from '@theme/Layout';
+import Link from '@docusaurus/Link';
 import {buildPrompt, TryButtons} from '../components/TryThisSkill';
-
-const STORAGE_KEY = 'spezivibe-workshop-v1';
-const INSTALL_CMD = 'npx skills add StanfordSpezi/SpeziVibe --all';
-
-const STEPS = [
-  {
-    id: 'install',
-    title: 'Install the planning skills',
-    blurb: 'One command adds the SpeziVibe skills to your AI coding tool — Claude Code, Cursor, Copilot, Codex, Gemini, and more.',
-    kind: 'command',
-    text: INSTALL_CMD,
-  },
-  {
-    id: 'need',
-    title: 'Define the need',
-    blurb: 'Turn your idea into a sharp problem statement using the Stanford Biodesign needs-finding process.',
-    skill: 'biodesign-needs-finding',
-    output: 'need-statement.md',
-    prompt: (idea) =>
-      `I want to build ${idea}. Use the biodesign-needs-finding skill to walk me through defining a clear problem statement.`,
-  },
-  {
-    id: 'compliance',
-    title: 'Plan for compliance',
-    blurb: 'Surface the privacy, regulatory, and research questions — HIPAA, IRB, FDA, GDPR — early, before any code.',
-    skill: 'digital-health-compliance-planning',
-    output: 'compliance-brief.md',
-    prompt: (idea) =>
-      `Based on my need statement for ${idea}, run the digital-health-compliance-planning skill to identify which compliance domains and controls apply.`,
-  },
-  {
-    id: 'data',
-    title: 'Model your health data',
-    blurb: 'Define the core health data entities, how they relate, and what they need for interoperability.',
-    skill: 'health-data-model-planning',
-    output: 'data-model-brief.md',
-    prompt: (idea) =>
-      `Using my planning so far for ${idea}, run the health-data-model-planning skill to define the data entities, relationships, and interoperability needs.`,
-  },
-  {
-    id: 'ux',
-    title: 'Design the experience',
-    blurb: 'Map the user journeys, onboarding, and day-to-day workflows for patients and clinicians.',
-    skill: 'digital-health-ux-planning',
-    output: 'ux-brief.md',
-    prompt: (idea) =>
-      `Using my planning so far for ${idea}, run the digital-health-ux-planning skill to plan the user journeys and onboarding.`,
-  },
-];
-
-function ScrollReveal() {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('active');
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      {threshold: 0.1},
-    );
-    document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-  return null;
-}
-
-function stepText(step, idea) {
-  const ideaText = idea.trim() || 'my digital health app';
-  return step.kind === 'command' ? step.text : step.prompt(ideaText);
-}
-
-function CopyBlock({text, copied, onCopy}) {
-  return (
-    <div className="ws-code">
-      <code>{text}</code>
-      <button
-        type="button"
-        className="ws-copy"
-        aria-label="Copy to clipboard"
-        onClick={onCopy}
-      >
-        {copied ? 'Copied!' : 'Copy'}
-      </button>
-    </div>
-  );
-}
+import CopyBlock from '../components/CopyBlock';
+import {STORAGE_KEY, stepsForMode, canSkip, restoreWorkshop, stepPrompt} from '../components/workshopFlow';
 
 export default function Workshop() {
-  const [idea, setIdea] = useState('');
-  const [done, setDone] = useState({});
-  const [copiedId, setCopiedId] = useState(null);
+  const [run, setRun] = useState(() => restoreWorkshop(null));
   const [loaded, setLoaded] = useState(false);
+  const [storageAvailable, setStorageAvailable] = useState(true);
+  const [previousRun, setPreviousRun] = useState(null);
+  const {idea, mode, done, skipped} = run;
 
-  // Hydrate from localStorage after mount (avoids SSR mismatch).
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const saved = JSON.parse(raw);
-        if (typeof saved.idea === 'string') setIdea(saved.idea);
-        if (saved.done && typeof saved.done === 'object') setDone(saved.done);
-      }
-    } catch (e) {
-      /* ignore */
-    }
+    try { setRun(restoreWorkshop(localStorage.getItem(STORAGE_KEY))); }
+    catch { setStorageAvailable(false); }
     setLoaded(true);
   }, []);
 
-  // Persist on change.
   useEffect(() => {
     if (!loaded) return;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({idea, done}));
-    } catch (e) {
-      /* ignore */
-    }
-  }, [idea, done, loaded]);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(run));
+      setStorageAvailable(true);
+    } catch { setStorageAvailable(false); }
+  }, [run, loaded]);
 
-  const doneCount = STEPS.filter((s) => done[s.id]).length;
-  const total = STEPS.length;
-  const pct = Math.round((doneCount / total) * 100);
-  const activeIndex = STEPS.findIndex((s) => !done[s.id]);
-  const allDone = doneCount === total;
+  const steps = stepsForMode(mode);
+  const doneCount = steps.filter((step) => done[step.id]).length;
+  const skipCount = steps.filter((step) => skipped[step.id]).length;
+  const finishedCount = doneCount + skipCount;
+  const activeStep = steps.find((step) => !done[step.id] && !skipped[step.id]);
+  const allDone = finishedCount === steps.length;
+  const browser = mode === 'browser';
+  const reviewedOutputs = steps.filter((step) => done[step.id] && step.output);
+  const hasProgress = Object.values(done).some(Boolean) || Object.values(skipped).some(Boolean);
 
-  const copy = (step) => {
-    const text = stepText(step, idea);
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(() => {
-        setCopiedId(step.id);
-        setTimeout(() => setCopiedId((c) => (c === step.id ? null : c)), 2000);
-      });
-    }
+  const update = (values) => {
+    setPreviousRun(null);
+    setRun((current) => ({...current, ...values}));
   };
-
-  const toggle = (id) => setDone((d) => ({...d, [id]: !d[id]}));
+  const mark = (id, status) => {
+    setPreviousRun(null);
+    setRun((current) => ({
+      ...current,
+      done: {...current.done, [id]: status === 'done' && !current.done[id]},
+      skipped: {...current.skipped, [id]: status === 'skipped' && !current.skipped[id]},
+    }));
+  };
   const reset = () => {
-    setIdea('');
-    setDone({});
+    setPreviousRun(run);
+    setRun({...restoreWorkshop(null), mode});
   };
 
   return (
     <Layout
       title="Workshop"
-      description="A step-by-step workshop that takes a simple idea and walks you through planning a digital health app, right in your browser."
-      wrapperClassName="landing-page"
+      description="Plan a digital health app with a guided checklist and prompts for your AI coding tool or browser chat. Review each brief, then make an implementation plan."
+      wrapperClassName="landing-page workshop-page"
     >
-      <div className="aurora-base"></div>
-      <div className="aurora-accent"></div>
-      <div className="grid-pattern"></div>
-      <ScrollReveal />
-
-      <section className="ws-wrap">
-        <div className="reveal">
-          <p className="section-label">Workshop</p>
-          <h1 className="ws-title">Plan your app, step by step</h1>
-          <p className="ws-subtitle">
-            Start with a simple idea. Each step gives you a prompt to paste into your AI
-            coding tool — by the end you&rsquo;ll have a folder of planning briefs ready to build from.
-          </p>
+      <header className="page-head">
+        <div className="section-rail"><span className="rail-label">Workshop</span></div>
+        <div className="section-main">
+          <h1>Plan your app, step by step</h1>
+          <p className="prose">Bring an idea and an AI tool. Work through a conversation at each step,
+            review the result, and save a set of briefs you can build from. You can pause and return later.</p>
         </div>
+      </header>
 
-        <div className="ws-idea reveal reveal-delay-1">
-          <label className="ws-idea-label" htmlFor="ws-idea-input">
-            What do you want to build?
-          </label>
-          <textarea
-            id="ws-idea-input"
-            className="ws-idea-input"
-            rows={2}
-            placeholder="e.g. a medication tracker for post-transplant patients"
-            value={idea}
-            onChange={(e) => setIdea(e.target.value)}
-          />
-          <p className="ws-idea-hint">
-            We&rsquo;ll weave this into every prompt below. You can edit it any time.
-          </p>
-        </div>
+      <section className="ws-body" aria-label="Your workshop">
+        <div className="section-rail"><span className="rail-label">Your run</span></div>
+        <div className="ws-main">
+          <fieldset className="ws-mode" disabled={!loaded}>
+            <legend>Where will you do the planning?</legend>
+            <label><input type="radio" name="workshop-mode" value="coding" checked={!browser} onChange={() => update({mode: 'coding'})} />
+              <span><strong>In my coding tool</strong><small>Save briefs directly into your project.</small></span>
+            </label>
+            <label><input type="radio" name="workshop-mode" value="browser" checked={browser} onChange={() => update({mode: 'browser'})} />
+              <span><strong>In browser chat</strong><small>No installation. Save the briefs yourself.</small></span>
+            </label>
+          </fieldset>
 
-        <div className="ws-progress reveal">
-          <div className="ws-progress-top">
-            <span className="ws-progress-label">
-              {doneCount} of {total} complete
-            </span>
-            {doneCount > 0 && (
-              <button type="button" className="ws-reset" onClick={reset}>
-                Reset
-              </button>
-            )}
+          <div className="ws-guidance">
+            {browser ? <>
+              <p>Copy each prompt into Claude, ChatGPT, or another chat that can read links. Keep using the same conversation so it has your earlier decisions.</p>
+              <p>The “Try in” buttons open a new chat. Paste or attach your earlier briefs there when asked. If the prompt doesn’t appear, copy it below. If the chat cannot read a skill link, open its instructions below and paste them into the chat.</p>
+            </> : <>
+              <p>You’ll need <strong>Node.js, Git, and an AI coding tool that supports skills</strong>. <Link to="/docs/getting-started">Follow the setup guide</Link> if you haven’t prepared them yet.</p>
+              <p>Use the same project folder and conversation throughout. Answer the tool’s questions, review each brief, and check that it was saved before marking the step done.</p>
+            </>}
+            <p>This is a common planning route. Skip a planning step if it doesn’t apply or you already have that brief. For a route tailored to your project, <Link to="/docs/getting-started">start with the build-an-app skill</Link>.</p>
           </div>
-          <div className="ws-progress-bar">
-            <div className="ws-progress-fill" style={{width: `${pct}%`}}></div>
+
+          <div className="ws-idea">
+            <label className="ws-idea-label" htmlFor="ws-idea-input">What do you want to build?</label>
+            <textarea id="ws-idea-input" className="ws-idea-input" rows={3}
+              placeholder="e.g. a medication tracker for post-transplant patients"
+              value={idea} disabled={!loaded} aria-describedby="ws-idea-hint"
+              onChange={(event) => update({idea: event.target.value})} />
+            <p className="ws-idea-hint" id="ws-idea-hint">Your idea goes into every prompt. Leave it blank if you want help exploring.
+              {hasProgress && ' Refining it keeps your progress; choose Start over for a different project.'}</p>
           </div>
-        </div>
 
-        <ol className="ws-steps">
-          {STEPS.map((step, i) => {
-            const isDone = !!done[step.id];
-            const isActive = !isDone && i === activeIndex;
-            return (
-              <li
-                key={step.id}
-                className={`glass-card ws-step${isDone ? ' is-done' : ''}${
-                  isActive ? ' is-active' : ''
-                }`}
-              >
-                <div className="ws-step-num" aria-hidden="true">
-                  {isDone ? '✓' : i + 1}
-                </div>
-                <div className="ws-step-body">
-                  <h3 className="ws-step-title">{step.title}</h3>
-                  {step.skill && (
-                    <p className="ws-step-meta">
-                      <span className="ws-step-skill">{step.skill}</span>
-                      <span className="ws-step-arrow">→</span>
-                      <span className="ws-step-output">{step.output}</span>
-                    </p>
-                  )}
-                  <p className="ws-step-blurb">{step.blurb}</p>
-                  <CopyBlock
-                    text={stepText(step, idea)}
-                    copied={copiedId === step.id}
-                    onCopy={() => copy(step)}
-                  />
-                  <div className="ws-step-actions">
-                    {step.skill && (
-                      <TryButtons
-                        className="ws-try"
-                        prompt={buildPrompt(step.skill, {context: idea})}
-                      />
-                    )}
-                    <button
-                      type="button"
-                      className={`ws-done-btn${isDone ? ' is-done' : ''}`}
-                      onClick={() => toggle(step.id)}
-                    >
-                      {isDone ? '✓ Done' : 'Mark done'}
-                    </button>
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
+          <p className="ws-storage" role="status">{!loaded ? 'Loading your workshop…' : storageAvailable
+            ? 'Your idea and checklist are saved in this browser. Save the actual briefs in your AI tool or project; this page does not store them.'
+            : 'This browser cannot save your workshop. You can continue, but your checklist may be lost when you leave. Keep your briefs separately.'}</p>
 
-        {allDone && (
-          <div className="glass-card ws-complete reveal">
-            <div className="ws-complete-badge">🎉 Plan complete</div>
-            <h2>You&rsquo;ve planned your app</h2>
-            <p>
-              You now have a <code>docs/planning/</code> folder of structured briefs — your
-              need statement, compliance brief, data model, and UX plan. That&rsquo;s everything
-              your AI coding agent needs to start building.
-            </p>
-            <p>
-              Ready for the next step? <code>spezi-platform-selection</code> picks React Native
-              or Apple-native and clones a matching Spezi template to build on.
-            </p>
-            <div className="ws-complete-links">
-              <a className="btn-primary" href="/docs/how-it-works">
-                See how building works
-              </a>
-              <a className="btn-secondary" href="/docs/skills/app-build-planner">
-                Sequence the build
-              </a>
+          <div className="ws-progress">
+            <div className="ws-progress-top">
+              <span className="ws-progress-label" role="status">{doneCount} done{skipCount > 0 ? ` · ${skipCount} skipped` : ''} · {steps.length} steps</span>
+              {loaded && (idea || hasProgress) && <button type="button" className="ws-reset" onClick={reset}>Start over</button>}
             </div>
+            <div className="ws-progress-bar" role="progressbar" aria-label="Workshop progress"
+              aria-valuenow={finishedCount} aria-valuemin={0} aria-valuemax={steps.length}
+              aria-valuetext={`${doneCount} done, ${skipCount} skipped, ${steps.length - finishedCount} remaining`}>
+              <div className="ws-progress-fill" style={{width: `${finishedCount / steps.length * 100}%`}} />
+            </div>
+            {previousRun && <div className="ws-undo"><span role="status">Workshop cleared.</span>{' '}
+              <button type="button" className="ws-reset" onClick={() => { setRun(previousRun); setPreviousRun(null); }}>Undo start over</button>
+            </div>}
+            {activeStep && <p className="ws-next">Next: <a href={`#workshop-${activeStep.id}`}>{activeStep.title} <span aria-hidden="true">↓</span></a></p>}
           </div>
-        )}
+
+          <ol className="ws-steps">
+            {steps.map((step, index) => {
+              const isDone = Boolean(done[step.id]);
+              const isSkipped = Boolean(skipped[step.id]);
+              const prompt = stepPrompt(step, idea, mode, skipped);
+              const browserPrompt = step.skill && browser
+                ? `${buildPrompt(step.skill)}\n\nWORKSHOP CONTEXT AND DELIVERABLE\n${prompt}`
+                : null;
+              return (
+                <li key={step.id} id={`workshop-${step.id}`} aria-current={activeStep?.id === step.id ? 'step' : undefined}
+                  className={`ws-step${isDone ? ' is-done' : ''}${activeStep?.id === step.id ? ' is-active' : ''}`}>
+                  <div className="ws-step-num" aria-hidden="true">{isDone ? '✓' : isSkipped ? '–' : index + 1}</div>
+                  <div className="ws-step-body">
+                    <h2 className="ws-step-title">{step.title}{isSkipped && <span className="ws-skipped-label">Skipped</span>}</h2>
+                    <p className="ws-step-blurb">{step.blurb}</p>
+                    {step.id === 'build-plan' && <aside className="ws-extra" aria-label="Additional planning">
+                      <p>For a study, consider <Link to="/docs/skills/digital-health-study-planning">study planning</Link> first.
+                        For clinical records, consider <Link to="/docs/skills/fhir-data-model-design">FHIR design</Link> or <Link to="/docs/skills/fasten-ehr-integration">EHR integration</Link>.
+                        Bring any extra briefs into this step too.</p>
+                    </aside>}
+                    {step.skill && <p className="ws-step-meta"><span>Save as</span> <code className="ws-step-output">{step.output}</code></p>}
+                    {browser ? <details className="ws-browser-prompt">
+                      <summary>View and copy this step’s prompt</summary>
+                      <CopyBlock text={browserPrompt} label={`Browser prompt: ${step.title}`} />
+                    </details> : <CopyBlock text={prompt} label={step.skill ? `Prompt: ${step.title}` : 'Terminal command'} />}
+                    {step.skill && <p className="ws-skill-help"><Link to={`/docs/skills/${step.skill}`}>About this skill</Link>
+                      {browser && <> · <a href={`https://github.com/StanfordSpezi/SpeziVibe/blob/main/skills/${step.skill}/SKILL.md`} target="_blank" rel="noopener noreferrer" aria-label={`Open ${step.skill} instructions in a new tab`}>Open skill instructions <span aria-hidden="true">↗</span></a></>}
+                    </p>}
+                    <p className="ws-review" id={`ws-review-${step.id}`}><strong>Before marking done:</strong> {step.check}</p>
+                    <div className="ws-step-actions">
+                      {browser && <TryButtons className="ws-try" prompt={browserPrompt} />}
+                      <button type="button" disabled={!loaded} className={`ws-done-btn${isDone ? ' is-done' : ''}`}
+                        onClick={() => mark(step.id, 'done')} aria-pressed={isDone} aria-describedby={`ws-review-${step.id}`}
+                        aria-label={`${isDone ? 'Mark incomplete' : 'Mark done'}: ${step.title}`}>
+                        {isDone ? '✓ Done' : 'Mark done'}
+                      </button>
+                      {canSkip(step) && <button type="button" disabled={!loaded} className="ws-reset" onClick={() => mark(step.id, 'skipped')}
+                        aria-pressed={isSkipped} aria-label={`${isSkipped ? 'Restore step' : 'Skip step'}: ${step.title}`}>
+                        {isSkipped ? 'Restore step' : 'Skip this step'}
+                      </button>}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+
+          {allDone && <section className="ws-complete" aria-labelledby="ws-complete-title">
+            <div className="ws-complete-badge">Checklist complete</div>
+            <h2 id="ws-complete-title">Bring your plan into the build</h2>
+            <p>You’ve marked the steps complete. Before building, check that these reviewed documents are saved in your project:</p>
+            <ul>{reviewedOutputs.map((step) => <li key={step.id}><code>{step.output}</code></li>)}</ul>
+            {skipCount > 0 && <p>Include any briefs you already had for the skipped steps. Keep remaining gaps visible in your implementation plan.</p>}
+            {browser && <p>Move your saved Markdown documents into a project folder and <Link to="/docs/getting-started">set up your coding tool with the skills</Link>. Browser chat prepared the plan; the next step happens in your coding tool.</p>}
+            <p>Use your existing project or choose a framework with your agent. Spezi starter templates are optional.</p>
+            <CopyBlock label="Build handoff prompt" text="Use the build-an-app skill to resume from docs/planning/ and docs/implementation-plan.md. Check the documents that actually exist, summarize unresolved decisions, and help me prepare the project and implement the first agreed milestone. Ask me about any missing context before building." />
+            <div className="ws-complete-links">
+              <Link className="btn-primary" to="/docs/how-it-works">See how building works</Link>
+              <Link className="btn-secondary" to="/docs/skills/spezi-platform-selection">Explore optional templates</Link>
+            </div>
+          </section>}
+        </div>
       </section>
     </Layout>
   );

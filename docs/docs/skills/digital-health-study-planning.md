@@ -1,8 +1,9 @@
 ---
 sidebar_position: 4
+description: Plan recruitment, consent, assessments, and data collection for a digital health study.
 ---
 
-# digital-health-study-planning
+# Plan a research study
 
 :::tip Install this skill
 
@@ -10,7 +11,7 @@ sidebar_position: 4
 npx skills add StanfordSpezi/SpeziVibe --skill digital-health-study-planning
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 

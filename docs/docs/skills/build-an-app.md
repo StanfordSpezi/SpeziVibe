@@ -1,16 +1,17 @@
 ---
 sidebar_position: 1
+description: Get guided help from an app idea through planning, project setup, and implementation.
 ---
 
-# build-an-app
+# Build an app
 
-:::tip Install this skill
+:::tip Install the guided workflow
 
 ```bash
-npx skills add StanfordSpezi/SpeziVibe --skill build-an-app
+npx skills add StanfordSpezi/SpeziVibe --skill '*'
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Install all skills so this guide can run the supporting planning skills. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 
@@ -25,6 +26,7 @@ The main entry point for SpeziVibe. Describe what you want to build and this ski
 3. Proposes the order and checks with you before proceeding
 4. Runs each skill interactively — you participate in each one
 5. Hands off to `app-build-planner` to produce an implementation plan
+6. Helps prepare your project and starts implementation when you’re ready
 
 ## Skill Selection
 
@@ -37,6 +39,8 @@ The orchestrator picks skills based on signals in your description:
 - Involves health data → **health-data-model-planning**
 - Needs interoperability or EHR integration → **fhir-data-model-design**
 - Mentions HIPAA, patient data, or regulated data → **digital-health-compliance-planning**
+- Patients connecting their own medical records → **fasten-ehr-integration**
+- Wants a persistent project knowledge base → **project-wiki**
 - Always runs → **app-build-planner**
 
 Skills are skipped if you already have the corresponding planning document.
@@ -48,9 +52,9 @@ You:  I want to build a medication tracking app for post-transplant patients
 
 AI:   Based on your description, here's the sequence I'd recommend:
       1. biodesign-needs-finding — define the core problem
-      2. digital-health-compliance-planning — HIPAA and medication data
+      2. digital-health-ux-planning — patient and caregiver workflows
       3. health-data-model-planning — medication schedules, adherence
-      4. digital-health-ux-planning — patient and caregiver workflows
+      4. digital-health-compliance-planning — privacy questions and controls
       5. app-build-planner — implementation plan with milestones
       6. spezi-platform-selection — pick React Native or Apple-native,
          set up the matching template (when you're ready to build)
@@ -69,7 +73,7 @@ AI:   Starting with needs-finding. What specific problem are
 
 ## Output
 
-Each skill produces its own document in `docs/planning/`. The final output is an `implementation-plan.md` with milestones, tasks, and dependencies.
+The selected planning skills save briefs in `docs/planning/`. The build planner saves `docs/implementation-plan.md` with milestones, tasks, and dependencies. The guide then helps you prepare the app project and begin building.
 
 ## What Happens Next
 

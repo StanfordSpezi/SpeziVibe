@@ -1,8 +1,9 @@
 ---
 sidebar_position: 2
+description: Define the health problem, population, and outcome before deciding what to build.
 ---
 
-# biodesign-needs-finding
+# Define the clinical need
 
 :::tip Install this skill
 
@@ -10,7 +11,7 @@ sidebar_position: 2
 npx skills add StanfordSpezi/SpeziVibe --skill biodesign-needs-finding
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 

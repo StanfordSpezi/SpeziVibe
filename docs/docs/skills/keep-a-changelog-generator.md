@@ -1,8 +1,9 @@
 ---
 sidebar_position: 11
+description: Turn git history into categorized changelog entries for your project.
 ---
 
-# keep-a-changelog-generator
+# Generate a changelog
 
 :::tip Install this skill
 
@@ -10,7 +11,7 @@ sidebar_position: 11
 npx skills add StanfordSpezi/SpeziVibe --skill keep-a-changelog-generator
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 

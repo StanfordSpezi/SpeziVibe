@@ -1,8 +1,9 @@
 ---
 sidebar_position: 10
+description: Plan and build a patient-authorized EHR integration with Fasten Connect.
 ---
 
-# fasten-ehr-integration
+# Connect patient health records
 
 :::tip Install this skill
 
@@ -10,11 +11,13 @@ sidebar_position: 10
 npx skills add StanfordSpezi/SpeziVibe --skill fasten-ehr-integration
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 
 <TryThisSkill skill="fasten-ehr-integration" />
+
+Browser chat can help with architecture and planning decisions. Building and testing the integration requires a coding tool, a project, and a Fasten developer account. If the app does not exist yet, save the planning decisions first and schedule the working integration in the implementation plan.
 
 Walks you through connecting your app to real EHR data with [Fasten Connect](https://connect.fastenhealth.com): patients link their own patient portals through an embedded widget, your backend requests a bulk FHIR export, and a webhook delivers the records into your app's own storage. The skill verifies each stage as you build — keys, widget, export, webhook, parsing — and finishes with a mandatory data-privacy walkthrough covering exactly where the health data travels and what obligations come with holding it.
 

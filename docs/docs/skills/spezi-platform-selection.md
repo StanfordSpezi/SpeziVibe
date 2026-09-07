@@ -1,8 +1,9 @@
 ---
 sidebar_position: 9
+description: Compare React Native and Apple-native, then set up an optional Spezi starter project.
 ---
 
-# spezi-platform-selection
+# Choose a platform and starter
 
 :::tip Install this skill
 
@@ -10,7 +11,7 @@ sidebar_position: 9
 npx skills add StanfordSpezi/SpeziVibe --skill spezi-platform-selection
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 

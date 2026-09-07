@@ -1,8 +1,9 @@
 ---
 sidebar_position: 7
+description: Map clinical data to FHIR resources, terminology, and relationships for implementation.
 ---
 
-# fhir-data-model-design
+# Design a FHIR data model
 
 :::tip Install this skill
 
@@ -10,7 +11,7 @@ sidebar_position: 7
 npx skills add StanfordSpezi/SpeziVibe --skill fhir-data-model-design
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 

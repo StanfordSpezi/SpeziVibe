@@ -1,8 +1,9 @@
 ---
 sidebar_position: 12
+description: Write release highlights, fixes, breaking changes, and migration guidance for users.
 ---
 
-# release-notes-generator
+# Write release notes
 
 :::tip Install this skill
 
@@ -10,7 +11,7 @@ sidebar_position: 12
 npx skills add StanfordSpezi/SpeziVibe --skill release-notes-generator
 ```
 
-Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --all`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
+Or install all skills: `npx skills add StanfordSpezi/SpeziVibe --skill '*'`. See the [Getting Started guide](/docs/getting-started) for tool-specific options.
 
 :::
 
