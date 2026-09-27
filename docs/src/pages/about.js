@@ -5,9 +5,10 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import {SPEZI_CONTRIBUTORS} from '../data/speziContributors';
 
 const TEAM = [
-  {name: 'Vishnu Ravi', credentials: 'MD, FAMIA', photo: '/img/team/vishnu-ravi.jpg', initials: 'VR', linkedin: 'https://www.linkedin.com/in/vishnuravimd'},
-  {name: 'Oliver Aalami', credentials: 'MD', photo: '/img/team/oliver-aalami.jpg', initials: 'OA', linkedin: 'https://www.linkedin.com/in/oliver-aalami-67035'},
-  {name: 'Aydin Zahedivash', credentials: 'MD, MBA', photo: '/img/team/aydin-zahedivash.jpg', initials: 'AZ', linkedin: 'https://www.linkedin.com/in/aydin-zahedivash'},
+  {name: 'Vishnu Ravi', photo: '/img/team/vishnu-ravi.jpg', initials: 'VR', linkedin: 'https://www.linkedin.com/in/vishnuravimd'},
+  {name: 'Oliver Aalami', photo: '/img/team/oliver-aalami.jpg', initials: 'OA', linkedin: 'https://www.linkedin.com/in/oliver-aalami-67035'},
+  {name: 'Aydin Zahedivash', photo: '/img/team/aydin-zahedivash.jpg', initials: 'AZ', linkedin: 'https://www.linkedin.com/in/aydin-zahedivash'},
+  {name: 'Michelle de Haaff', photo: '/img/team/michelle-de-haaff.jpg', initials: 'MD', linkedin: 'https://www.linkedin.com/in/michelledehaaff'},
 ];
 
 const LINKS = [
@@ -54,40 +55,20 @@ export default function About() {
           <h1>Good ideas should reach patients faster</h1>
           <p className="prose">
             <Link to="/framework">Stanford Spezi</Link> is an open-source digital health ecosystem housed at Stanford Biodesign.
-            SpeziVibe is our toolkit for turning clinical needs into working apps with AI.
+            SpeziVibe applies the Biodesign process to building apps with AI: start from a real health need,
+            test possible solutions, and bring the strongest one to patients. The <Link to="/workshop">workshop</Link> walks
+            you through the planning.
           </p>
+          <a className="text-link" href="https://biodesign.stanford.edu/about-us/process.html">
+            Explore the Biodesign process <span aria-hidden="true">↗</span>
+          </a>
         </div>
       </header>
 
       <div className="band">
-        <section className="section" aria-labelledby="biodesign-process-title">
+        <section className="section" aria-labelledby="people-title">
           <div className="section-rail">
-            <span className="rail-label">Our approach</span>
-          </div>
-          <div className="section-main">
-            <h2 className="title" id="biodesign-process-title">Identify. Invent. Implement.</h2>
-            <p className="prose">
-              The Biodesign innovation process starts with understanding an unmet health need.
-              Teams then explore and test possible solutions, and develop a path to bring the
-              strongest idea into patient care.
-            </p>
-            <p className="prose">
-              SpeziVibe brings that focus on needs to building digital health apps with AI.
-              Its skills help you define who needs help, plan the experience and health data,
-              and turn those decisions into milestones you can build, test, and refine.
-              The <Link to="/workshop">workshop</Link> guides you through those planning conversations.
-            </p>
-            <a className="text-link" href="https://biodesign.stanford.edu/about-us/process.html">
-              Explore the Biodesign process <span aria-hidden="true">↗</span>
-            </a>
-          </div>
-        </section>
-      </div>
-
-      <div className="band">
-        <section className="section" aria-labelledby="project-leads-title">
-          <div className="section-rail">
-            <span className="rail-label">People</span>
+            <span className="rail-label" id="people-title">People</span>
           </div>
           <div className="section-main">
             <h2 className="title" id="project-leads-title">Project leadership</h2>
@@ -111,22 +92,11 @@ export default function About() {
                         {m.name} <span aria-hidden="true">↗</span>
                       </a>
                     </h3>
-                    <p className="member-cred">{m.credentials}</p>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-        </section>
-      </div>
-
-      <div className="band">
-        <section className="section" aria-labelledby="contributors-title">
-          <div className="section-rail">
-            <span className="rail-label">Community</span>
-          </div>
-          <div className="section-main">
-            <h2 className="title" id="contributors-title">Spezi contributors</h2>
+            <h2 className="title people-subtitle" id="contributors-title">Stanford Spezi contributors</h2>
             <ul className="contributors-list">
               {SPEZI_CONTRIBUTORS.map((contributor) => (
                 <li key={contributor.github}>
