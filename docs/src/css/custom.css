@@ -819,7 +819,7 @@ h4 {
 
 .team {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
   margin-top: 2.25rem;
 }
@@ -875,13 +875,8 @@ h4 {
   letter-spacing: -0.015em;
 }
 
-.member-cred {
-  margin: 0.2rem 0 0;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-3);
+.people-subtitle {
+  margin-top: 4rem;
 }
 
 .contributors-list {
