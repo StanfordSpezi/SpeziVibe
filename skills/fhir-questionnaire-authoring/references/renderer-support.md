@@ -9,7 +9,11 @@ SPDX-License-Identifier: MIT
 What each Spezi questionnaire renderer does with a FHIR R4 Questionnaire. Use this to check by hand when `questionnaire-check` isn't available. The checker (Phoenix `src/compatibility`) encodes the same rules and cites the source for each.
 
 - **iOS:** [ResearchKitOnFHIR](https://github.com/StanfordBDHG/ResearchKitOnFHIR), used by SpeziQuestionnaire 1.x. Covers 2.0.0 to 3.0.0-beta.2. The Spezi Template Application pins 2.0.7; SpeziQuestionnaire 1.3 allows 2.0.4 and later, up to 3.0.
-- **React Native:** the questionnaire package of the [SpeziVibe React Native template](https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate) (`packages/questionnaire`), as of main on 2026-03-15. It isn't versioned: each app gets a copy when it's created.
+- **React Native:** the questionnaire package of the [SpeziVibe React Native template](https://github.com/StanfordSpezi/SpeziVibeReactNativeTemplate) (`packages/questionnaire`). Each app keeps the copy it was created with; its version is in the app's `packages/questionnaire/package.json`. The tables describe **1.0.0**. **1.1.0** fixed several of the problems they list:
+  - required questions that are hidden or can't be shown no longer block Submit (they're just not shown), and answers to hidden questions are left out of the response;
+  - limits, whole numbers and maxLength are enforced on optional questions too;
+  - `valueString` and `valueInteger` choice answers are saved;
+  - time answers are saved as `hh:mm:ss`, and dates in local time.
 
 **Error** means the app can't load the survey, may crash, or participants can't finish it. **Ignored** means the app silently leaves it out.
 

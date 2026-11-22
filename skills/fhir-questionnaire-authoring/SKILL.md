@@ -19,7 +19,7 @@ FHIR allows far more in a Questionnaire than any app renderer implements, and mo
 
 - On iOS (ResearchKitOnFHIR), a condition on a question **inside a group** is ignored, so the question is always shown.
 - On iOS, a slider with more than 13 steps (e.g. 0–100 in steps of 1) is rejected by ResearchKit.
-- In the React Native template, the minimum and maximum of an **optional** question aren't enforced. A **required** question hidden by a condition blocks Submit with no message.
+- In React Native apps created before questionnaire package 1.1.0, the minimum and maximum of an **optional** question aren't enforced, and a **required** question hidden by a condition blocks Submit with no message.
 
 So the job is not just "write valid FHIR". It is "write FHIR this app supports", then check it with a tool instead of from memory, and get a person to confirm the survey says what the study needs.
 
@@ -43,8 +43,10 @@ Read whatever exists. Don't ask for what you can find:
 | Platform | How to tell | Checker target |
 |---|---|---|
 | Apple-native (Spezi Template Application, SpeziQuestionnaire 1.x) | An Xcode project. Find `researchkitonfhir` in `*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved` and note its version (the template pins 2.0.7). | `ios@<that version>`, e.g. `ios@2.0.7`. If the exact version isn't listed by `--list-targets`, use the closest lower one. |
-| React Native (`create-spezivibe-app`) | `package.json` depends on `@spezivibe/questionnaire`, and the app has `lib/questionnaires/`. | `react-native` |
+| React Native (`create-spezivibe-app`) | `package.json` depends on `@spezivibe/questionnaire`, and the app has `lib/questionnaires/`. Note the `version` in `packages/questionnaire/package.json`: each app keeps the copy it was created with. | `react-native@<that version>`, e.g. `react-native@1.0.0` |
 | Not decided yet | No app code yet. | Check against **both** `ios` and `react-native`, and keep to what both support. |
+
+If the checker prints a **note** that it used an earlier version's rules (the app's renderer is newer than the checker knows), mention it to the user: a warning may be about something the newer version supports.
 
 SpeziQuestionnaire **2.x** uses a new converter that the checker doesn't cover yet. If the project uses it, say so and check by reading its documentation instead.
 
@@ -76,7 +78,7 @@ Write one JSON file per survey, for example `questionnaires/phq-9.json`, unless 
 **Conditions (`enableWhen`)**
 - Put conditions on top-level questions or on a whole group, **never on a question inside a group** (ignored on iOS).
 - Compare choices with `answerCoding` (with `system` and `code`, exactly as in the option) using `=` or `!=`. Compare numbers with `answerInteger`/`answerDecimal`, and yes/no with `answerBoolean`. Don't compare dates with `=`/`!=`, and don't use `answerString`, `answerTime` or `answerDateTime`: iOS can't load such a survey.
-- Don't make a conditional question `required` if the app may be React Native.
+- Don't make a conditional question `required` if the app may be React Native before 1.1.0.
 
 **Numbers and sliders**
 - Use `minValue`/`maxValue` with `valueInteger` for integer questions. Use `valueDecimal` only for fractional limits on decimal questions, which needs ResearchKitOnFHIR 2.0.7 or later.
