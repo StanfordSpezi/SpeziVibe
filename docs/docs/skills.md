@@ -33,6 +33,7 @@ Listed in the order they typically run. `build-an-app` orchestrates them; `spezi
 
 | Skill | What it does | Output |
 |-------|-------------|--------|
+| [fhir-questionnaire-authoring](skills/fhir-questionnaire-authoring) | Write FHIR Questionnaires the app renders as intended, check them against its renderer, and review them in Phoenix | Checked Questionnaire JSON files + Phoenix review links |
 | [fasten-ehr-integration](skills/fasten-ehr-integration) | Connect patient-authorized EHR records via Fasten Connect — provider-linking widget, webhook ingestion, FHIR record handling, privacy walkthrough | Working integration + `docs/planning/ehr-connection-brief.md` |
 
 ## Knowledge Management Skills

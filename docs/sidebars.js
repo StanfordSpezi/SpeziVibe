@@ -25,6 +25,7 @@ const sidebars = {
       type: 'category',
       label: 'Integration Skills',
       items: [
+        'skills/fhir-questionnaire-authoring',
         'skills/fasten-ehr-integration',
       ],
     },

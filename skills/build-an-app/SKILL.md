@@ -49,6 +49,7 @@ From their answer, look for signals about:
 | Mentions HealthKit, vitals, wearables, or sensor data | Health data modeling is needed |
 | Mentions EHR, Epic, SMART on FHIR, or interoperability | FHIR data model design is needed |
 | Mentions patients pulling in their own medical records, patient portals, MyChart, or Fasten | EHR record integration (`fasten-ehr-integration`) is needed |
+| Mentions surveys, questionnaires, check-ins, patient-reported outcomes, or instruments like PHQ-9 | Questionnaire authoring (`fhir-questionnaire-authoring`) is needed during the build |
 | Mentions they already have a repo or project | Skip platform selection |
 | Mentions a framework outside the Spezi templates (Flutter, Kotlin, web, etc.) or says they don't want a starter template | Skip platform selection — they'll build with their own framework (see Step 4) |
 | Mentions they already have designs or wireframes | UX planning may be lighter or skippable |
@@ -78,6 +79,7 @@ Based on what you heard, assemble a plan from the available skills. Every skill 
 | `digital-health-compliance-planning` | App handles PHI or has regulatory concerns |
 | `fasten-ehr-integration` | App needs patients to pull their own EHR records in via Fasten Connect |
 | `digital-health-study-planning` | App is part of a research study with enrollment and assessments |
+| `fhir-questionnaire-authoring` | App collects surveys or questionnaires — runs during the build, not during planning (see Step 3) |
 | `app-build-planner` | Always — produces the implementation plan that drives the build |
 | `project-wiki` | User wants a persistent knowledge base that grows with the project — also offered at the end of planning (Step 4) even if not selected here |
 
@@ -127,6 +129,8 @@ Run skills in this order (skipping any that were not selected):
 If the user is **not** using a Spezi template, there is no clone step — the planning briefs and implementation plan are framework-agnostic, and Step 4 sets up the project with the user's chosen framework instead.
 
 `fasten-ehr-integration` is part planning, part implementation — its full deliverable is a working, tested integration. When the app does not exist yet, run it at this point for the developer-account setup and the privacy/architecture decisions that produce `docs/planning/ehr-connection-brief.md`, and let `app-build-planner` schedule the working integration as a milestone; return to the skill during that milestone to build and verify the integration inside the actual project.
+
+`fhir-questionnaire-authoring` is an implementation skill: it writes the survey files into the app and checks them against the app's questionnaire renderer, so it needs to know the platform. Don't run it during planning. Make sure `app-build-planner` schedules a questionnaires milestone, and tell the user to run this skill in that milestone, inside the actual project.
 
 Between each skill, ask: "Ready to move on, or do you want to adjust anything?"
 

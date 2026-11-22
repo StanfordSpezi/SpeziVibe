@@ -158,6 +158,7 @@ Listed in the order they typically run.
 | `fhir-data-model-design` | Map clinical concepts to FHIR |
 | `app-build-planner` | Turn planning outputs into a milestone-based build plan |
 | `spezi-platform-selection` | Choose React Native or Apple-native and set up the matching Spezi starter template (optional) |
+| `fhir-questionnaire-authoring` | Write the app's surveys as FHIR Questionnaires, check them against the app, and review them in Phoenix |
 | `fasten-ehr-integration` | Pull patients' real EHR records into the app via Fasten Connect, with a built-in privacy walkthrough |
 | `project-wiki` | Turn your project into a compounding, AI-maintained knowledge base |
 | `keep-a-changelog-generator` | Draft changelogs people can actually read |
@@ -267,6 +268,18 @@ Choose the right app foundation — helps you decide between **React Native** an
 
 ```bash
 npx skills add StanfordSpezi/SpeziVibe --skill spezi-platform-selection
+```
+
+</details>
+
+### `fhir-questionnaire-authoring`
+
+Write the app's surveys as FHIR Questionnaires the app actually renders as intended. Checks each file against the app's questionnaire renderer (ResearchKitOnFHIR on iOS, or the React Native template) with `questionnaire-check`, catching rules the app would silently ignore, and hands it to a person to review and edit in the [Phoenix](https://stanfordbdhg.github.io/phoenix) survey builder.
+
+<details><summary>Install</summary>
+
+```bash
+npx skills add StanfordSpezi/SpeziVibe --skill fhir-questionnaire-authoring
 ```
 
 </details>
