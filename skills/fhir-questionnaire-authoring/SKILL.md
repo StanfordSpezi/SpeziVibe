@@ -90,10 +90,12 @@ Write one JSON file per survey, for example `questionnaires/phq-9.json`, unless 
 
 ## Step 3: Check Each File
 
-Run the checker on every file, with the target from Step 1:
+The checker, `questionnaire-check`, is a single file with no dependencies, published with [Phoenix](https://github.com/StanfordBDHG/phoenix/releases/tag/questionnaire-check) and updated whenever its rules change. Download it once per session (outside the project, so it isn't committed), then run it on every file with the target from Step 1. It needs Node.js 18 or later.
 
 ```bash
-npx @stanfordbdhg/questionnaire-check questionnaires/phq-9.json --target ios@2.0.7 --link
+QC="${TMPDIR:-/tmp}/questionnaire-check.mjs"
+curl -fsSL -o "$QC" https://github.com/StanfordBDHG/phoenix/releases/download/questionnaire-check/questionnaire-check.mjs
+node "$QC" questionnaires/phq-9.json --target ios@2.0.7 --link
 ```
 
 Use `--target ios,react-native` if the platform isn't decided, and `--json` if you want to parse the result. The checker reports:
@@ -103,7 +105,7 @@ Use `--target ios,react-native` if the platform isn't decided, and `--json` if y
 
 Re-run until there are no errors.
 
-If the command fails because the package can't be found (it is new), check by hand against [references/renderer-support.md](references/renderer-support.md), and tell the user the automatic check didn't run.
+Exit status 0 means no errors, 1 means errors (fix them), and 2 means the file or options are wrong. If the download fails or Node.js isn't available, check by hand against [references/renderer-support.md](references/renderer-support.md), and tell the user the automatic check didn't run.
 
 ---
 
