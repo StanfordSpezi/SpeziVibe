@@ -17,6 +17,7 @@ const DEPENDENCIES = {
       'fhir-data-model-design',
       'digital-health-compliance-planning',
       'fasten-ehr-integration',
+      'fhir-questionnaire-authoring',
       'app-build-planner',
       'project-wiki',
     ],
@@ -27,6 +28,13 @@ const DEPENDENCIES = {
       'references/react-native-packages.md',
       'references/apple-native-modules.md',
       'references/milestone-patterns.md',
+    ],
+  },
+  'fhir-questionnaire-authoring': {
+    kind: 'references',
+    files: [
+      'references/questionnaire-patterns.md',
+      'references/renderer-support.md',
     ],
   },
   'spezi-platform-selection': {
